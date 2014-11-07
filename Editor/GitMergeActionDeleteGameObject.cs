@@ -4,10 +4,12 @@ using System.Collections;
 public class GitMergeActionDeleteGameObject : GitMergeAction
 {
     private GameObject copy;
+    private bool oursWasActive;
 
     public GitMergeActionDeleteGameObject(GameObject ours, GameObject theirs)
         : base(ours, theirs)
     {
+        oursWasActive = ours.activeSelf;
         copy = GameObject.Instantiate(ours) as GameObject;
         copy.name = ours.name;
         copy.SetActiveForMerging(false);
@@ -20,6 +22,7 @@ public class GitMergeActionDeleteGameObject : GitMergeAction
         if(ours == null)
         {
             ours = copy.InstantiateForMerging();
+            ours.SetActive(oursWasActive);
         }
     }
 

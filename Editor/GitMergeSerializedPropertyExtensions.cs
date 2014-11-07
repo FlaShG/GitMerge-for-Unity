@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public static class SerializedPropertyExtensions
+public static class GitMergeSerializedPropertyExtensions
 {
 	public static object GetValue(this SerializedProperty p, bool forComparison = false)
     {

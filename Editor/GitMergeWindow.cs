@@ -11,7 +11,6 @@ public class GitMergeWindow : EditorWindow
 
     private static string sceneName;
     private static string theirSceneName;
-    private static List<GameObject> addedObjects;
 
 
 	[MenuItem("Window/GitMerge")]
@@ -29,7 +28,7 @@ public class GitMergeWindow : EditorWindow
 
             var ourObjects = GetAllSceneObjects();
             EditorApplication.OpenSceneAdditive(theirSceneName);
-            addedObjects = GetAllNewSceneObjects(ourObjects);
+            var addedObjects = GetAllNewSceneObjects(ourObjects);
             Hide(addedObjects);
 
             BuildAllMergeActions(ourObjects, addedObjects);
@@ -73,7 +72,7 @@ public class GitMergeWindow : EditorWindow
     {
         foreach(var obj in objects)
         {
-            obj.hideFlags = HideFlags.HideAndDontSave;
+            obj.SetAsMergeObject(false);
         }
     }
 
@@ -130,10 +129,7 @@ public class GitMergeWindow : EditorWindow
 
     private static void CompleteMerge()
     {
-        foreach(var obj in addedObjects)
-        {
-            DestroyImmediate(obj);
-        }
+        GitMergeGameObjectExtensions.DestroyAllMergeObjects();
         EditorApplication.SaveScene();
         AssetDatabase.DeleteAsset(theirSceneName);
 

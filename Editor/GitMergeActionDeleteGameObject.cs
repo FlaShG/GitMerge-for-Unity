@@ -10,7 +10,7 @@ public class GitMergeActionDeleteGameObject : GitMergeAction
     {
         copy = GameObject.Instantiate(ours) as GameObject;
         copy.name = ours.name;
-        copy.hideFlags = HideFlags.HideAndDontSave;
+        copy.SetActiveForMerging(false);
 
         UseOurs();
     }
@@ -19,9 +19,7 @@ public class GitMergeActionDeleteGameObject : GitMergeAction
     {
         if(ours == null)
         {
-            ours = GameObject.Instantiate(copy) as GameObject;
-            ours.name = copy.name;
-            ours.hideFlags = HideFlags.None;
+            ours = copy.InstantiateForMerging();
         }
     }
 

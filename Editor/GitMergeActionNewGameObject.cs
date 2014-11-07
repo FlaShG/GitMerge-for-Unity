@@ -20,9 +20,7 @@ public class GitMergeActionNewGameObject : GitMergeAction
     protected override void ApplyTheirs()
     {
         ApplyOurs();
-        ours = GameObject.Instantiate(theirs) as GameObject;
-        ours.name = theirs.name;
-        ours.hideFlags = HideFlags.None;
+        ours = theirs.InstantiateForMerging();
     }
 
     public override void OnGUI()

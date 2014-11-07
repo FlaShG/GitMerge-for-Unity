@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GirMergeGameObjectExtensions : MonoBehaviour
+public class GitMergeGameObjectExtensions : MonoBehaviour
 {
 	void Awake()
     {

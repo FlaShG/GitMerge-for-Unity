@@ -25,9 +25,11 @@ public class GitMergeWindow : EditorWindow
         if(GUILayout.Button("Do Stuff"))
         {
             GetTheirVersionOf(EditorApplication.currentScene);
+            AssetDatabase.Refresh();
 
             var ourObjects = GetAllSceneObjects();
             EditorApplication.OpenSceneAdditive(theirSceneName);
+            AssetDatabase.DeleteAsset(theirSceneName);
             var addedObjects = GetAllNewSceneObjects(ourObjects);
             Hide(addedObjects);
 
@@ -131,7 +133,6 @@ public class GitMergeWindow : EditorWindow
     {
         GitMergeGameObjectExtensions.DestroyAllMergeObjects();
         EditorApplication.SaveScene();
-        AssetDatabase.DeleteAsset(theirSceneName);
 
         allMergeActions = null;
 

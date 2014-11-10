@@ -1,46 +1,52 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class GitMergeActionNewComponent : GitMergeAction
+public class GitMergeActionDeleteComponent : GitMergeAction
 {
     protected Component ourComponent;
-    protected Component theirComponent;
+    protected Component copy;
 
-    public GitMergeActionNewComponent(GameObject ours, Component theirComponent)
+    public GitMergeActionDeleteComponent(GameObject ours, Component ourComponent)
         : base(ours, null)
     {
-        this.theirComponent = theirComponent;
+        this.ourComponent = ourComponent;
+
+        var go = new GameObject("GitMerge Object");
+        go.SetActiveForMerging(false);
+
+        copy = go.AddComponent(ourComponent);
+        UseOurs();
     }
 
     protected override void ApplyOurs()
     {
-        if(ourComponent)
+        if(ourComponent == null)
         {
-            Object.DestroyImmediate(ourComponent);
+            ourComponent = ours.AddComponent(copy);
         }
     }
 
     protected override void ApplyTheirs()
     {
-        if(!ourComponent)
+        if(ourComponent != null)
         {
-            ourComponent = ours.AddComponent(theirComponent);
+            Object.DestroyImmediate(ourComponent);
         }
     }
 
     public override void OnGUI()
     {
-        GUILayout.Label(TypeOf(theirComponent));
+        GUILayout.Label(TypeOf(copy));
 
         var defaultOptionColor = merged ? Color.gray : Color.white;
 
         GUI.color = usingOurs ? Color.green : defaultOptionColor;
-        if(GUILayout.Button("Don't add Component"))
+        if(GUILayout.Button("Keep Component"))
         {
             UseOurs();
         }
         GUI.color = usingTheirs ? Color.green : defaultOptionColor;
-        if(GUILayout.Button("Add new Component"))
+        if(GUILayout.Button("Delete Component"))
         {
             UseTheirs();
         }

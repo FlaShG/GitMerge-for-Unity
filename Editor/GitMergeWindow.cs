@@ -13,15 +13,15 @@ public class GitMergeWindow : EditorWindow
     private static string theirSceneName;
 
 
-	[MenuItem("Window/GitMerge")]
+    [MenuItem("Window/GitMerge")]
     static void OpenEditor()
     {
-        EditorWindow.GetWindow(typeof(GitMergeWindow), true, "GitMerge");
+        EditorWindow.GetWindow(typeof(GitMergeWindow), false, "GitMerge");
     }
 
     void OnGUI()
     {
-        GUILayout.Label("Open Scene: "+EditorApplication.currentScene);
+        GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
         if(GUILayout.Button("Do Stuff"))
         {
             GetTheirVersionOf(EditorApplication.currentScene);
@@ -34,21 +34,36 @@ public class GitMergeWindow : EditorWindow
             Hide(addedObjects);
 
             BuildAllMergeActions(ourObjects, addedObjects);
-        }
 
-        var done = false;
-        if(allMergeActions != null)
-        {
-            done = true;
-            foreach(var actions in allMergeActions)
+            if(allMergeActions.Count == 0)
             {
-                actions.OnGUI();
-                done = done && actions.merged;
+                allMergeActions = null;
             }
         }
-        if(done && GUILayout.Button("Done!"))
+
+
+        if(allMergeActions != null)
         {
-            CompleteMerge();
+            var done = false;
+            if(allMergeActions != null)
+            {
+                done = true;
+                foreach(var actions in allMergeActions)
+                {
+                    actions.OnGUI();
+                    done = done && actions.merged;
+                }
+            }
+            GUILayout.BeginHorizontal();
+            if(done && GUILayout.Button("Done!"))
+            {
+                CompleteMerge();
+            }
+            if(GUILayout.Button("Abort"))
+            {
+                AbortMerge();
+            }
+            GUILayout.EndHorizontal();
         }
     }
 
@@ -117,7 +132,7 @@ public class GitMergeWindow : EditorWindow
             }
             theirObjectsDict.Remove(id);
         }
-        
+
         foreach(var theirs in theirObjectsDict.Values)
         {
             //new GameObjects from them
@@ -140,8 +155,18 @@ public class GitMergeWindow : EditorWindow
         {
             ExecuteGit("reset HEAD");
             ExecuteGit("add " + sceneName);
-            ExecuteGit("commit -m \"Merged "+sceneName+".\"");
+            ExecuteGit("commit -m \"Merged " + sceneName + ".\"");
         }
+    }
+
+    private static void AbortMerge()
+    {
+        foreach(var actions in allMergeActions)
+        {
+            actions.UseOurs();
+        }
+        GitMergeGameObjectExtensions.DestroyAllMergeObjects();
+        allMergeActions = null;
     }
 
     private static string ExecuteGit(string args)

@@ -72,9 +72,13 @@ public class GitMergeActions
             Component theirComponent;
             theirDict.TryGetValue(id, out theirComponent);
 
-            if(ourComponent && theirComponent)
+            if(theirComponent) //both components exist
             {
                 FindPropertyDifferences(ourComponent, theirComponent);
+            }
+            else //component doesn't exist in their version, offer a deletion
+            {
+                actions.Add(new GitMergeActionDeleteComponent(ours, ourComponent));
             }
 
             theirDict.Remove(id);
@@ -83,6 +87,7 @@ public class GitMergeActions
         foreach(var theirComponent in theirDict.Values)
         {
             //new Components from them
+            actions.Add(new GitMergeActionNewComponent(ours, theirComponent));
         }
     }
 

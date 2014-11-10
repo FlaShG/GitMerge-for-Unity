@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections.Generic;
 
 public static class GitMergeGameObjectExtensions
@@ -46,5 +47,27 @@ public static class GitMergeGameObjectExtensions
             Object.DestroyImmediate(obj);
         }
         objects.Clear();
+    }
+    
+    public static Component AddComponent(this GameObject go, Component original)
+    {
+        var c = go.AddComponent(original.GetType());
+
+        var originalSerialized = new SerializedObject(original).GetIterator();
+        var newSerialized = new SerializedObject(c).GetIterator();
+
+        if(originalSerialized.Next(true))
+        {
+            newSerialized.Next(true);
+
+            while(originalSerialized.NextVisible(false))
+            {
+                newSerialized.NextVisible(false);
+
+                newSerialized.SetValue(originalSerialized.GetValue());
+            }
+        }
+        
+        return c;
     }
 }

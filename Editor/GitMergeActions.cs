@@ -130,6 +130,14 @@ public class GitMergeActions
         merged = actions.TrueForAll(action => action.merged);
     }
 
+    public void UseOurs()
+    {
+        foreach(var action in actions)
+        {
+            action.UseOurs();
+        }
+    }
+
     public void OnGUI()
     {
         GUILayout.Label(name);

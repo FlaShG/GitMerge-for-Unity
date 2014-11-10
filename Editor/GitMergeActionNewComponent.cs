@@ -30,6 +30,8 @@ public class GitMergeActionNewComponent : GitMergeAction
 
     public override void OnGUI()
     {
+        GUILayout.Label(TypeOf(theirComponent));
+
         var defaultOptionColor = merged ? Color.gray : Color.white;
 
         GUI.color = usingOurs ? Color.green : defaultOptionColor;
@@ -42,5 +44,16 @@ public class GitMergeActionNewComponent : GitMergeAction
         {
             UseTheirs();
         }
+    }
+
+    private string TypeOf(object o)
+    {
+        var s = o.GetType().ToString();
+        var i = s.LastIndexOf('.');
+        if(i >= 0)
+        {
+            s = s.Substring(i+1);
+        }
+        return s;
     }
 }

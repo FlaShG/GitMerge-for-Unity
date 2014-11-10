@@ -20,7 +20,7 @@ public class GitMergeActionDeleteComponent : GitMergeAction
 
     protected override void ApplyOurs()
     {
-        if(ours == null)
+        if(ourComponent == null)
         {
             ourComponent = ours.AddComponent(copy);
         }
@@ -28,7 +28,7 @@ public class GitMergeActionDeleteComponent : GitMergeAction
 
     protected override void ApplyTheirs()
     {
-        if(ours != null)
+        if(ourComponent != null)
         {
             Object.DestroyImmediate(ourComponent);
         }
@@ -36,6 +36,8 @@ public class GitMergeActionDeleteComponent : GitMergeAction
 
     public override void OnGUI()
     {
+        GUILayout.Label(TypeOf(copy));
+
         var defaultOptionColor = merged ? Color.gray : Color.white;
 
         GUI.color = usingOurs ? Color.green : defaultOptionColor;
@@ -48,5 +50,16 @@ public class GitMergeActionDeleteComponent : GitMergeAction
         {
             UseTheirs();
         }
+    }
+
+    private string TypeOf(object o)
+    {
+        var s = o.GetType().ToString();
+        var i = s.LastIndexOf('.');
+        if(i >= 0)
+        {
+            s = s.Substring(i+1);
+        }
+        return s;
     }
 }

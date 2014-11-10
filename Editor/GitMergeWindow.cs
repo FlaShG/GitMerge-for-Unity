@@ -16,7 +16,7 @@ public class GitMergeWindow : EditorWindow
 	[MenuItem("Window/GitMerge")]
     static void OpenEditor()
     {
-        EditorWindow.GetWindow(typeof(GitMergeWindow), true, "GitMerge");
+        EditorWindow.GetWindow(typeof(GitMergeWindow), false, "GitMerge");
     }
 
     void OnGUI()

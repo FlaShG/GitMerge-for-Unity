@@ -25,6 +25,8 @@ public abstract class GitMergeAction
         usingOurs = true;
         usingTheirs = false;
         usingNew = false;
+
+        HighlightObject();
     }
     public void UseTheirs()
     {
@@ -33,6 +35,8 @@ public abstract class GitMergeAction
         usingOurs = false;
         usingTheirs = true;
         usingNew = false;
+
+        HighlightObject();
     }
     public void UsedNew()
     {
@@ -56,4 +60,12 @@ public abstract class GitMergeAction
     }
 
     public abstract void OnGUI();
+
+    private void HighlightObject()
+    {
+        if(ours)
+        {
+            ours.Highlight();
+        }
+    }
 }

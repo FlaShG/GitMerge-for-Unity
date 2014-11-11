@@ -70,4 +70,11 @@ public static class GitMergeGameObjectExtensions
         
         return c;
     }
+
+    public static void Highlight(this GameObject go)
+    {
+        Selection.activeGameObject = go;
+        EditorGUIUtility.PingObject(go);
+        SceneView.lastActiveSceneView.FrameSelected();
+    }
 }

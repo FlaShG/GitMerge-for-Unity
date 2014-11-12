@@ -22,7 +22,9 @@ public class GitMergeWindow : EditorWindow
     void OnGUI()
     {
         GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
-        if(EditorApplication.currentScene != "" && GUILayout.Button("Do Stuff"))
+        if(EditorApplication.currentScene != ""
+           && allMergeActions == null
+           && GUILayout.Button("Do Stuff"))
         {
             GetTheirVersionOf(EditorApplication.currentScene);
             AssetDatabase.Refresh();

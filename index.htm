@@ -29,10 +29,9 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#install">Install</a></li>
-            <li><a href="#use">How to use</a></li>
+            <li><a href="#howto">How to use</a></li>
             <li><a href="#development">Active Development</a></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -43,33 +42,139 @@
 
     <h1>Using Unity with Git, made painless for everyone.</h1>
     <div class="alert alert-danger">
-        GitMerge is currently in an early stage of development.
+        <i>GitMerge for Unity</i> is currently in an early stage of development.
         Use it at your own risk.
     </div>
-    <div class="alert alert-danger">
-        This page is in a state of being developed, too.
-        As you can see, there's pretty much nothing of interest here yet.
-    </div>
     <p class="lead">
-        GitMerge is a free, open source Unity Editor tool that allows you
-        to merge Scene files. This solves the main problem you currently get when using
+        <i>GitMerge for Unity</i> is a free, open source Unity Editor tool that allows you
+        to merge scene and (not yet) prefab files. This solves the main problem you currently get when using
         Git to work with Unity.
     </p>
     
     <h2 id="abour">About</h2>
+        <p>
+            Unity offers a few solutions for collaborative teamwork. These do not necessarily stick to
+            the standard you're used to. So... <b>why not use Git?</b>
+        </p>
+        <p>
+            You'll have to take these two things into account in order to get started:
+            <ol>
+                <li>
+                    Setup a good .gitignore, like
+                    <a href="https://github.com/github/gitignore/blob/master/Unity.gitignore" target="_blank">
+                        this one</a>.
+                </li>
+                
+                <li>
+                    Get yourself a mergetool for scenes and prefabs.<br />
+                    That's where <i>GitMerge for Unity</i> is supposed to come in.
+                </li>
+            </ol>
+        </p>
     
+    <h2 id="install">How to install</h2>
+    <p>
+        To use <i>GitMerge for Unity</i>, go to the
+        <a href="https://github.com/FlaShG/GitMerge-for-Unity">project page</a>
+        and clone the repository into your Assets Folder.
+    </p>
+    <p>
+        Next, you make sure
+        "<a href="http://docs.unity3d.com/Manual/class-EditorManager.html" target="_blank">Asset Serialization</a>"
+        is set to "Mixed" or "Binary".<br />
+        Otherwise, Unity will save scenes and prefabs in YAML text format and Git will
+        attempt to do its line-based automatic merge. This usually leads to broken files with Unity scenes and prefabs.
+    </p>
+    <p>
+        That's it, you're ready to go!
+    </p>
     
-    <h2 id="install">Install</h2>
+    <div class="col-sm-4 pull-right">
+        <div class="panel panel-info">
+            <div class="panel-heading"><h4>How to...</h4></div>
+            <ol>
+                <li><a href="#instructions-start">Start merging</a></li>
+                <li><a href="#instructions-scene">Merge a scene</a></li>
+                <li><a href="#instructions-prefab">Merga a prefab</a></li>
+            </ol>
+        </div>
+    </div>
+    <h2 id="howto">How to use</h2>
     
-    
-    <h2 id="use">How to use</h2>
+    <div class="alert alert-danger col-sm-8">
+        This tool is still under development. There are some features, like prefab support, that
+        are not yet implemented. Also, remember that you use the tool at your own risk.
+    </div>
 
+    <h3 id="instructions-start" class="clear">Start merging</h3>
+    <p>
+        <i>GitMerge for Unity</i> comes as an opt-in merge tool.
+        It is not integrated into Git as an automatic merge tool since merging scenes and prefabs
+        is something you'd never want to have done automatically.
+    </p>
+    <p>
+        First off, you create your merge conflict the way you usually do.
+        Once you're in Git's MERGING state, open the GitMerge window in Unity (Window &rarr; GitMerge).
+    </p>
+    
+    <h3 id="instructions-scene">Merge a scene</h3>
+    <p>
+        To merge a scene, open it the usual way. Then, in the GitMerge Window, click "Start merging this scene".
+        When there is an active merge conflict, the tool will find the differences between the currently opened
+        version of the scene and "their" version.
+    </p>
+    <p>
+        You will then get a list of so called "MergeActions" in the tool window.
+        Each MergeAction solves one point of conflict between the two scenes.<br />
+        To do this, you will be offered two to three options every time:
+        <ul>
+            <li><b>Use "ours"</b> (left side)</li>
+            <li><b>Use "theirs"</b> (right side)</li>
+            <li><b>Use new</b> (center, when applicable)</li>
+        </ul>
+        You can choose to click the left button to use our version, the left button for their version,
+        or enter a new value in the middle. Either way, the MergeAction line will turn from red (unmerged)
+        to green (merged).
+    </p>
+    <p>
+        You can, of course, continue to edit the scene in a normal way during merging.
+        It is not recommended to delete GameObjects that might be part of a MergeAction though.
+    </p>
+    <p>
+        When all MergeActions are flagged as merged, you can click on "Apply merge".<br />
+        The scene will be saved and marked as merged for git. Since there could be more merge conflicts,
+        this will not automatically commit.<br />
+        You'll have to commit your merge manually at some point from now on.
+    </p>
+    
+    <h3 id="instructions-prefab">Merge a prefab</h3>
+    <p>
+        This has not been implemented yet, but will work pretty much like merging a scene.
+        You'll probably drag the prefab to merge into the tool window, causing it to create a temporary local scene
+        (like mecanim does when editing rigs).
+        The prefab will be instantiated, merged the same way you merge scenes, and saved.
+    </p>
+    
     
     <h2 id="development">Active development</h2>
-    
-    
+    <p>
+        <i>GitMerge for Unity</i> is an open source tool that is being actively developed.
+        You can head over to the <a href="https://github.com/FlaShG/GitMerge-for-Unity">project page</a>,
+        check out issues, fork, and make pull requests.<br />
+        If you find a bug or something to improve, but cannot fix/implement it yourself, feel free to tell me about it.
+    </p>
+    <p>
+        To see what's up next, have a look at the project's
+        <a href="https://github.com/FlaShG/GitMerge-for-Unity/issues">issue page</a>.
+    </p>
     
     </div><!-- /.container -->
+    
+    <div class="footer">
+        <div class="container">
+            GitMerge for Unity 
+        </div>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ==================================================

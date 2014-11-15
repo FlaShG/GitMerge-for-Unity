@@ -153,12 +153,10 @@ public class GitMergeWindow : EditorWindow
 
         allMergeActions = null;
 
-        if(EditorUtility.DisplayDialog("Commit Merge", "Do you want to commit the merge now?", "Commit Now", "Commit Later"))
-        {
-            ExecuteGit("reset HEAD");
-            ExecuteGit("add " + sceneName);
-            ExecuteGit("commit -m \"Merged " + sceneName + ".\"");
-        }
+        //Mark as merged for git
+        ExecuteGit("add " + sceneName);
+
+        //directly committing here might not be that smart, since there might be more conflicts
     }
 
     private static void AbortMerge()

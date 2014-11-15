@@ -16,7 +16,10 @@ public class GitMergeWindow : EditorWindow
     [MenuItem("Window/GitMerge")]
     static void OpenEditor()
     {
-        EditorWindow.GetWindow(typeof(GitMergeWindow), false, "GitMerge");
+        var window = EditorWindow.GetWindow(typeof(GitMergeWindow), false, "GitMerge");
+        //In case we're merging and the scene becomes edited,
+        //the shown SerializedProperties should be repainted
+        window.autoRepaintOnSceneChange = true;
     }
 
     void OnGUI()
@@ -24,7 +27,7 @@ public class GitMergeWindow : EditorWindow
         GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
         if(EditorApplication.currentScene != ""
            && allMergeActions == null
-           && GUILayout.Button("Do Stuff"))
+           && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
         {
             GetTheirVersionOf(EditorApplication.currentScene);
             AssetDatabase.Refresh();
@@ -146,7 +149,7 @@ public class GitMergeWindow : EditorWindow
         }
     }
 
-    private static void CompleteMerge()
+    private void CompleteMerge()
     {
         GitMergeGameObjectExtensions.DestroyAllMergeObjects();
         EditorApplication.SaveScene();
@@ -157,6 +160,8 @@ public class GitMergeWindow : EditorWindow
         ExecuteGit("add " + sceneName);
 
         //directly committing here might not be that smart, since there might be more conflicts
+
+        this.ShowNotification(new GUIContent("Scene successfully merged."));
     }
 
     private static void AbortMerge()

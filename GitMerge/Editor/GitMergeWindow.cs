@@ -22,6 +22,12 @@ public class GitMergeWindow : EditorWindow
         window.autoRepaintOnSceneChange = true;
     }
 
+    void OnHierarchyChange()
+    {
+        //Repaint if we changed the scene
+        this.Repaint();
+    }
+
     void OnGUI()
     {
         GUILayout.Label("Open Scene: " + EditorApplication.currentScene);

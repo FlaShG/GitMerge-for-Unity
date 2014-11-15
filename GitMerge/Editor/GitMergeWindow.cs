@@ -66,7 +66,7 @@ public class GitMergeWindow : EditorWindow
                 }
             }
             GUILayout.BeginHorizontal();
-            if(done && GUILayout.Button("Done!"))
+            if(done && GUILayout.Button("Apply merge"))
             {
                 CompleteMerge();
             }

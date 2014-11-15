@@ -59,7 +59,7 @@ public class GitMergeActionChangeValues : GitMergeAction
         GUI.backgroundColor = Color.white;
 
         var oldValue = ourProperty.GetValue();
-        EditorGUILayout.PropertyField(ourProperty, new GUIContent(""));
+        EditorGUILayout.PropertyField(ourProperty);
         if(!object.Equals(ourProperty.GetValue(), oldValue))
         {
             ourProperty.serializedObject.ApplyModifiedProperties();

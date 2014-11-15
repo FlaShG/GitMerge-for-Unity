@@ -75,6 +75,11 @@ public static class GitMergeGameObjectExtensions
     {
         Selection.activeGameObject = go;
         EditorGUIUtility.PingObject(go);
-        SceneView.lastActiveSceneView.FrameSelected();
+
+        var view = SceneView.lastActiveSceneView;
+        if(view)
+        {
+            view.FrameSelected();
+        }
     }
 }

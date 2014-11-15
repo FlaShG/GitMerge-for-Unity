@@ -16,10 +16,13 @@ public class GitMergeActionChangeValues : GitMergeAction
     {
         get { return theirInitialValue != null ? theirInitialValue.ToString() : "[none]"; }
     }
+    protected Component ourComponent;
 
-    public GitMergeActionChangeValues(GameObject ours, GameObject theirs, SerializedProperty ourProperty, SerializedProperty theirProperty)
-        : base(ours, theirs)
+    public GitMergeActionChangeValues(GameObject ours, Component ourComponent, SerializedProperty ourProperty, SerializedProperty theirProperty)
+        : base(ours, null)
     {
+        this.ourComponent = ourComponent;
+
         this.ourProperty = ourProperty;
         this.theirProperty = theirProperty;
 
@@ -41,12 +44,30 @@ public class GitMergeActionChangeValues : GitMergeAction
 
     public override void OnGUI()
     {
+        GUILayout.EndHorizontal();
+        GUILayout.Label(ourComponent.GetPlainType());
+        GUILayout.BeginHorizontal();
+
+
         GUILayout.Label(ourString, GUILayout.Width(100));
         if(GUILayout.Button(">>>"))
         {
             UseOurs();
         }
-        EditorGUILayout.PropertyField(ourProperty);
+
+        var c = GUI.backgroundColor;
+        GUI.backgroundColor = Color.white;
+
+        var oldValue = ourProperty.GetValue();
+        EditorGUILayout.PropertyField(ourProperty, new GUIContent(""));
+        if(!object.Equals(ourProperty.GetValue(), oldValue))
+        {
+            ourProperty.serializedObject.ApplyModifiedProperties();
+            UsedNew();
+        }
+
+        GUI.backgroundColor = c;
+
         if(GUILayout.Button("<<<"))
         {
             UseTheirs();

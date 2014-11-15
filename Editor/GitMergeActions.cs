@@ -107,7 +107,7 @@ public class GitMergeActions
 
                 if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
                 {
-                    actions.Add(new GitMergeActionChangeValues(ours, theirs, ourProperty.Copy(), theirProperty.Copy()));
+                    actions.Add(new GitMergeActionChangeValues(ours, ourComponent, ourProperty.Copy(), theirProperty.Copy()));
                 }
             }
         }

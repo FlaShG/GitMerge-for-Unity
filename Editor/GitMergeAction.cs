@@ -40,6 +40,7 @@ public abstract class GitMergeAction
     }
     public void UsedNew()
     {
+        merged = true;
         usingOurs = false;
         usingTheirs = false;
         usingNew = true;

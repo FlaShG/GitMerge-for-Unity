@@ -155,7 +155,7 @@ public class GitMergeActions
 
         GUILayout.BeginHorizontal();
         open = EditorGUILayout.Foldout(open, new GUIContent(name));
-        //GUILayout.Label(name);
+
         if(GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
         {
             ours.Highlight();

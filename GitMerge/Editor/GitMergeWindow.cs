@@ -20,6 +20,7 @@ public class GitMergeWindow : EditorWindow
         //In case we're merging and the scene becomes edited,
         //the shown SerializedProperties should be repainted
         window.autoRepaintOnSceneChange = true;
+        window.minSize = new Vector2(480, 100);
     }
 
     void OnHierarchyChange()

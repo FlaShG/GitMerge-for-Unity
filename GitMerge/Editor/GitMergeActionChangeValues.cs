@@ -45,12 +45,12 @@ public class GitMergeActionChangeValues : GitMergeAction
     public override void OnGUI()
     {
         GUILayout.BeginVertical();
-        GUILayout.Label(ourComponent.GetPlainType());
+        GUILayout.Label(ourComponent.GetPlainType() + "." + ourProperty.GetPlainName());
 
         GUILayout.BeginHorizontal();
 
         GUILayout.Label(ourString, GUILayout.Width(100));
-        if(GUILayout.Button(">>>"))
+        if(GUILayout.Button(">>>", GUILayout.ExpandWidth(false)))
         {
             UseOurs();
         }
@@ -59,7 +59,7 @@ public class GitMergeActionChangeValues : GitMergeAction
         GUI.backgroundColor = Color.white;
 
         var oldValue = ourProperty.GetValue();
-        EditorGUILayout.PropertyField(ourProperty, new GUIContent(""));
+        EditorGUILayout.PropertyField(ourProperty, new GUIContent(""), GUILayout.Width(170));
         if(!object.Equals(ourProperty.GetValue(), oldValue))
         {
             ourProperty.serializedObject.ApplyModifiedProperties();
@@ -68,7 +68,7 @@ public class GitMergeActionChangeValues : GitMergeAction
 
         GUI.backgroundColor = c;
 
-        if(GUILayout.Button("<<<"))
+        if(GUILayout.Button("<<<", GUILayout.ExpandWidth(false)))
         {
             UseTheirs();
         }

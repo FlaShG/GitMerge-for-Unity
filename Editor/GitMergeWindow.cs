@@ -33,9 +33,11 @@ public class GitMergeWindow : EditorWindow
 
     void Update()
     {
-        if(GitMergeAction.inMergePhase && EditorApplication.isCompiling)
+        if(GitMergeAction.inMergePhase
+        &&(EditorApplication.isCompiling
+        || EditorApplication.isPlayingOrWillChangePlaymode))
         {
-            UnityEngine.Debug.LogWarning("Aborting merge due to recompiling scripts.");
+            UnityEngine.Debug.LogWarning("Aborting merge due to editor state change.");
             AbortMerge();
         }
     }

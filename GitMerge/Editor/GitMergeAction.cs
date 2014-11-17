@@ -52,8 +52,9 @@ public abstract class GitMergeAction
     public bool OnGUIMerge()
     {
         var wasMerged = merged;
-        GUI.backgroundColor = merged ? Color.green : Color.red;
-        GUILayout.BeginHorizontal(EditorStyles.inspectorFullWidthMargins);
+        GUI.backgroundColor = merged ? new Color(.2f, .8f, .2f, 1) : Color.red;
+        GUILayout.BeginHorizontal(GitMergeResources.styles.mergeAction);
+        GUI.backgroundColor = Color.white;
         OnGUI();
         GUI.color = Color.white;
         GUILayout.EndHorizontal();

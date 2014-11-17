@@ -30,6 +30,8 @@ public class GitMergeWindow : EditorWindow
 
     void OnGUI()
     {
+        GitMergeResources.DrawLogo();
+
         GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
         if(EditorApplication.currentScene != ""
            && allMergeActions == null

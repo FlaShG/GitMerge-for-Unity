@@ -44,10 +44,10 @@ public class GitMergeActionChangeValues : GitMergeAction
 
     public override void OnGUI()
     {
-        GUILayout.EndHorizontal();
+        GUILayout.BeginVertical();
         GUILayout.Label(ourComponent.GetPlainType());
-        GUILayout.BeginHorizontal();
 
+        GUILayout.BeginHorizontal();
 
         GUILayout.Label(ourString, GUILayout.Width(100));
         if(GUILayout.Button(">>>"))
@@ -73,5 +73,8 @@ public class GitMergeActionChangeValues : GitMergeAction
             UseTheirs();
         }
         GUILayout.Label(theirString, GUILayout.Width(100));
+
+        GUILayout.EndHorizontal();
+        GUILayout.EndVertical();
     }
 }

@@ -12,6 +12,8 @@ public class GitMergeWindow : EditorWindow
     private static string sceneName;
     private static string theirSceneName;
 
+    private Vector2 scrollPosition = Vector2.zero;
+
 
     [MenuItem("Window/GitMerge")]
     static void OpenEditor()
@@ -20,7 +22,7 @@ public class GitMergeWindow : EditorWindow
         //In case we're merging and the scene becomes edited,
         //the shown SerializedProperties should be repainted
         window.autoRepaintOnSceneChange = true;
-        window.minSize = new Vector2(480, 100);
+        window.minSize = new Vector2(500, 100);
     }
 
     void OnHierarchyChange()
@@ -62,11 +64,15 @@ public class GitMergeWindow : EditorWindow
             if(allMergeActions != null)
             {
                 done = true;
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true,GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
+                GUILayout.BeginVertical(GUILayout.Width(480));
                 foreach(var actions in allMergeActions)
                 {
                     actions.OnGUI();
                     done = done && actions.merged;
                 }
+                GUILayout.EndVertical();
+                GUILayout.EndScrollView();
             }
             GUILayout.BeginHorizontal();
             if(done && GUILayout.Button("Done!"))

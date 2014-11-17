@@ -50,7 +50,8 @@ public class GitMergeActionChangeValues : GitMergeAction
         GUILayout.BeginHorizontal();
 
         GUILayout.Label(ourString, GUILayout.Width(100));
-        if(GUILayout.Button(">>>", GUILayout.ExpandWidth(false)))
+
+        if(MergeButton(">>>", usingOurs))
         {
             UseOurs();
         }
@@ -68,7 +69,7 @@ public class GitMergeActionChangeValues : GitMergeAction
 
         GUI.backgroundColor = c;
 
-        if(GUILayout.Button("<<<", GUILayout.ExpandWidth(false)))
+        if(MergeButton("<<<", usingTheirs))
         {
             UseTheirs();
         }
@@ -76,5 +77,16 @@ public class GitMergeActionChangeValues : GitMergeAction
 
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
+    }
+
+    private static bool MergeButton(string text, bool green)
+    {
+        if(green)
+        {
+            GUI.color = Color.green;
+        }
+        bool result = GUILayout.Button(text, GUILayout.ExpandWidth(false));
+        GUI.color = Color.white;
+        return result;
     }
 }

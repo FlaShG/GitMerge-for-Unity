@@ -68,7 +68,7 @@ public abstract class GitMergeAction
         }
         else
         {
-            GUI.backgroundColor = new Color(.8f, .2f, .2f, 1);
+            GUI.backgroundColor = new Color(1f, .25f, .25f, 1);
         }
         GUILayout.BeginHorizontal(GitMergeResources.styles.mergeAction);
         GUI.backgroundColor = Color.white;

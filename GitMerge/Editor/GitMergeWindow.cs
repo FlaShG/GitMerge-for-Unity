@@ -31,6 +31,15 @@ public class GitMergeWindow : EditorWindow
         this.Repaint();
     }
 
+    void Update()
+    {
+        if(GitMergeAction.inMergePhase && EditorApplication.isCompiling)
+        {
+            UnityEngine.Debug.LogWarning("Aborting merge due to recompiling scripts.");
+            AbortMerge();
+        }
+    }
+
     void OnGUI()
     {
         GitMergeResources.DrawLogo();

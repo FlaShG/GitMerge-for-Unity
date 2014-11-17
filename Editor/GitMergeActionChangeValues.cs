@@ -44,13 +44,14 @@ public class GitMergeActionChangeValues : GitMergeAction
 
     public override void OnGUI()
     {
-        GUILayout.EndHorizontal();
-        GUILayout.Label(ourComponent.GetPlainType());
+        GUILayout.BeginVertical();
+        GUILayout.Label(ourComponent.GetPlainType() + "." + ourProperty.GetPlainName());
+
         GUILayout.BeginHorizontal();
 
-
         GUILayout.Label(ourString, GUILayout.Width(100));
-        if(GUILayout.Button(">>>"))
+
+        if(MergeButton(">>>", usingOurs))
         {
             UseOurs();
         }
@@ -59,7 +60,7 @@ public class GitMergeActionChangeValues : GitMergeAction
         GUI.backgroundColor = Color.white;
 
         var oldValue = ourProperty.GetValue();
-        EditorGUILayout.PropertyField(ourProperty);
+        EditorGUILayout.PropertyField(ourProperty, new GUIContent(""), GUILayout.Width(170));
         if(!object.Equals(ourProperty.GetValue(), oldValue))
         {
             ourProperty.serializedObject.ApplyModifiedProperties();
@@ -68,10 +69,24 @@ public class GitMergeActionChangeValues : GitMergeAction
 
         GUI.backgroundColor = c;
 
-        if(GUILayout.Button("<<<"))
+        if(MergeButton("<<<", usingTheirs))
         {
             UseTheirs();
         }
         GUILayout.Label(theirString, GUILayout.Width(100));
+
+        GUILayout.EndHorizontal();
+        GUILayout.EndVertical();
+    }
+
+    private static bool MergeButton(string text, bool green)
+    {
+        if(green)
+        {
+            GUI.color = Color.green;
+        }
+        bool result = GUILayout.Button(text, GUILayout.ExpandWidth(false));
+        GUI.color = Color.white;
+        return result;
     }
 }

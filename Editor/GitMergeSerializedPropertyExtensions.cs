@@ -122,4 +122,15 @@ public static class GitMergeSerializedPropertyExtensions
                 break;
         }
     }
+
+    public static string GetPlainName(this SerializedProperty p)
+    {
+        var s = p.name;
+        var i = s.IndexOf('_');
+        if(i >= 0)
+        {
+            s = s.Substring(i + 1);
+        }
+        return s;
+    }
 }

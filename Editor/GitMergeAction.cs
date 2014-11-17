@@ -4,12 +4,16 @@ using System.Collections;
 
 public abstract class GitMergeAction
 {
+    //Don't highlight objects if not in merge phase
+    public static bool inMergePhase;
+
     public bool merged { private set; get; }
     protected GameObject ours;
     protected GameObject theirs;
     protected bool usingOurs;
     protected bool usingTheirs;
     protected bool usingNew;
+    protected bool automatic;
 
 
     public GitMergeAction(GameObject ours, GameObject theirs)
@@ -26,6 +30,8 @@ public abstract class GitMergeAction
         usingTheirs = false;
         usingNew = false;
 
+        automatic = !inMergePhase;
+
         HighlightObject();
     }
     public void UseTheirs()
@@ -36,6 +42,8 @@ public abstract class GitMergeAction
         usingTheirs = true;
         usingNew = false;
 
+        automatic = !inMergePhase;
+
         HighlightObject();
     }
     public void UsedNew()
@@ -44,6 +52,8 @@ public abstract class GitMergeAction
         usingOurs = false;
         usingTheirs = false;
         usingNew = true;
+
+        automatic = !inMergePhase;
     }
 
     protected abstract void ApplyOurs();
@@ -52,8 +62,16 @@ public abstract class GitMergeAction
     public bool OnGUIMerge()
     {
         var wasMerged = merged;
-        GUI.backgroundColor = merged ? Color.green : Color.red;
-        GUILayout.BeginHorizontal(EditorStyles.inspectorFullWidthMargins);
+        if(merged)
+        {
+            GUI.backgroundColor = automatic ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
+        }
+        else
+        {
+            GUI.backgroundColor = new Color(1f, .25f, .25f, 1);
+        }
+        GUILayout.BeginHorizontal(GitMergeResources.styles.mergeAction);
+        GUI.backgroundColor = Color.white;
         OnGUI();
         GUI.color = Color.white;
         GUILayout.EndHorizontal();
@@ -64,7 +82,7 @@ public abstract class GitMergeAction
 
     private void HighlightObject()
     {
-        if(ours)
+        if(ours && inMergePhase)
         {
             ours.Highlight();
         }

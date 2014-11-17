@@ -12,6 +12,8 @@ public class GitMergeWindow : EditorWindow
     private static string sceneName;
     private static string theirSceneName;
 
+    private Vector2 scrollPosition = Vector2.zero;
+
 
     [MenuItem("Window/GitMerge")]
     static void OpenEditor()
@@ -20,6 +22,7 @@ public class GitMergeWindow : EditorWindow
         //In case we're merging and the scene becomes edited,
         //the shown SerializedProperties should be repainted
         window.autoRepaintOnSceneChange = true;
+        window.minSize = new Vector2(500, 100);
     }
 
     void OnHierarchyChange()
@@ -28,13 +31,28 @@ public class GitMergeWindow : EditorWindow
         this.Repaint();
     }
 
+    void Update()
+    {
+        if(GitMergeAction.inMergePhase
+        &&(EditorApplication.isCompiling
+        || EditorApplication.isPlayingOrWillChangePlaymode))
+        {
+            UnityEngine.Debug.LogWarning("Aborting merge due to editor state change.");
+            AbortMerge();
+        }
+    }
+
     void OnGUI()
     {
+        GitMergeResources.DrawLogo();
+
         GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
         if(EditorApplication.currentScene != ""
            && allMergeActions == null
            && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
         {
+            GitMergeAction.inMergePhase = false;
+
             GetTheirVersionOf(EditorApplication.currentScene);
             AssetDatabase.Refresh();
 
@@ -50,6 +68,10 @@ public class GitMergeWindow : EditorWindow
             {
                 allMergeActions = null;
             }
+            else
+            {
+                GitMergeAction.inMergePhase = true;
+            }
         }
 
 
@@ -59,11 +81,22 @@ public class GitMergeWindow : EditorWindow
             if(allMergeActions != null)
             {
                 done = true;
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true,GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
+                GUILayout.BeginVertical(GUILayout.Width(480));
+
+                var textColor = GUI.skin.label.normal.textColor;
+                GUI.skin.label.normal.textColor = Color.black;
+
                 foreach(var actions in allMergeActions)
                 {
                     actions.OnGUI();
                     done = done && actions.merged;
                 }
+
+                GUI.skin.label.normal.textColor = textColor;
+
+                GUILayout.EndVertical();
+                GUILayout.EndScrollView();
             }
             GUILayout.BeginHorizontal();
             if(done && GUILayout.Button("Apply merge"))
@@ -157,6 +190,8 @@ public class GitMergeWindow : EditorWindow
 
     private void CompleteMerge()
     {
+        GitMergeAction.inMergePhase = false;
+
         GitMergeGameObjectExtensions.DestroyAllMergeObjects();
         EditorApplication.SaveScene();
 
@@ -172,6 +207,8 @@ public class GitMergeWindow : EditorWindow
 
     private static void AbortMerge()
     {
+        GitMergeAction.inMergePhase = false;
+
         foreach(var actions in allMergeActions)
         {
             actions.UseOurs();

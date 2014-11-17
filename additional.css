@@ -13,6 +13,21 @@ h4
     margin-bottom: 8px;
 }
 
+.pull-right.with-margin
+{
+    margin: 10px 0 10px 30px;
+}
+
+p.last
+{
+    margin-bottom: -5px;
+}
+
+.small-text
+{
+    font-size: 0.8em;
+}
+
 .clear
 {
     clear: both;

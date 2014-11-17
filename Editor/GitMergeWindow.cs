@@ -51,27 +51,7 @@ public class GitMergeWindow : EditorWindow
            && allMergeActions == null
            && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
         {
-            GitMergeAction.inMergePhase = false;
-
-            GetTheirVersionOf(EditorApplication.currentScene);
-            AssetDatabase.Refresh();
-
-            var ourObjects = GetAllSceneObjects();
-            EditorApplication.OpenSceneAdditive(theirSceneName);
-            AssetDatabase.DeleteAsset(theirSceneName);
-            var addedObjects = GetAllNewSceneObjects(ourObjects);
-            Hide(addedObjects);
-
-            BuildAllMergeActions(ourObjects, addedObjects);
-
-            if(allMergeActions.Count == 0)
-            {
-                allMergeActions = null;
-            }
-            else
-            {
-                GitMergeAction.inMergePhase = true;
-            }
+            InitializeMerging();
         }
 
 
@@ -81,22 +61,7 @@ public class GitMergeWindow : EditorWindow
             if(allMergeActions != null)
             {
                 done = true;
-                scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true,GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
-                GUILayout.BeginVertical(GUILayout.Width(480));
-
-                var textColor = GUI.skin.label.normal.textColor;
-                GUI.skin.label.normal.textColor = Color.black;
-
-                foreach(var actions in allMergeActions)
-                {
-                    actions.OnGUI();
-                    done = done && actions.merged;
-                }
-
-                GUI.skin.label.normal.textColor = textColor;
-
-                GUILayout.EndVertical();
-                GUILayout.EndScrollView();
+                done = DisplayMergeActions(done);
             }
             GUILayout.BeginHorizontal();
             if(done && GUILayout.Button("Apply merge"))
@@ -108,6 +73,52 @@ public class GitMergeWindow : EditorWindow
                 AbortMerge();
             }
             GUILayout.EndHorizontal();
+        }
+    }
+
+    private bool DisplayMergeActions(bool done)
+    {
+        scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true, GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
+        GUILayout.BeginVertical(GUILayout.Width(480));
+
+        var textColor = GUI.skin.label.normal.textColor;
+        GUI.skin.label.normal.textColor = Color.black;
+
+        foreach(var actions in allMergeActions)
+        {
+            actions.OnGUI();
+            done = done && actions.merged;
+        }
+
+        GUI.skin.label.normal.textColor = textColor;
+
+        GUILayout.EndVertical();
+        GUILayout.EndScrollView();
+        return done;
+    }
+
+    private void InitializeMerging()
+    {
+        GitMergeAction.inMergePhase = false;
+
+        GetTheirVersionOf(EditorApplication.currentScene);
+        AssetDatabase.Refresh();
+
+        var ourObjects = GetAllSceneObjects();
+        EditorApplication.OpenSceneAdditive(theirSceneName);
+        AssetDatabase.DeleteAsset(theirSceneName);
+        var addedObjects = GetAllNewSceneObjects(ourObjects);
+        SetAsMergeObjects(addedObjects);
+
+        BuildAllMergeActions(ourObjects, addedObjects);
+
+        if(allMergeActions.Count == 0)
+        {
+            allMergeActions = null;
+        }
+        else
+        {
+            GitMergeAction.inMergePhase = true;
         }
     }
 
@@ -129,7 +140,7 @@ public class GitMergeWindow : EditorWindow
         return all;
     }
 
-    private void Hide(List<GameObject> objects)
+    private void SetAsMergeObjects(List<GameObject> objects)
     {
         foreach(var obj in objects)
         {

@@ -37,7 +37,7 @@ public class GitMergeWindow : EditorWindow
         &&(EditorApplication.isCompiling
         || EditorApplication.isPlayingOrWillChangePlaymode))
         {
-            UnityEngine.Debug.LogWarning("Aborting merge due to editor state change.");
+            ShowNotification(new GUIContent("Aborting merge due to editor state change."));
             AbortMerge();
         }
     }
@@ -78,8 +78,8 @@ public class GitMergeWindow : EditorWindow
 
     private bool DisplayMergeActions(bool done)
     {
-        scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true, GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
-        GUILayout.BeginVertical(GUILayout.Width(480));
+        scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
+        GUILayout.BeginVertical(GUILayout.MinWidth(480));
 
         var textColor = GUI.skin.label.normal.textColor;
         GUI.skin.label.normal.textColor = Color.black;
@@ -213,7 +213,7 @@ public class GitMergeWindow : EditorWindow
 
         //directly committing here might not be that smart, since there might be more conflicts
 
-        this.ShowNotification(new GUIContent("Scene successfully merged."));
+        ShowNotification(new GUIContent("Scene successfully merged."));
     }
 
     private static void AbortMerge()

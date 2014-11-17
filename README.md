@@ -6,4 +6,6 @@ More information: http://flashg.github.io/GitMerge-for-Unity/
 
 ## Current state of the project
 
-Unstable, incomplete, undocumented, buggy, and being developed. Use at your own risk.
+The scene merging part works pretty fine now.
+There are still some rough edges, and prefab support is missing.
+The creator(s) of this tool take no responsibility for any problems caused by this tool.

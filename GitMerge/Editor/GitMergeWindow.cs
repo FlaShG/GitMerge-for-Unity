@@ -40,6 +40,8 @@ public class GitMergeWindow : EditorWindow
            && allMergeActions == null
            && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
         {
+            GitMergeAction.inMergePhase = false;
+
             GetTheirVersionOf(EditorApplication.currentScene);
             AssetDatabase.Refresh();
 
@@ -54,6 +56,10 @@ public class GitMergeWindow : EditorWindow
             if(allMergeActions.Count == 0)
             {
                 allMergeActions = null;
+            }
+            else
+            {
+                GitMergeAction.inMergePhase = true;
             }
         }
 
@@ -166,6 +172,8 @@ public class GitMergeWindow : EditorWindow
 
     private void CompleteMerge()
     {
+        GitMergeAction.inMergePhase = false;
+
         GitMergeGameObjectExtensions.DestroyAllMergeObjects();
         EditorApplication.SaveScene();
 
@@ -181,6 +189,8 @@ public class GitMergeWindow : EditorWindow
 
     private static void AbortMerge()
     {
+        GitMergeAction.inMergePhase = false;
+
         foreach(var actions in allMergeActions)
         {
             actions.UseOurs();

@@ -4,6 +4,9 @@ using System.Collections;
 
 public abstract class GitMergeAction
 {
+    //Don't highlight objects if not in merge phase
+    public static bool inMergePhase;
+
     public bool merged { private set; get; }
     protected GameObject ours;
     protected GameObject theirs;
@@ -65,7 +68,7 @@ public abstract class GitMergeAction
 
     private void HighlightObject()
     {
-        if(ours)
+        if(ours && inMergePhase)
         {
             ours.Highlight();
         }

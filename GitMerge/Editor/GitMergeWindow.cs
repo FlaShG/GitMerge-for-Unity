@@ -72,11 +72,18 @@ public class GitMergeWindow : EditorWindow
                 done = true;
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true,GUILayout.MinWidth(500), GUILayout.ExpandHeight(true));
                 GUILayout.BeginVertical(GUILayout.Width(480));
+
+                var textColor = GUI.skin.label.normal.textColor;
+                GUI.skin.label.normal.textColor = Color.black;
+
                 foreach(var actions in allMergeActions)
                 {
                     actions.OnGUI();
                     done = done && actions.merged;
                 }
+
+                GUI.skin.label.normal.textColor = textColor;
+
                 GUILayout.EndVertical();
                 GUILayout.EndScrollView();
             }

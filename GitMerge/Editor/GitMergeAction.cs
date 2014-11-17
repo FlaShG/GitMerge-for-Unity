@@ -13,6 +13,7 @@ public abstract class GitMergeAction
     protected bool usingOurs;
     protected bool usingTheirs;
     protected bool usingNew;
+    protected bool automatic;
 
 
     public GitMergeAction(GameObject ours, GameObject theirs)
@@ -29,6 +30,8 @@ public abstract class GitMergeAction
         usingTheirs = false;
         usingNew = false;
 
+        automatic = !inMergePhase;
+
         HighlightObject();
     }
     public void UseTheirs()
@@ -39,6 +42,8 @@ public abstract class GitMergeAction
         usingTheirs = true;
         usingNew = false;
 
+        automatic = !inMergePhase;
+
         HighlightObject();
     }
     public void UsedNew()
@@ -47,6 +52,8 @@ public abstract class GitMergeAction
         usingOurs = false;
         usingTheirs = false;
         usingNew = true;
+
+        automatic = !inMergePhase;
     }
 
     protected abstract void ApplyOurs();
@@ -55,7 +62,14 @@ public abstract class GitMergeAction
     public bool OnGUIMerge()
     {
         var wasMerged = merged;
-        GUI.backgroundColor = merged ? new Color(.2f, .8f, .2f, 1) : Color.red;
+        if(merged)
+        {
+            GUI.backgroundColor = automatic ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
+        }
+        else
+        {
+            GUI.backgroundColor = new Color(.8f, .2f, .2f, 1);
+        }
         GUILayout.BeginHorizontal(GitMergeResources.styles.mergeAction);
         GUI.backgroundColor = Color.white;
         OnGUI();

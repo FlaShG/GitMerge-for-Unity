@@ -101,6 +101,8 @@ public class GitMergeWindow : EditorWindow
     {
         GitMergeAction.inMergePhase = false;
 
+        GitMergeOriginalObjects.Clear();
+
         GetTheirVersionOf(EditorApplication.currentScene);
         AssetDatabase.Refresh();
 

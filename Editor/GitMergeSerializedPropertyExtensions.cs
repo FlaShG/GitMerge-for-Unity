@@ -98,7 +98,16 @@ public static class GitMergeSerializedPropertyExtensions
                 p.intValue = (int)value;
                 break;
             case SerializedPropertyType.ObjectReference:
-                p.objectReferenceValue = value as Object;
+                var obj = default(Object);
+                if(value.GetType() == typeof(int))
+                {
+                    obj = GitMergeOriginalObjects.GetOriginalObject((int)value);
+                }
+                else
+                {
+                    obj = value as Object;
+                }
+                p.objectReferenceValue = obj;
                 break;
             case SerializedPropertyType.Quaternion:
                 p.quaternionValue = (Quaternion)value;

@@ -27,7 +27,7 @@ public class GitMergeActionChangeValues : GitMergeAction
         this.theirProperty = theirProperty;
 
         ourInitialValue = ourProperty.GetValue();
-        theirInitialValue = theirProperty.GetValue();
+        theirInitialValue = theirProperty.GetValue(true); //true in order to get object ids instead of references
     }
 
     protected override void ApplyOurs()

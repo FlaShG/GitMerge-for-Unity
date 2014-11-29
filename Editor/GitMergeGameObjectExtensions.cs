@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public static class GitMergeGameObjectExtensions
 {
     //This dict holds all of "their" GameObjects
+    //Needed for scene cleaning after merge
     //<GameObject, originallyActive>
     private static Dictionary<GameObject, bool> theirObjects = new Dictionary<GameObject, bool>();
 

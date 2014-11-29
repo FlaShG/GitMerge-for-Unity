@@ -105,6 +105,7 @@ public class GitMergeWindow : EditorWindow
         AssetDatabase.Refresh();
 
         var ourObjects = GetAllSceneObjects();
+        SetAsOriginalObjects(ourObjects);
         EditorApplication.OpenSceneAdditive(theirSceneName);
         AssetDatabase.DeleteAsset(theirSceneName);
         var addedObjects = GetAllNewSceneObjects(ourObjects);
@@ -138,6 +139,14 @@ public class GitMergeWindow : EditorWindow
         }
 
         return all;
+    }
+
+    private void SetAsOriginalObjects(List<GameObject> objects)
+    {
+        foreach(var obj in objects)
+        {
+            obj.SetAsOriginalObject();
+        }
     }
 
     private void SetAsMergeObjects(List<GameObject> objects)
@@ -204,6 +213,7 @@ public class GitMergeWindow : EditorWindow
         GitMergeAction.inMergePhase = false;
 
         GitMergeGameObjectExtensions.DestroyAllMergeObjects();
+        GitMergeOriginalObjects.Clear();
         EditorApplication.SaveScene();
 
         allMergeActions = null;

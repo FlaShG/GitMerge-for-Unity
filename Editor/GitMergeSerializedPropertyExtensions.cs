@@ -99,13 +99,16 @@ public static class GitMergeSerializedPropertyExtensions
                 break;
             case SerializedPropertyType.ObjectReference:
                 var obj = default(Object);
-                if(value.GetType() == typeof(int))
+                if(value != null)
                 {
-                    obj = GitMergeOriginalObjects.GetOriginalObject((int)value);
-                }
-                else
-                {
-                    obj = value as Object;
+                    if(value.GetType() == typeof(int))
+                    {
+                        obj = GitMergeOriginalObjects.GetOriginalObject((int)value);
+                    }
+                    else
+                    {
+                        obj = value as Object;
+                    }
                 }
                 p.objectReferenceValue = obj;
                 break;

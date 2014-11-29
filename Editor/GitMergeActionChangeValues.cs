@@ -27,7 +27,7 @@ public class GitMergeActionChangeValues : GitMergeAction
         this.theirProperty = theirProperty;
 
         ourInitialValue = ourProperty.GetValue();
-        theirInitialValue = theirProperty.GetValue(true); //true in order to get object ids instead of references
+        theirInitialValue = theirProperty.GetValue();
     }
 
     protected override void ApplyOurs()
@@ -38,7 +38,13 @@ public class GitMergeActionChangeValues : GitMergeAction
 
     protected override void ApplyTheirs()
     {
-        ourProperty.SetValue(theirInitialValue);
+        var value = theirInitialValue;
+        if(ourProperty.propertyType == SerializedPropertyType.ObjectReference)
+        {
+            value = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
+        }
+
+        ourProperty.SetValue(value);
         ourProperty.serializedObject.ApplyModifiedProperties();
     }
 

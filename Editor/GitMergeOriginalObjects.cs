@@ -22,14 +22,6 @@ public static class GitMergeOriginalObjects
         ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
     }
 
-    //might not be useful having the method above
-    /*
-    public static void SetAsOriginalObject(this Object o)
-    {
-        ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
-    }
-    */
-
     public static Object GetOriginalObject(int id)
     {
         Object result = null;

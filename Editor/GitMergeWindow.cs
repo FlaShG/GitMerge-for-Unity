@@ -103,16 +103,25 @@ public class GitMergeWindow : EditorWindow
 
         GitMergeOriginalObjects.Clear();
 
+        //checkout "their" version
         GetTheirVersionOf(EditorApplication.currentScene);
         AssetDatabase.Refresh();
 
+        //find all of "our" objects
         var ourObjects = GetAllSceneObjects();
         SetAsOriginalObjects(ourObjects);
+
+        //add "their" objects
         EditorApplication.OpenSceneAdditive(theirSceneName);
+
+        //delete scene file
         AssetDatabase.DeleteAsset(theirSceneName);
+
+        //find all of "their" objects
         var addedObjects = GetAllNewSceneObjects(ourObjects);
         SetAsMergeObjects(addedObjects);
 
+        //create list of differences that have to be merged
         BuildAllMergeActions(ourObjects, addedObjects);
 
         if(allMergeActions.Count == 0)

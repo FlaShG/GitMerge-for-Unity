@@ -13,6 +13,7 @@ public class GitMergeActionNewGameObject : GitMergeAction
     {
         if(ours != null)
         {
+            GitMergeOriginalObjects.RemoveInstanceOf(theirs);
             GameObject.DestroyImmediate(ours);
         }
     }
@@ -22,6 +23,7 @@ public class GitMergeActionNewGameObject : GitMergeAction
         if(ours == null)
         {
             ours = theirs.InstantiateForMerging();
+            GitMergeOriginalObjects.SetAsInstance(ours, theirs);
         }
     }
 

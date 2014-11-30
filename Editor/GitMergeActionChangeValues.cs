@@ -39,9 +39,21 @@ public class GitMergeActionChangeValues : GitMergeAction
     protected override void ApplyTheirs()
     {
         var value = theirInitialValue;
+
+        //If we're about references here, get "our" version of the object.
         if(ourProperty.propertyType == SerializedPropertyType.ObjectReference)
         {
-            value = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
+            var id = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
+            var obj = GitMergeOriginalObjects.GetOriginalObject(id);
+
+            //If we didn't have our own version of the object before, it must be new
+            if(!obj)
+            {
+                //Get our copy of the new object if it exists
+                obj = GitMergeOriginalObjects.GetInstanceOf(value as Object);
+            }
+
+            value = obj;
         }
 
         ourProperty.SetValue(value);

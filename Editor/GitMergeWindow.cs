@@ -156,7 +156,7 @@ public class GitMergeWindow : EditorWindow
     {
         foreach(var obj in objects)
         {
-            obj.SetAsOriginalObject();
+            GitMergeOriginalObjects.SetAsOriginalObject(obj);
         }
     }
 
@@ -165,6 +165,7 @@ public class GitMergeWindow : EditorWindow
         foreach(var obj in objects)
         {
             obj.SetAsMergeObject(false);
+            GitMergeOriginalObjects.SetAsTheirs(obj);
         }
     }
 

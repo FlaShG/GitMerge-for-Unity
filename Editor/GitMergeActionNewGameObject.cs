@@ -11,7 +11,7 @@ public class GitMergeActionNewGameObject : GitMergeAction
 
     protected override void ApplyOurs()
     {
-        if(ours != null)
+        if(ours)
         {
             GitMergeOriginalObjects.RemoveInstanceOf(theirs);
             GameObject.DestroyImmediate(ours);
@@ -20,7 +20,7 @@ public class GitMergeActionNewGameObject : GitMergeAction
 
     protected override void ApplyTheirs()
     {
-        if(ours == null)
+        if(!ours)
         {
             ours = theirs.InstantiateForMerging();
             GitMergeOriginalObjects.SetAsInstance(ours, theirs);

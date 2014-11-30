@@ -86,6 +86,11 @@ public static class GitMergeOriginalObjects
         }
     }
 
+    public static void RemoveInstanceOf(Component theirs)
+    {
+        ourInstances.Remove(theirs);
+    }
+
     /// <summary>
     /// Returns:
     /// * the given object if it is "ours"

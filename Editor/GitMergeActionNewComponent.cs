@@ -16,6 +16,7 @@ public class GitMergeActionNewComponent : GitMergeAction
     {
         if(ourComponent)
         {
+            GitMergeOriginalObjects.RemoveInstanceOf(theirComponent);
             Object.DestroyImmediate(ourComponent);
         }
     }
@@ -25,6 +26,7 @@ public class GitMergeActionNewComponent : GitMergeAction
         if(!ourComponent)
         {
             ourComponent = ours.AddComponent(theirComponent);
+            GitMergeOriginalObjects.SetAsInstance(ourComponent, theirComponent);
         }
     }
 

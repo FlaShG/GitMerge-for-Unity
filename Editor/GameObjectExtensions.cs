@@ -6,52 +6,6 @@ namespace GitMerge
 {
     public static class GameObjectExtensions
     {
-        //This dict holds all of "their" GameObjects
-        //Needed for scene cleaning after merge
-        //<GameObject, originallyActive>
-        private static Dictionary<GameObject, bool> theirObjects = new Dictionary<GameObject, bool>();
-
-        public static void SetAsMergeObject(this GameObject go, bool active)
-        {
-            if(!theirObjects.ContainsKey(go))
-            {
-                theirObjects.Add(go, go.activeSelf);
-            }
-            go.SetActiveForMerging(false);
-        }
-
-        public static void SetActiveForMerging(this GameObject go, bool active)
-        {
-            go.SetActive(active);
-            go.hideFlags = active ? HideFlags.None : HideFlags.HideAndDontSave;
-        }
-
-        public static GameObject InstantiateForMerging(this GameObject go)
-        {
-            var copy = GameObject.Instantiate(go) as GameObject;
-
-            bool wasActive;
-            if(!theirObjects.TryGetValue(go, out wasActive))
-            {
-                wasActive = go.activeSelf;
-            }
-
-            copy.SetActive(wasActive);
-            copy.hideFlags = HideFlags.None;
-            copy.name = go.name;
-
-            return copy;
-        }
-
-        public static void DestroyAllMergeObjects()
-        {
-            foreach(var obj in theirObjects.Keys)
-            {
-                Object.DestroyImmediate(obj);
-            }
-            theirObjects.Clear();
-        }
-
         public static Component AddComponent(this GameObject go, Component original)
         {
             var c = go.AddComponent(original.GetType());

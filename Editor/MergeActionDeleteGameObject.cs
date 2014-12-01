@@ -23,7 +23,7 @@ namespace GitMerge
         {
             if(ours == null)
             {
-                ours = copy.InstantiateForMerging();
+                ours = ObjectDictionaries.InstantiateForMerging(copy);
                 ours.SetActive(oursWasActive);
             }
         }

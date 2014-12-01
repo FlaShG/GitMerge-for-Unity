@@ -10,13 +10,14 @@ namespace GitMerge
         //<fileID, GameObject>
         private static Dictionary<int, Object> ourObjects = new Dictionary<int, Object>();
 
-        //This set holds all of "their" objects
-        //Needed to determine if we should look up "our" instance of it
-        private static HashSet<GameObject> theirObjects = new HashSet<GameObject>();
-
         //This dict maps our instances of their objects
         //Whenever we instantiate a copy of "their" new object, they're both added here
         private static Dictionary<Object, Object> ourInstances = new Dictionary<Object, Object>();
+
+        //This dict holds all of "their" GameObjects
+        //Needed for scene cleaning after merge
+        //<GameObject, originallyActive>
+        private static Dictionary<GameObject, bool> theirObjects = new Dictionary<GameObject, bool>();
 
         public static void SetAsOriginalObject(GameObject go)
         {
@@ -116,19 +117,55 @@ namespace GitMerge
             var go = obj as GameObject;
             if(go)
             {
-                return theirObjects.Contains(go);
+                return theirObjects.ContainsKey(go);
             }
             var c = obj as Component;
             if(c)
             {
-                return theirObjects.Contains(c.gameObject);
+                return theirObjects.ContainsKey(c.gameObject);
             }
             return false;
         }
 
-        public static void SetAsTheirs(GameObject obj)
+        public static void SetAsMergeObject(GameObject go, bool active)
         {
-            theirObjects.Add(obj);
+            if(!theirObjects.ContainsKey(go))
+            {
+                theirObjects.Add(go, go.activeSelf);
+            }
+            go.SetActiveForMerging(false);
+        }
+
+        public static void SetActiveForMerging(this GameObject go, bool active)
+        {
+            go.SetActive(active);
+            go.hideFlags = active ? HideFlags.None : HideFlags.HideAndDontSave;
+        }
+
+        public static GameObject InstantiateForMerging(GameObject go)
+        {
+            var copy = GameObject.Instantiate(go) as GameObject;
+
+            bool wasActive;
+            if(!theirObjects.TryGetValue(go, out wasActive))
+            {
+                wasActive = go.activeSelf;
+            }
+
+            copy.SetActive(wasActive);
+            copy.hideFlags = HideFlags.None;
+            copy.name = go.name;
+
+            return copy;
+        }
+
+        public static void DestroyAllMergeObjects()
+        {
+            foreach(var obj in theirObjects.Keys)
+            {
+                Object.DestroyImmediate(obj);
+            }
+            theirObjects.Clear();
         }
     }
 }

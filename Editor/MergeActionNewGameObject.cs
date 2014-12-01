@@ -24,7 +24,7 @@ namespace GitMerge
         {
             if(!ours)
             {
-                ours = theirs.InstantiateForMerging();
+                ours = ObjectDictionaries.InstantiateForMerging(theirs);
                 ObjectDictionaries.SetAsInstance(ours, theirs);
             }
         }

@@ -28,6 +28,7 @@ namespace GitMerge
             if(ourComponent == null)
             {
                 ourComponent = ours.AddComponent(copy);
+                ObjectDictionaries.SetAsOurObject(ourComponent);
             }
         }
 
@@ -35,6 +36,7 @@ namespace GitMerge
         {
             if(ourComponent != null)
             {
+                ObjectDictionaries.RemoveOurObject(ourComponent);
                 Object.DestroyImmediate(ourComponent);
             }
         }

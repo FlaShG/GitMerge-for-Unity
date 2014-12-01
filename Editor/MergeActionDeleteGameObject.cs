@@ -28,6 +28,7 @@ namespace GitMerge
             {
                 ours = ObjectDictionaries.InstantiateFromMerging(copy);
                 ours.SetActive(oursWasActive);
+                ObjectDictionaries.SetAsOurObject(ours);
             }
         }
 
@@ -35,6 +36,7 @@ namespace GitMerge
         {
             if(ours != null)
             {
+                ObjectDictionaries.RemoveOurObject(ours);
                 GameObject.DestroyImmediate(ours);
             }
         }

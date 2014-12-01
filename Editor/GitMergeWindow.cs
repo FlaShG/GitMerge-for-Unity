@@ -15,6 +15,7 @@ namespace GitMerge
         private static string theirSceneName;
 
         private Vector2 scrollPosition = Vector2.zero;
+        private int mode = 0;
 
 
         [MenuItem("Window/GitMerge")]
@@ -47,6 +48,7 @@ namespace GitMerge
         void OnGUI()
         {
             Resources.DrawLogo();
+            DrawModeButtons();
 
             GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
             if(EditorApplication.currentScene != ""
@@ -76,6 +78,12 @@ namespace GitMerge
                 }
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private void DrawModeButtons()
+        {
+            string[] modes = { "Merge Scene", "Merge Prefab", "Settings" };
+            mode = GUI.SelectionGrid(new Rect(72, 36, 300, 22), mode, modes, 3);
         }
 
         private bool DisplayMergeActions(bool done)

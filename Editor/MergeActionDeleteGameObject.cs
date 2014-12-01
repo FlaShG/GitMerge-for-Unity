@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// The MergeAction that handles a GameObject which exists in "their" version but not "ours".
+    /// </summary>
     public class MergeActionDeleteGameObject : MergeAction
     {
         private GameObject copy;

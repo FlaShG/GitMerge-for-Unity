@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// The MergeAction that handles GameObjects that exist in "our" version but not in "theirs".
+    /// </summary>
     public class MergeActionNewGameObject : MergeAction
     {
         public MergeActionNewGameObject(GameObject ours, GameObject theirs)

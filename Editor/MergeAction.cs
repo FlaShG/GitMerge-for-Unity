@@ -4,17 +4,30 @@ using System.Collections;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// Each MergeAction represents a single, specific merge conflict.
+    /// This can be a GameObject added or deleted in one of the versions,
+    /// a Component added or deleted on a GameObject,
+    /// or a single property changed on a Component.
+    /// </summary>
     public abstract class MergeAction
     {
-        //Don't highlight objects if not in merge phase
+        //Don't highlight objects if not in merge phase.
+        //Prevents highlighting while automerging.
         public static bool inMergePhase;
 
+        //A MergeAction is considere "merged" when, at some point,
+        //"our", "their" or a new version has been applied.
         public bool merged { private set; get; }
+
         public GameObject ours { protected set; get; }
         public GameObject theirs { protected set; get; }
+
+        //Flags that indicate how this MergeAction has been resolved.
         protected bool usingOurs;
         protected bool usingTheirs;
         protected bool usingNew;
+        //True when this action has been automatically resolved
         protected bool automatic;
 
 
@@ -58,9 +71,14 @@ namespace GitMerge
             automatic = !inMergePhase;
         }
 
+        //The implementations of these methods conatain the actual merging steps
         protected abstract void ApplyOurs();
         protected abstract void ApplyTheirs();
 
+        /// <summary>
+        /// Displays the MergeAction.
+        /// </summary>
+        /// <returns>True when the represented conflict has now been merged.</returns>
         public bool OnGUIMerge()
         {
             var wasMerged = merged;
@@ -80,6 +98,7 @@ namespace GitMerge
             return merged && !wasMerged;
         }
 
+        //The actual UI of the MergeAction depends on the actual type
         public abstract void OnGUI();
 
         private void HighlightObject()

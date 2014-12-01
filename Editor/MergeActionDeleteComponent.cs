@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// The MergeAction that handles a Component which exists in "their" version but not "ours".
+    /// </summary>
     public class MergeActionDeleteComponent : MergeAction
     {
         protected Component ourComponent;

@@ -150,6 +150,12 @@ namespace GitMerge
             go.SetActiveForMerging(false);
         }
 
+        /// <summary>
+        /// Copy an object that has been disabled and hidden for merging into the scene,
+        /// enable and unhide the copy.
+        /// </summary>
+        /// <param name="go">The original GameObject.</param>
+        /// <returns>The copy GameObject.</returns>
         public static GameObject InstantiateFromMerging(GameObject go)
         {
             var copy = GameObject.Instantiate(go) as GameObject;

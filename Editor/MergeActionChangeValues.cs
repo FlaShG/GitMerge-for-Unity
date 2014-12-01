@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// The MergeAction allowing to merge the value of a single property of a Component.
+    /// </summary>
     public class MergeActionChangeValues : MergeAction
     {
         protected SerializedProperty ourProperty;

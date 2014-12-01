@@ -46,13 +46,13 @@ namespace GitMerge
             if(ourProperty.propertyType == SerializedPropertyType.ObjectReference)
             {
                 var id = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
-                var obj = ObjectDictionaries.GetOriginalObject(id);
+                var obj = ObjectDictionaries.GetOurObject(id);
 
                 //If we didn't have our own version of the object before, it must be new
                 if(!obj)
                 {
                     //Get our copy of the new object if it exists
-                    obj = ObjectDictionaries.GetInstanceOf(value as Object);
+                    obj = ObjectDictionaries.GetOurVersionOf(value as Object);
                 }
 
                 value = obj;

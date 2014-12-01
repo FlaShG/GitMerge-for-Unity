@@ -18,7 +18,7 @@ namespace GitMerge
         {
             if(ourComponent)
             {
-                ObjectDictionaries.RemoveInstanceOf(theirComponent);
+                ObjectDictionaries.RemoveCopyOf(theirComponent);
                 Object.DestroyImmediate(ourComponent);
             }
         }
@@ -28,7 +28,7 @@ namespace GitMerge
             if(!ourComponent)
             {
                 ourComponent = ours.AddComponent(theirComponent);
-                ObjectDictionaries.SetAsInstance(ourComponent, theirComponent);
+                ObjectDictionaries.SetAsCopy(ourComponent, theirComponent);
             }
         }
 

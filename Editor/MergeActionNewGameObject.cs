@@ -15,7 +15,7 @@ namespace GitMerge
         {
             if(ours)
             {
-                ObjectDictionaries.RemoveInstanceOf(theirs);
+                ObjectDictionaries.RemoveCopyOf(theirs);
                 GameObject.DestroyImmediate(ours);
             }
         }
@@ -24,8 +24,8 @@ namespace GitMerge
         {
             if(!ours)
             {
-                ours = ObjectDictionaries.InstantiateForMerging(theirs);
-                ObjectDictionaries.SetAsInstance(ours, theirs);
+                ours = ObjectDictionaries.InstantiateFromMerging(theirs);
+                ObjectDictionaries.SetAsCopy(ours, theirs);
             }
         }
 

@@ -28,6 +28,12 @@ namespace GitMerge
             return c;
         }
 
+        public static void SetActiveForMerging(this GameObject go, bool active)
+        {
+            go.SetActive(active);
+            go.hideFlags = active ? HideFlags.None : HideFlags.HideAndDontSave;
+        }
+
         public static void Highlight(this GameObject go)
         {
             Selection.activeGameObject = go;

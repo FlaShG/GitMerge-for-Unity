@@ -158,7 +158,7 @@ namespace GitMerge
         {
             foreach(var obj in objects)
             {
-                ObjectDictionaries.SetAsOriginalObject(obj);
+                ObjectDictionaries.SetAsOurObject(obj);
             }
         }
 
@@ -166,7 +166,7 @@ namespace GitMerge
         {
             foreach(var obj in objects)
             {
-                ObjectDictionaries.SetAsMergeObject(obj, false);
+                ObjectDictionaries.SetAsTheirs(obj, false);
             }
         }
 
@@ -225,7 +225,7 @@ namespace GitMerge
         {
             MergeAction.inMergePhase = false;
 
-            ObjectDictionaries.DestroyAllMergeObjects();
+            ObjectDictionaries.DestroyTheirObjects();
             ObjectDictionaries.Clear();
             EditorApplication.SaveScene();
 
@@ -247,7 +247,7 @@ namespace GitMerge
             {
                 actions.UseOurs();
             }
-            ObjectDictionaries.DestroyAllMergeObjects();
+            ObjectDictionaries.DestroyTheirObjects();
             allMergeActions = null;
         }
 

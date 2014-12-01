@@ -2,24 +2,27 @@
 using UnityEditor;
 using System.Reflection;
 
-public static class ObjectIDFinder
+namespace GitMerge
 {
-    //soooo hacky
-    public static int GetIdentifierFor(Object o)
+    public static class ObjectIDFinder
     {
-        if(o == null)
+        //soooo hacky
+        public static int GetIdentifierFor(Object o)
         {
-            return -1;
+            if(o == null)
+            {
+                return -1;
+            }
+
+            var inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            SerializedObject serializedObject = new SerializedObject(o);
+            inspectorModeInfo.SetValue(serializedObject, InspectorMode.Debug, null);
+
+            SerializedProperty localIdProp =
+                serializedObject.FindProperty("m_LocalIdentfierInFile");   //note the misspelling!
+
+            return localIdProp.intValue;
         }
-
-        var inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        SerializedObject serializedObject = new SerializedObject(o);
-        inspectorModeInfo.SetValue(serializedObject, InspectorMode.Debug, null);
-
-        SerializedProperty localIdProp =
-            serializedObject.FindProperty("m_LocalIdentfierInFile");   //note the misspelling!
-
-        return localIdProp.intValue;
     }
 }

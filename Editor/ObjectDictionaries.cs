@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// Dictionaries that categorize the scene's objects into our objects, their objects, and temporary
+    /// copies of their objects that have been instantiated while merging.
+    /// </summary>
     public static class ObjectDictionaries
     {
         //This dict holds all of "our" objects

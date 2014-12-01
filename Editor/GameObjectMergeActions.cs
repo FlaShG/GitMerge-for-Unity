@@ -6,16 +6,31 @@ using System.Text;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// One instance of this class represents one GameObject with relevance to the merge process.
+    /// Holds all MergeActions that can be applied to the GameObject or its Components.
+    /// Is considered as "merged" when all its MergeActions are "merged".
+    /// </summary>
     public class GameObjectMergeActions
     {
+        /// <summary>
+        /// Reference to "our" version of the GameObject.
+        /// </summary>
         public GameObject ours { private set; get; }
+        /// <summary>
+        /// Reference to "their" versoin of the GameObject.
+        /// </summary>
         public GameObject theirs { private set; get; }
+
         private string name;
         public bool merged { private set; get; }
         public bool hasActions
         {
             get { return actions.Count > 0; }
         }
+        /// <summary>
+        /// All actions available for solving specific conflicts on the GameObject.
+        /// </summary>
         private List<MergeAction> actions;
 
 
@@ -25,19 +40,7 @@ namespace GitMerge
 
             this.ours = ours;
             this.theirs = theirs;
-            name = "";
-            if(ours)
-            {
-                name = "Your[" + GetPath(ours) + "]";
-            }
-            if(theirs)
-            {
-                if(ours)
-                {
-                    name += " vs. ";
-                }
-                name += "Their[" + GetPath(theirs) + "]";
-            }
+            GenerateName();
 
             if(theirs && !ours)
             {
@@ -57,11 +60,36 @@ namespace GitMerge
             CheckIfMerged();
         }
 
+        /// <summary>
+        /// Generate a title for this object
+        /// </summary>
+        private void GenerateName()
+        {
+            name = "";
+            if(ours)
+            {
+                name = "Your[" + GetPath(ours) + "]";
+            }
+            if(theirs)
+            {
+                if(ours)
+                {
+                    name += " vs. ";
+                }
+                name += "Their[" + GetPath(theirs) + "]";
+            }
+        }
+
+        /// <summary>
+        /// Check for Components that one of the sides doesn't have, and/or for defferent values
+        /// on Components.
+        /// </summary>
         private void FindComponentDifferences()
         {
             var ourComponents = ours.GetComponents<Component>();
             var theirComponents = theirs.GetComponents<Component>();
 
+            //Map "their" Components to their respective ids
             var theirDict = new Dictionary<int, Component>();
             foreach(var theirComponent in theirComponents)
             {
@@ -70,28 +98,34 @@ namespace GitMerge
 
             foreach(var ourComponent in ourComponents)
             {
+                //Try to find "their" equivalent to our Components
                 var id = ObjectIDFinder.GetIdentifierFor(ourComponent);
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
 
-                if(theirComponent) //both components exist
+                if(theirComponent) //Both Components exist
                 {
                     FindPropertyDifferences(ourComponent, theirComponent);
+                    //Remove "their" Component from the dict to only keep those new to us
                     theirDict.Remove(id);
                 }
-                else //component doesn't exist in their version, offer a deletion
+                else //Component doesn't exist in their version, offer a deletion
                 {
                     actions.Add(new MergeActionDeleteComponent(ours, ourComponent));
                 }
             }
 
+            //Everything left in the dict is a...
             foreach(var theirComponent in theirDict.Values)
             {
-                //new Components from them
+                //...new Component from them
                 actions.Add(new MergeActionNewComponent(ours, theirComponent));
             }
         }
 
+        /// <summary>
+        /// Find all the values different in "our" and "their" version of a component.
+        /// </summary>
         private void FindPropertyDifferences(Component ourComponent, Component theirComponent)
         {
             var ourSerialized = new SerializedObject(ourComponent);
@@ -108,12 +142,16 @@ namespace GitMerge
 
                     if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
                     {
+                        //We found a difference, accordingly add a MergeAction
                         actions.Add(new MergeActionChangeValues(ours, ourComponent, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Get the path of a GameObject in the hierarchy.
+        /// </summary>
         private static string GetPath(GameObject g)
         {
             var t = g.transform;
@@ -126,11 +164,15 @@ namespace GitMerge
             return sb.ToString();
         }
 
-        public void CheckIfMerged()
+        private void CheckIfMerged()
         {
             merged = actions.TrueForAll(action => action.merged);
         }
 
+        /// <summary>
+        /// Use "our" version for all conflicts.
+        /// This is used on all GameObjectMergeActions objects when the merge is aborted.
+        /// </summary>
         public void UseOurs()
         {
             foreach(var action in actions)
@@ -139,7 +181,7 @@ namespace GitMerge
             }
         }
 
-
+        //If the foldout is open
         private bool open;
         public void OnGUI()
         {
@@ -165,6 +207,7 @@ namespace GitMerge
 
             if(open)
             {
+                //Display all merge actions.
                 foreach(var action in actions)
                 {
                     if(action.OnGUIMerge())
@@ -189,7 +232,5 @@ namespace GitMerge
 
             GUI.backgroundColor = Color.white;
         }
-
-
     }
 }

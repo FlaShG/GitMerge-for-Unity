@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace GitMerge
 {
+    /// <summary>
+    /// The window that lets you perform merges on scenes and prefabs.
+    /// </summary>
     public class GitMergeWindow : EditorWindow
     {
         private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
@@ -34,6 +37,7 @@ namespace GitMerge
             this.Repaint();
         }
 
+        //Always check for editor state changes, and abort the active merge process if needed
         void Update()
         {
             if(MergeAction.inMergePhase
@@ -64,8 +68,7 @@ namespace GitMerge
                 var done = false;
                 if(allMergeActions != null)
                 {
-                    done = true;
-                    done = DisplayMergeActions(done);
+                    done = DisplayMergeActions();
                 }
                 GUILayout.BeginHorizontal();
                 if(done && GUILayout.Button("Apply merge"))
@@ -86,7 +89,11 @@ namespace GitMerge
             mode = GUI.SelectionGrid(new Rect(72, 36, 300, 22), mode, modes, 3);
         }
 
-        private bool DisplayMergeActions(bool done)
+        /// <summary>
+        /// Displays all GameObjectMergeActions.
+        /// </summary>
+        /// <returns>True, if all MergeActions are flagged as "merged".</returns>
+        private bool DisplayMergeActions()
         {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
             GUILayout.BeginVertical(GUILayout.MinWidth(480));
@@ -94,6 +101,7 @@ namespace GitMerge
             var textColor = GUI.skin.label.normal.textColor;
             GUI.skin.label.normal.textColor = Color.black;
 
+            var done = true;
             foreach(var actions in allMergeActions)
             {
                 actions.OnGUI();
@@ -119,7 +127,7 @@ namespace GitMerge
 
             //find all of "our" objects
             var ourObjects = GetAllSceneObjects();
-            SetAsOriginalObjects(ourObjects);
+            SetAsOurObjects(ourObjects);
 
             //add "their" objects
             EditorApplication.OpenSceneAdditive(theirSceneName);
@@ -129,7 +137,7 @@ namespace GitMerge
 
             //find all of "their" objects
             var addedObjects = GetAllNewSceneObjects(ourObjects);
-            SetAsMergeObjects(addedObjects);
+            SetAsTheirObjects(addedObjects);
 
             //create list of differences that have to be merged
             BuildAllMergeActions(ourObjects, addedObjects);
@@ -149,6 +157,9 @@ namespace GitMerge
             return new List<GameObject>((GameObject[])FindObjectsOfType(typeof(GameObject)));
         }
 
+        /// <summary>
+        /// Finds all GameObjects in the scene, minus the ones passed.
+        /// </summary>
         private static List<GameObject> GetAllNewSceneObjects(List<GameObject> oldObjects)
         {
             var all = GetAllSceneObjects();
@@ -162,7 +173,7 @@ namespace GitMerge
             return all;
         }
 
-        private void SetAsOriginalObjects(List<GameObject> objects)
+        private void SetAsOurObjects(List<GameObject> objects)
         {
             foreach(var obj in objects)
             {
@@ -170,7 +181,7 @@ namespace GitMerge
             }
         }
 
-        private void SetAsMergeObjects(List<GameObject> objects)
+        private void SetAsTheirObjects(List<GameObject> objects)
         {
             foreach(var obj in objects)
             {
@@ -178,6 +189,11 @@ namespace GitMerge
             }
         }
 
+        /// <summary>
+        /// Creates "their" version of the scene at the given path,
+        /// named scenename--THEIRS.unity.
+        /// </summary>
+        /// <param name="path">The path of the scene, relative to the project folder.</param>
         private static void GetTheirVersionOf(string path)
         {
             sceneName = path;
@@ -194,10 +210,17 @@ namespace GitMerge
             File.Move(ours, path);
         }
 
+        /// <summary>
+        /// Finds all specific merge conflicts between two sets of GameObjects,
+        /// representing "our" scene and "their" scene.
+        /// </summary>
+        /// <param name="ourObjects">The GameObjects of "our" version of the scene.</param>
+        /// <param name="theirObjects">The GameObjects of "their" version of the scene.</param>
         private void BuildAllMergeActions(List<GameObject> ourObjects, List<GameObject> theirObjects)
         {
             allMergeActions = new List<GameObjectMergeActions>();
 
+            //Map "their" GameObjects to their respective ids
             var theirObjectsDict = new Dictionary<int, GameObject>();
             foreach(var theirs in theirObjects)
             {
@@ -206,21 +229,25 @@ namespace GitMerge
 
             foreach(var ours in ourObjects)
             {
+                //Try to find "their" equivalent to "our" GameObjects
                 var id = ObjectIDFinder.GetIdentifierFor(ours);
                 GameObject theirs;
                 theirObjectsDict.TryGetValue(id, out theirs);
 
+                //If theirs is null, mergeActions.hasActions will be false
                 var mergeActions = new GameObjectMergeActions(ours, theirs);
                 if(mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
                 }
+                //Remove "their" GameObject from the dict to only keep those new to us
                 theirObjectsDict.Remove(id);
             }
 
+            //Every GameObject left in the dict is a...
             foreach(var theirs in theirObjectsDict.Values)
             {
-                //new GameObjects from them
+                //...new GameObject from them
                 var mergeActions = new GameObjectMergeActions(null, theirs);
                 if(mergeActions.hasActions)
                 {
@@ -229,6 +256,11 @@ namespace GitMerge
             }
         }
 
+        /// <summary>
+        /// Completes the merge process after solving all conflicts.
+        /// Cleans up the scene by deleting "their" GameObjects, clears merge related data structures,
+        /// executes git add scene_name.
+        /// </summary>
         private void CompleteMerge()
         {
             MergeAction.inMergePhase = false;
@@ -247,7 +279,11 @@ namespace GitMerge
             ShowNotification(new GUIContent("Scene successfully merged."));
         }
 
-        private static void AbortMerge()
+        /// <summary>
+        /// Aborts merge by using "our" version in all conflicts.
+        /// Cleans up merge related data.
+        /// </summary>
+        private void AbortMerge()
         {
             MergeAction.inMergePhase = false;
 
@@ -256,9 +292,17 @@ namespace GitMerge
                 actions.UseOurs();
             }
             ObjectDictionaries.DestroyTheirObjects();
+            ObjectDictionaries.Clear();
             allMergeActions = null;
+
+            ShowNotification(new GUIContent("Merge aborted."));
         }
 
+        /// <summary>
+        /// Executes git as a subprocess.
+        /// </summary>
+        /// <param name="args">The git parameters. Examples: "status", "add filename".</param>
+        /// <returns>Whatever git returns.</returns>
         private static string ExecuteGit(string args)
         {
             var process = new Process();
@@ -276,11 +320,6 @@ namespace GitMerge
             process.WaitForExit();
 
             return output;
-        }
-
-        private static void print(string msg)
-        {
-            UnityEngine.Debug.Log(msg);
         }
     }
 }

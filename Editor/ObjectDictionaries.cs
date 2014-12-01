@@ -32,6 +32,11 @@ namespace GitMerge
             }
         }
 
+        public static void SetAsOurObject(Component c)
+        {
+            AddOurObject(c);
+        }
+
         private static void AddOurObject(Object o)
         {
             ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
@@ -39,14 +44,19 @@ namespace GitMerge
 
         public static void RemoveOurObject(GameObject go)
         {
-            RemoveOurObject(go);
+            RemoveOurSingleObject(go);
             foreach(var c in go.GetComponents<Component>())
             {
-                RemoveOurObject(c);
+                RemoveOurSingleObject(c);
             }
         }
 
-        private static void RemoveOurObject(Object o)
+        public static void RemoveOurObject(Component c)
+        {
+            RemoveOurSingleObject(c);
+        }
+
+        private static void RemoveOurSingleObject(Object o)
         {
             ourObjects.Remove(ObjectIDFinder.GetIdentifierFor(o));
         }

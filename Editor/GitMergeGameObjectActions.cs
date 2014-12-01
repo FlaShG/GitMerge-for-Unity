@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class GitMergeActions
+public class GitMergeGameObjectActions
 {
     public GameObject ours { private set; get; }
     public GameObject theirs { private set; get; }
@@ -17,7 +17,7 @@ public class GitMergeActions
     private List<GitMergeAction> actions;
 
 
-    public GitMergeActions(GameObject ours, GameObject theirs)
+    public GitMergeGameObjectActions(GameObject ours, GameObject theirs)
     {
         actions = new List<GitMergeAction>();
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class GitMergeWindow : EditorWindow
 {
     private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
-    private static List<GitMergeActions> allMergeActions;
+    private static List<GitMergeGameObjectActions> allMergeActions;
 
     private static string sceneName;
     private static string theirSceneName;
@@ -187,7 +187,7 @@ public class GitMergeWindow : EditorWindow
 
     private void BuildAllMergeActions(List<GameObject> ourObjects, List<GameObject> theirObjects)
     {
-        allMergeActions = new List<GitMergeActions>();
+        allMergeActions = new List<GitMergeGameObjectActions>();
 
         var theirObjectsDict = new Dictionary<int, GameObject>();
         foreach(var theirs in theirObjects)
@@ -201,7 +201,7 @@ public class GitMergeWindow : EditorWindow
             GameObject theirs;
             theirObjectsDict.TryGetValue(id, out theirs);
 
-            var mergeActions = new GitMergeActions(ours, theirs);
+            var mergeActions = new GitMergeGameObjectActions(ours, theirs);
             if(mergeActions.hasActions)
             {
                 allMergeActions.Add(mergeActions);
@@ -212,7 +212,7 @@ public class GitMergeWindow : EditorWindow
         foreach(var theirs in theirObjectsDict.Values)
         {
             //new GameObjects from them
-            var mergeActions = new GitMergeActions(null, theirs);
+            var mergeActions = new GitMergeGameObjectActions(null, theirs);
             if(mergeActions.hasActions)
             {
                 allMergeActions.Add(mergeActions);

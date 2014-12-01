@@ -8,8 +8,8 @@ public abstract class GitMergeAction
     public static bool inMergePhase;
 
     public bool merged { private set; get; }
-    protected GameObject ours;
-    protected GameObject theirs;
+    public GameObject ours { protected set; get; }
+    public GameObject theirs { protected set; get; }
     protected bool usingOurs;
     protected bool usingTheirs;
     protected bool usingNew;

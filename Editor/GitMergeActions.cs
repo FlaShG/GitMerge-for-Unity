@@ -16,7 +16,7 @@ public class GitMergeActions
     }
     private List<GitMergeAction> actions;
 
-    
+
     public GitMergeActions(GameObject ours, GameObject theirs)
     {
         actions = new List<GitMergeAction>();
@@ -26,7 +26,7 @@ public class GitMergeActions
         name = "";
         if(ours)
         {
-            name = "Your["+GetPath(ours)+"]";
+            name = "Your[" + GetPath(ours) + "]";
         }
         if(theirs)
         {
@@ -34,7 +34,7 @@ public class GitMergeActions
             {
                 name += " vs. ";
             }
-            name += "Their["+GetPath(theirs)+"]";
+            name += "Their[" + GetPath(theirs) + "]";
         }
 
         if(theirs && !ours)
@@ -75,13 +75,12 @@ public class GitMergeActions
             if(theirComponent) //both components exist
             {
                 FindPropertyDifferences(ourComponent, theirComponent);
+                theirDict.Remove(id);
             }
             else //component doesn't exist in their version, offer a deletion
             {
                 actions.Add(new GitMergeActionDeleteComponent(ours, ourComponent));
             }
-
-            theirDict.Remove(id);
         }
 
         foreach(var theirComponent in theirDict.Values)
@@ -120,11 +119,11 @@ public class GitMergeActions
         while(t.parent != null)
         {
             t = t.parent;
-            sb.Append(t.name+"/", 0, 1);
+            sb.Append(t.name + "/", 0, 1);
         }
         return sb.ToString();
     }
-    
+
     public void CheckIfMerged()
     {
         merged = actions.TrueForAll(action => action.merged);
@@ -156,7 +155,7 @@ public class GitMergeActions
         GUILayout.BeginHorizontal();
         open = EditorGUILayout.Foldout(open, new GUIContent(name));
 
-        if(GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
+        if(ours && GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
         {
             ours.Highlight();
         }
@@ -172,10 +171,22 @@ public class GitMergeActions
                 }
             }
         }
+
+        //If "ours" is null, the GameObject doesn't exist in one of the versions.
+        //Try to get a reference if the object exists in the current merging state.
+        //If it exists, the new/gelete MergeAction will have a reference.
+        if(!ours)
+        {
+            foreach(var action in actions)
+            {
+                ours = action.ours;
+            }
+        }
+
         GUILayout.EndVertical();
 
         GUI.backgroundColor = Color.white;
     }
 
-    
+
 }

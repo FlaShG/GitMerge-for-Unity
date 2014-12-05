@@ -153,7 +153,7 @@ namespace GitMerge
                     if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
                     {
                         //We found a difference, accordingly add a MergeAction
-                        actions.Add(new MergeActionChangeValues(ours, ours, ourProperty.Copy(), theirProperty.Copy()));
+                        actions.Add(new MergeActionChangeValues(ours, ourObject, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
             }

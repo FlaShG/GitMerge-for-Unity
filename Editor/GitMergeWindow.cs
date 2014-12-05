@@ -13,6 +13,13 @@ namespace GitMerge
     {
         private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
         private static List<GameObjectMergeActions> allMergeActions;
+        private static bool mergeInProgress
+        {
+            get
+            {
+                return allMergeActions != null;
+            }
+        }
 
         private static string sceneName;
         private static string theirSceneName;
@@ -54,6 +61,24 @@ namespace GitMerge
             Resources.DrawLogo();
             DrawModeButtons();
 
+            switch(mode)
+            {
+                case 0:
+                    OnGUISceneTab();
+                    break;
+
+                case 1:
+                    OnGUIPrefabTab();
+                    break;
+
+                default:
+                    OnGUISettingsTab();
+                    break;
+            }
+        }
+
+        private void OnGUISceneTab()
+        {
             GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
             if(EditorApplication.currentScene != ""
                && allMergeActions == null
@@ -62,8 +87,22 @@ namespace GitMerge
                 InitializeMerging();
             }
 
+            DisplayMergeProcess();
+        }
 
-            if(allMergeActions != null)
+        private void OnGUIPrefabTab()
+        {
+
+        }
+
+        private void OnGUISettingsTab()
+        {
+
+        }
+
+        private void DisplayMergeProcess()
+        {
+            if(mergeInProgress)
             {
                 var done = false;
                 if(allMergeActions != null)
@@ -75,18 +114,26 @@ namespace GitMerge
                 {
                     CompleteMerge();
                 }
-                if(GUILayout.Button("Abort"))
-                {
-                    AbortMerge();
-                }
                 GUILayout.EndHorizontal();
             }
         }
 
         private void DrawModeButtons()
         {
-            string[] modes = { "Merge Scene", "Merge Prefab", "Settings" };
-            mode = GUI.SelectionGrid(new Rect(72, 36, 300, 22), mode, modes, 3);
+            if(!mergeInProgress)
+            {
+                string[] modes = { "Merge Scene", "Merge Prefab", "Settings" };
+                mode = GUI.SelectionGrid(new Rect(72, 36, 300, 22), mode, modes, 3);
+            }
+            else
+            {
+                GUI.backgroundColor = new Color(1,0.4f,0.4f,1);
+                if(GUI.Button(new Rect(72, 36, 300, 22), "Abort merge"))
+                {
+                    AbortMerge();
+                }
+                GUI.backgroundColor = Color.white;
+            }
         }
 
         /// <summary>

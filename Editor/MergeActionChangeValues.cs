@@ -21,13 +21,13 @@ namespace GitMerge
         {
             get { return theirInitialValue != null ? theirInitialValue.ToString() : "[none]"; }
         }
-        protected Component ourComponent;
+        protected Object ourObject;
 
-        public MergeActionChangeValues(GameObject ours, Component ourComponent, SerializedProperty ourProperty, SerializedProperty theirProperty)
+        public MergeActionChangeValues(GameObject ours, Object ourObject, SerializedProperty ourProperty, SerializedProperty theirProperty)
             : base(ours, null)
         {
-            this.ourComponent = ourComponent;
-
+            this.ourObject = ourObject;
+            
             this.ourProperty = ourProperty;
             this.theirProperty = theirProperty;
 
@@ -68,7 +68,7 @@ namespace GitMerge
         public override void OnGUI()
         {
             GUILayout.BeginVertical();
-            GUILayout.Label(ourComponent.GetPlainType() + "." + ourProperty.GetPlainName());
+            GUILayout.Label(ourObject.GetPlainType() + "." + ourProperty.GetPlainName() + ": " + ourProperty.propertyType);
 
             GUILayout.BeginHorizontal();
 

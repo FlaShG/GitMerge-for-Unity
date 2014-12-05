@@ -2,17 +2,17 @@
 
 namespace GitMerge
 {
-    public static class ComponentExtensions
+    public static class ObjectExtensions
     {
         /// <summary>
         /// Get a fine, readable type string. Doesn't really need to be a Component extension method.
         /// Example: UnityEngine.BoxCollider => BoxCollider
         /// </summary>
-        /// <param name="c">The Component whose type we want to display</param>
+        /// <param name="o">The object whose type we want to display</param>
         /// <returns>The well readable type string</returns>
-        public static string GetPlainType(this Component c)
+        public static string GetPlainType(this object o)
         {
-            var s = c.GetType().ToString();
+            var s = o.GetType().ToString();
             var i = s.LastIndexOf('.');
             if(i >= 0)
             {

@@ -52,6 +52,7 @@ namespace GitMerge
             }
             if(ours && theirs)
             {
+                FindPropertyDifferences();
                 FindComponentDifferences();
             }
 
@@ -78,6 +79,15 @@ namespace GitMerge
                 }
                 name += "Their[" + GetPath(theirs) + "]";
             }
+        }
+
+        /// <summary>
+        /// Finds the differences between properties of the two GameObjects.
+        /// That means the name, layer, tag... everything that's not part of a Component.
+        /// </summary>
+        private void FindPropertyDifferences()
+        {
+            FindPropertyDifferences(ours, theirs);
         }
 
         /// <summary>
@@ -126,10 +136,10 @@ namespace GitMerge
         /// <summary>
         /// Find all the values different in "our" and "their" version of a component.
         /// </summary>
-        private void FindPropertyDifferences(Component ourComponent, Component theirComponent)
+        private void FindPropertyDifferences(Object ourObject, Object theirObject)
         {
-            var ourSerialized = new SerializedObject(ourComponent);
-            var theirSerialized = new SerializedObject(theirComponent);
+            var ourSerialized = new SerializedObject(ourObject);
+            var theirSerialized = new SerializedObject(theirObject);
 
             var ourProperty = ourSerialized.GetIterator();
             if(ourProperty.Next(true))
@@ -143,7 +153,7 @@ namespace GitMerge
                     if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
                     {
                         //We found a difference, accordingly add a MergeAction
-                        actions.Add(new MergeActionChangeValues(ours, ourComponent, ourProperty.Copy(), theirProperty.Copy()));
+                        actions.Add(new MergeActionChangeValues(ours, ours, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
             }

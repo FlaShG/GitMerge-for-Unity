@@ -25,7 +25,7 @@ namespace GitMerge
         private static string theirSceneName;
 
         private Vector2 scrollPosition = Vector2.zero;
-        private int mode = 0;
+        private int tab = 0;
 
 
         [MenuItem("Window/GitMerge")]
@@ -59,9 +59,9 @@ namespace GitMerge
         void OnGUI()
         {
             Resources.DrawLogo();
-            DrawModeButtons();
+            DrawTabButtons();
 
-            switch(mode)
+            switch(tab)
             {
                 case 0:
                     OnGUISceneTab();
@@ -77,6 +77,9 @@ namespace GitMerge
             }
         }
 
+        /// <summary>
+        /// Tab that offers scene merging.
+        /// </summary>
         private void OnGUISceneTab()
         {
             GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
@@ -90,16 +93,25 @@ namespace GitMerge
             DisplayMergeProcess();
         }
 
+        /// <summary>
+        /// Tab that offers prefab merging.
+        /// </summary>
         private void OnGUIPrefabTab()
         {
-
+            //TODO: Implement
         }
 
+        /// <summary>
+        /// Tab that offers various settings for the tool.
+        /// </summary>
         private void OnGUISettingsTab()
         {
-
+            //TODO: Implement
         }
 
+        /// <summary>
+        /// Displays all MergeActions and the "apply merge" button if a merge is in progress.
+        /// </summary>
         private void DisplayMergeProcess()
         {
             if(mergeInProgress)
@@ -118,12 +130,16 @@ namespace GitMerge
             }
         }
 
-        private void DrawModeButtons()
+        /// <summary>
+        /// If no merge is in progress, draws the buttons to switch between tabs.
+        /// Otherwise, draws the "abort merge" button.
+        /// </summary>
+        private void DrawTabButtons()
         {
             if(!mergeInProgress)
             {
-                string[] modes = { "Merge Scene", "Merge Prefab", "Settings" };
-                mode = GUI.SelectionGrid(new Rect(72, 36, 300, 22), mode, modes, 3);
+                string[] tabs = { "Merge Scene", "Merge Prefab", "Settings" };
+                tab = GUI.SelectionGrid(new Rect(72, 36, 300, 22), tab, tabs, 3);
             }
             else
             {

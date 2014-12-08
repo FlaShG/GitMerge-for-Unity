@@ -278,7 +278,15 @@ namespace GitMerge
             theirSceneName = Path.Combine(basepath, sname + "--THEIRS.unity");
 
             File.Copy(path, ours);
-            ExecuteGit("checkout --theirs " + path);
+            try
+            {
+                ExecuteGit("checkout --theirs " + path);
+            }
+            catch(GitException e)
+            {
+                File.Delete(ours);
+                throw e;
+            }
             File.Move(path, theirSceneName);
             File.Move(ours, path);
         }

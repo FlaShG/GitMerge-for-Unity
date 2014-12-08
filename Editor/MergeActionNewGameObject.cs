@@ -11,7 +11,10 @@ namespace GitMerge
         public MergeActionNewGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
         {
-            UseTheirs();
+            if(GitMergeWindow.automerge)
+            {
+                UseTheirs();
+            }
         }
 
         protected override void ApplyOurs()

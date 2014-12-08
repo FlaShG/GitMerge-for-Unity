@@ -15,6 +15,11 @@ namespace GitMerge
             : base(ours, null)
         {
             this.theirComponent = theirComponent;
+
+            if(GitMergeWindow.automerge)
+            {
+                UseOurs();
+            }
         }
 
         protected override void ApplyOurs()

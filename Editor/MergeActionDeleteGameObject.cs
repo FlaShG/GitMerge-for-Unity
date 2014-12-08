@@ -19,7 +19,10 @@ namespace GitMerge
             copy.name = ours.name;
             copy.SetActiveForMerging(false);
 
-            UseOurs();
+            if(GitMergeWindow.automerge)
+            {
+                UseOurs();
+            }
         }
 
         protected override void ApplyOurs()

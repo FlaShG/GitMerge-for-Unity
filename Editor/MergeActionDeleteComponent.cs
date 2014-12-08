@@ -20,7 +20,11 @@ namespace GitMerge
             go.SetActiveForMerging(false);
 
             copy = go.AddComponent(ourComponent);
-            UseOurs();
+
+            if(GitMergeWindow.automerge)
+            {
+                UseOurs();
+            }
         }
 
         protected override void ApplyOurs()

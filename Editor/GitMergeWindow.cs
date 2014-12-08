@@ -13,8 +13,10 @@ namespace GitMerge
     public class GitMergeWindow : EditorWindow
     {
         private const string epGitpath = "GitMerge_git";
+        private const string epAutomerge = "GitMerge_automerge";
 
         private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
+        public static bool automerge { private set; get; }
 
         private static List<GameObjectMergeActions> allMergeActions;
         private static bool mergeInProgress
@@ -40,7 +42,20 @@ namespace GitMerge
             //the shown SerializedProperties should be repainted
             window.autoRepaintOnSceneChange = true;
             window.minSize = new Vector2(500, 100);
-            git = EditorPrefs.GetString(epGitpath);
+        }
+
+        void OnEnable()
+        {
+            LoadSettings();
+        }
+
+        private static void LoadSettings()
+        {
+            if(EditorPrefs.HasKey(epGitpath))
+            {
+                git = EditorPrefs.GetString(epGitpath);
+            }
+            automerge = EditorPrefs.GetBool(epAutomerge);
         }
 
         void OnHierarchyChange()
@@ -115,8 +130,16 @@ namespace GitMerge
             if(git != gitNew)
             {
                 git = gitNew;
-                PlayerPrefs.SetString(epGitpath, git);
+                EditorPrefs.SetString(epGitpath, git);
             }
+
+            var amNew = EditorGUILayout.Toggle("Automerge", automerge);
+            if(automerge != amNew)
+            {
+                automerge = amNew;
+                EditorPrefs.SetBool(epAutomerge, automerge);
+            }
+            GUILayout.Label("(Automerge new/deleted GameObjects/Components upon merge start)");
         }
 
         /// <summary>

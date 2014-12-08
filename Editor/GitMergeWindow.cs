@@ -12,11 +12,15 @@ namespace GitMerge
     /// </summary>
     public class GitMergeWindow : EditorWindow
     {
+        //EditorPrefs keys for settings
         private const string epGitpath = "GitMerge_git";
         private const string epAutomerge = "GitMerge_automerge";
-
+        private const string epAutofocus = "GitMerge_autofocus";
+        
+        //Settings
         private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
         public static bool automerge { private set; get; }
+        public static bool autofocus { private set; get; }
 
         private static List<GameObjectMergeActions> allMergeActions;
         private static bool mergeInProgress
@@ -55,7 +59,22 @@ namespace GitMerge
             {
                 git = EditorPrefs.GetString(epGitpath);
             }
-            automerge = EditorPrefs.GetBool(epAutomerge);
+            if(EditorPrefs.HasKey(epAutomerge))
+            {
+                automerge = EditorPrefs.GetBool(epAutomerge);
+            }
+            else
+            {
+                automerge = true;
+            }
+            if(EditorPrefs.HasKey(epAutofocus))
+            {
+                autofocus = EditorPrefs.GetBool(epAutofocus);
+            }
+            else
+            {
+                autofocus = true;
+            }
         }
 
         void OnHierarchyChange()
@@ -140,6 +159,14 @@ namespace GitMerge
                 EditorPrefs.SetBool(epAutomerge, automerge);
             }
             GUILayout.Label("(Automerge new/deleted GameObjects/Components upon merge start)");
+
+            var afNew = EditorGUILayout.Toggle("Auto Highlight", autofocus);
+            if(autofocus != afNew)
+            {
+                autofocus = afNew;
+                EditorPrefs.SetBool(epAutofocus, autofocus);
+            }
+            GUILayout.Label("(Highlight GameObjects when applying a MergeAction to it)");
         }
 
         /// <summary>

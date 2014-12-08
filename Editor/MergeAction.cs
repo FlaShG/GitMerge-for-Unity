@@ -47,7 +47,10 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            HighlightObject();
+            if(GitMergeWindow.autofocus)
+            {
+                HighlightObject();
+            }
         }
         public void UseTheirs()
         {
@@ -59,7 +62,10 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            HighlightObject();
+            if(GitMergeWindow.autofocus)
+            {
+                HighlightObject();
+            }
         }
         public void UsedNew()
         {

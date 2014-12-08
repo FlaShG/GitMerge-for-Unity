@@ -3,6 +3,7 @@ using UnityEditor;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace GitMerge
 {
@@ -11,7 +12,10 @@ namespace GitMerge
     /// </summary>
     public class GitMergeWindow : EditorWindow
     {
+        private const string epGitpath = "GitMerge_git";
+
         private static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
+
         private static List<GameObjectMergeActions> allMergeActions;
         private static bool mergeInProgress
         {
@@ -36,6 +40,7 @@ namespace GitMerge
             //the shown SerializedProperties should be repainted
             window.autoRepaintOnSceneChange = true;
             window.minSize = new Vector2(500, 100);
+            git = EditorPrefs.GetString(epGitpath);
         }
 
         void OnHierarchyChange()
@@ -106,7 +111,12 @@ namespace GitMerge
         /// </summary>
         private void OnGUISettingsTab()
         {
-            //TODO: Implement
+            var gitNew = EditorGUILayout.TextField("Path to git.exe", git);
+            if(git != gitNew)
+            {
+                git = gitNew;
+                PlayerPrefs.SetString(epGitpath, git);
+            }
         }
 
         /// <summary>
@@ -377,12 +387,27 @@ namespace GitMerge
             startInfo.RedirectStandardOutput = true;
             process.StartInfo = startInfo;
 
-            process.Start();
+            try
+            {
+                process.Start();
+            }
+            catch(Win32Exception)
+            {
+                throw new GitException();
+            }
 
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
             return output;
+        }
+
+        private class GitException : System.Exception
+        {
+            public override string Message
+            {
+                get { return "Could not find git.exe. Please enter a valid git.exe path in the settings."; }
+            }
         }
     }
 }

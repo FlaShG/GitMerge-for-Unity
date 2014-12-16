@@ -6,6 +6,6 @@ More information: http://flashg.github.io/GitMerge-for-Unity/
 
 ## Current state of the project
 
-The scene merging part works pretty fine now, except for stuff like gameobject hierarchies and reference properties.
+The scene merging part works pretty fine now. See the project issues for what's up next.
 There are still some rough edges, and prefab support is missing.
 The creator(s) of this tool take no responsibility for any problems caused by this tool.

@@ -82,12 +82,19 @@ namespace GitMerge
             var c = GUI.backgroundColor;
             GUI.backgroundColor = Color.white;
 
-            var oldValue = ourProperty.GetValue();
-            EditorGUILayout.PropertyField(ourProperty, new GUIContent(""), GUILayout.Width(170));
-            if(!object.Equals(ourProperty.GetValue(), oldValue))
+            if(ourProperty.isArray)
             {
-                ourProperty.serializedObject.ApplyModifiedProperties();
-                UsedNew();
+                GUILayout.Label("[Array]");
+            }
+            else
+            {
+                var oldValue = ourProperty.GetValue();
+                EditorGUILayout.PropertyField(ourProperty, new GUIContent(""), GUILayout.Width(170));
+                if(!object.Equals(ourProperty.GetValue(), oldValue))
+                {
+                    ourProperty.serializedObject.ApplyModifiedProperties();
+                    UsedNew();
+                }
             }
 
             GUI.backgroundColor = c;

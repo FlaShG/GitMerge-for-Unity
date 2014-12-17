@@ -161,14 +161,47 @@ namespace GitMerge
                             }
                         }
                     }
-                    
-                    if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
+
+                    if(DifferentValues(ourProperty, theirProperty))
                     {
                         //We found a difference, accordingly add a MergeAction
                         actions.Add(new MergeActionChangeValues(ours, ourObject, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns true when the two properties have different values, false otherwise.
+        /// </summary>
+        private static bool DifferentValues(SerializedProperty ourProperty, SerializedProperty theirProperty)
+        {
+            if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
+            {
+                return true;
+            }
+            if(ourProperty.isArray)
+            {
+                if(ourProperty.arraySize != theirProperty.arraySize)
+                {
+                    return true;
+                }
+
+                var op = ourProperty.Copy();
+                var tp = theirProperty.Copy();
+
+                while(op.NextVisible(true))
+                {
+                    tp.NextVisible(true);
+
+                    if(!op.GetValue(true).Equals(tp.GetValue(true)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

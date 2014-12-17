@@ -24,9 +24,9 @@ namespace GitMerge
             {
                 newSerialized.Next(true);
 
-                while(originalSerialized.NextVisible(false))
+                while(originalSerialized.NextVisible(true))
                 {
-                    newSerialized.NextVisible(false);
+                    newSerialized.NextVisible(true);
                     newSerialized.SetValue(originalSerialized.GetValue());
                 }
             }

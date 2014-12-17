@@ -12,7 +12,7 @@ namespace GitMerge
                 case SerializedPropertyType.AnimationCurve:
                     return p.animationCurveValue;
                 case SerializedPropertyType.ArraySize:
-                    return 0; //TODO: erm
+                    return p.intValue;
                 case SerializedPropertyType.Boolean:
                     return p.boolValue;
                 case SerializedPropertyType.Bounds:
@@ -68,6 +68,7 @@ namespace GitMerge
                     break;
                 case SerializedPropertyType.ArraySize:
                     //TODO: erm
+                    p.intValue = (int)value;
                     break;
                 case SerializedPropertyType.Boolean:
                     p.boolValue = (bool)value;

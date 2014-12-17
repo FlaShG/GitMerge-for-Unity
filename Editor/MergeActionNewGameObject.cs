@@ -22,7 +22,7 @@ namespace GitMerge
             if(ours)
             {
                 ObjectDictionaries.RemoveCopyOf(theirs);
-                GameObject.DestroyImmediate(ours);
+                GameObject.DestroyImmediate(ours, true);
             }
         }
 

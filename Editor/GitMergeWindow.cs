@@ -31,8 +31,21 @@ namespace GitMerge
             }
         }
 
-        private static string sceneName;
-        private static string theirSceneName;
+        private static string fileName;
+        private static string theirFilename;
+
+        //Stuff needed for prefab merging
+        public static GameObject ourPrefab { private set; get; }
+        private static GameObject theirPrefab;
+        private static string previouslyOpenedScene;
+        public static GameObject ourPrefabInstance { private set; get; }
+
+        //Are we merging a scene?
+        //If we're merging and this yields false, we're merging a prefab.
+        private static bool isMergingScene
+        {
+            get { return ourPrefab == null; }
+        }
 
         private Vector2 scrollPosition = Vector2.zero;
         private int tab = 0;
@@ -123,10 +136,10 @@ namespace GitMerge
         {
             GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
             if(EditorApplication.currentScene != ""
-               && allMergeActions == null
+               && !mergeInProgress
                && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
             {
-                InitializeMerging();
+                InitializeSceneMerging();
             }
 
             DisplayMergeProcess();
@@ -137,7 +150,17 @@ namespace GitMerge
         /// </summary>
         private void OnGUIPrefabTab()
         {
-            //TODO: Implement
+            GameObject prefab;
+            if(!mergeInProgress)
+            {
+                GUILayout.Label("Drag your prefab here to start merging:");
+                if(prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
+                {
+                    InitializePrefabMerging(prefab);
+                }
+            }
+
+            DisplayMergeProcess();
         }
 
         /// <summary>
@@ -184,7 +207,14 @@ namespace GitMerge
                 GUILayout.BeginHorizontal();
                 if(done && GUILayout.Button("Apply merge"))
                 {
-                    CompleteMerge();
+                    if(isMergingScene)
+                    {
+                        CompleteSceneMerge();
+                    }
+                    else
+                    {
+                        CompletePrefabMerge();
+                    }
                 }
                 GUILayout.EndHorizontal();
             }
@@ -238,9 +268,13 @@ namespace GitMerge
             return done;
         }
 
-        private void InitializeMerging()
+        private void InitializeSceneMerging()
         {
             MergeAction.inMergePhase = false;
+
+            //Do this just in case there is still a reference.
+            //Otherwise isMergingScene will be false if something goes wrong.
+            ourPrefab = null;
 
             ObjectDictionaries.Clear();
 
@@ -253,10 +287,10 @@ namespace GitMerge
             SetAsOurObjects(ourObjects);
 
             //add "their" objects
-            EditorApplication.OpenSceneAdditive(theirSceneName);
+            EditorApplication.OpenSceneAdditive(theirFilename);
 
             //delete scene file
-            AssetDatabase.DeleteAsset(theirSceneName);
+            AssetDatabase.DeleteAsset(theirFilename);
 
             //find all of "their" objects
             var addedObjects = GetAllNewSceneObjects(ourObjects);
@@ -272,6 +306,55 @@ namespace GitMerge
             else
             {
                 MergeAction.inMergePhase = true;
+            }
+        }
+
+        private void InitializePrefabMerging(GameObject prefab)
+        {
+            if(!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            {
+                return;
+            }
+
+            MergeAction.inMergePhase = false;
+
+            ObjectDictionaries.Clear();
+
+            //checkout "their" version
+            GetTheirVersionOf(AssetDatabase.GetAssetOrScenePath(prefab));
+            AssetDatabase.Refresh();
+            
+            ourPrefab = prefab;
+
+            //Open a new Scene that will only display the prefab
+            previouslyOpenedScene = EditorApplication.currentScene;
+            EditorApplication.NewScene();
+
+            //make the new scene empty
+            DestroyImmediate(Camera.main.gameObject);
+
+            //instantiate our object in order to view it while merging
+            ourPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+
+            //find all of "our" objects in the prefab
+            var ourObjects = GetAllObjects(prefab);
+
+            theirPrefab = AssetDatabase.LoadAssetAtPath(theirFilename, typeof(GameObject)) as GameObject;
+            theirPrefab.hideFlags = HideFlags.HideAndDontSave;
+            var theirObjects = GetAllObjects(theirPrefab);
+
+            //create list of differences that have to be merged
+            BuildAllMergeActions(ourObjects, theirObjects);
+
+            if(allMergeActions.Count == 0)
+            {
+                allMergeActions = null;
+                ourPrefab = null;
+            }
+            else
+            {
+                MergeAction.inMergePhase = true;
+                ourPrefabInstance.Highlight();
             }
         }
 
@@ -296,6 +379,28 @@ namespace GitMerge
             return all;
         }
 
+        /// <summary>
+        /// Recursively find all GameObjects that are part of the prefab
+        /// </summary>
+        /// <param name="prefab">The prefab to analyze</param>
+        /// <param name="list">The list with all the objects already found. Pass null in the beginning.</param>
+        /// <returns>The list with all the objects</returns>
+        private static List<GameObject> GetAllObjects(GameObject prefab, List<GameObject> list = null)
+        {
+            if(list == null)
+            {
+                list = new List<GameObject>();
+            }
+
+            list.Add(prefab);
+            foreach(Transform t in prefab.transform)
+            {
+                GetAllObjects(t.gameObject, list);
+            }
+            return list;
+        }
+
+        //TODO: Move to ObjectDictionaries
         private void SetAsOurObjects(List<GameObject> objects)
         {
             foreach(var obj in objects)
@@ -304,6 +409,7 @@ namespace GitMerge
             }
         }
 
+        //TODO: Move to ObjectDictionaries
         private void SetAsTheirObjects(List<GameObject> objects)
         {
             foreach(var obj in objects)
@@ -313,31 +419,32 @@ namespace GitMerge
         }
 
         /// <summary>
-        /// Creates "their" version of the scene at the given path,
-        /// named scenename--THEIRS.unity.
+        /// Creates "their" version of the file at the given path,
+        /// named filename--THEIRS.unity.
         /// </summary>
-        /// <param name="path">The path of the scene, relative to the project folder.</param>
+        /// <param name="path">The path of the file, relative to the project folder.</param>
         private static void GetTheirVersionOf(string path)
         {
-            sceneName = path;
+            fileName = path;
 
             string basepath = Path.GetDirectoryName(path);
             string sname = Path.GetFileNameWithoutExtension(path);
+            string extension = Path.GetExtension(path);
 
-            string ours = Path.Combine(basepath, sname + "--OURS.unity");
-            theirSceneName = Path.Combine(basepath, sname + "--THEIRS.unity");
+            string ours = Path.Combine(basepath, sname + "--OURS" + extension);
+            theirFilename = Path.Combine(basepath, sname + "--THEIRS" + extension);
 
             File.Copy(path, ours);
             try
             {
-                ExecuteGit("checkout --theirs " + path);
+                ExecuteGit("checkout --theirs \"" + path + "\"");
             }
             catch(GitException e)
             {
                 File.Delete(ours);
                 throw e;
             }
-            File.Move(path, theirSceneName);
+            File.Move(path, theirFilename);
             File.Move(ours, path);
         }
 
@@ -392,7 +499,7 @@ namespace GitMerge
         /// Cleans up the scene by deleting "their" GameObjects, clears merge related data structures,
         /// executes git add scene_name.
         /// </summary>
-        private void CompleteMerge()
+        private void CompleteSceneMerge()
         {
             MergeAction.inMergePhase = false;
 
@@ -403,11 +510,41 @@ namespace GitMerge
             allMergeActions = null;
 
             //Mark as merged for git
-            ExecuteGit("add " + sceneName);
+            ExecuteGit("add " + fileName);
 
             //directly committing here might not be that smart, since there might be more conflicts
 
             ShowNotification(new GUIContent("Scene successfully merged."));
+        }
+
+        /// <summary>
+        /// Completes the merge process after solving all conflicts.
+        /// Cleans up the scene by deleting "their" GameObjects, clears merge related data structures,
+        /// executes git add scene_name.
+        /// </summary>
+        private void CompletePrefabMerge()
+        {
+            MergeAction.inMergePhase = false;
+
+            //ObjectDictionaries.Clear();
+
+            allMergeActions = null;
+
+            //TODO: Could we explicitly just save the prefab?
+            AssetDatabase.SaveAssets();
+
+            //Mark as merged for git
+            ExecuteGit("add " + fileName);
+
+            //directly committing here might not be that smart, since there might be more conflicts
+
+            ourPrefab = null;
+
+            //delete their prefab file
+            AssetDatabase.DeleteAsset(theirFilename);
+
+            OpenPreviousScene();
+            ShowNotification(new GUIContent("Prefab successfully merged."));
         }
 
         /// <summary>
@@ -427,6 +564,27 @@ namespace GitMerge
             allMergeActions = null;
 
             ShowNotification(new GUIContent("Merge aborted."));
+
+            //If we aborted merging a prefab...
+            if(!isMergingScene)
+            {
+                //delete prefab file
+                AssetDatabase.DeleteAsset(theirFilename);
+                OpenPreviousScene();
+                ourPrefab = null;
+            }
+        }
+
+        /// <summary>
+        /// Opens the previously opened scene, if there was any.
+        /// </summary>
+        private static void OpenPreviousScene()
+        {
+            if(!string.IsNullOrEmpty(previouslyOpenedScene))
+            {
+                EditorApplication.OpenScene(previouslyOpenedScene);
+                previouslyOpenedScene = "";
+            }
         }
 
         /// <summary>

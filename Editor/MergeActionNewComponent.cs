@@ -27,7 +27,7 @@ namespace GitMerge
             if(ourComponent)
             {
                 ObjectDictionaries.RemoveCopyOf(theirComponent);
-                Object.DestroyImmediate(ourComponent);
+                Object.DestroyImmediate(ourComponent, true);
             }
         }
 

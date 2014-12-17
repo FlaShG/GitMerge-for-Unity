@@ -41,7 +41,7 @@ namespace GitMerge
             if(ourComponent != null)
             {
                 ObjectDictionaries.RemoveOurObject(ourComponent);
-                Object.DestroyImmediate(ourComponent);
+                Object.DestroyImmediate(ourComponent, true);
             }
         }
 

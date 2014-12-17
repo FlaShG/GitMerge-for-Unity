@@ -17,7 +17,8 @@ namespace GitMerge
             var c = go.AddComponent(original.GetType());
 
             var originalSerialized = new SerializedObject(original).GetIterator();
-            var newSerialized = new SerializedObject(c).GetIterator();
+            var nso = new SerializedObject(c);
+            var newSerialized = nso.GetIterator();
 
             if(originalSerialized.Next(true))
             {
@@ -26,10 +27,11 @@ namespace GitMerge
                 while(originalSerialized.NextVisible(false))
                 {
                     newSerialized.NextVisible(false);
-
                     newSerialized.SetValue(originalSerialized.GetValue());
                 }
             }
+
+            nso.ApplyModifiedProperties();
 
             return c;
         }

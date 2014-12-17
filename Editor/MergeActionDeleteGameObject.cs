@@ -40,7 +40,7 @@ namespace GitMerge
             if(ours != null)
             {
                 ObjectDictionaries.RemoveOurObject(ours);
-                GameObject.DestroyImmediate(ours);
+                GameObject.DestroyImmediate(ours, true);
             }
         }
 

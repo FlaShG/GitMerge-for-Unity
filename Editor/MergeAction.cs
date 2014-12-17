@@ -51,6 +51,8 @@ namespace GitMerge
             {
                 HighlightObject();
             }
+
+            RefreshPrefabInstance();
         }
         public void UseTheirs()
         {
@@ -66,6 +68,8 @@ namespace GitMerge
             {
                 HighlightObject();
             }
+
+            RefreshPrefabInstance();
         }
         public void UsedNew()
         {
@@ -75,6 +79,20 @@ namespace GitMerge
             usingNew = true;
 
             automatic = !inMergePhase;
+
+            RefreshPrefabInstance();
+        }
+
+        /// <summary>
+        /// Refreshes the prefab instance, if there is any.
+        /// We change the prefab directly, so we have to do this to see the changes in the scene view.
+        /// </summary>
+        private static void RefreshPrefabInstance()
+        {
+            if(GitMergeWindow.ourPrefabInstance)
+            {
+                PrefabUtility.ResetToPrefabState(GitMergeWindow.ourPrefabInstance);
+            }
         }
 
         //The implementations of these methods conatain the actual merging steps
@@ -109,9 +127,13 @@ namespace GitMerge
 
         private void HighlightObject()
         {
-            if(ours && inMergePhase)
+            //Highlight the instance of the prefab, not the prefab itself
+            //Otherwise, "ours".
+            var objectToHighlight = GitMergeWindow.ourPrefabInstance ?? ours;
+
+            if(objectToHighlight && inMergePhase)
             {
-                ours.Highlight();
+                objectToHighlight.Highlight();
             }
         }
     }

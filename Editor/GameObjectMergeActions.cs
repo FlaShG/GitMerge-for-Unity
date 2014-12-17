@@ -211,7 +211,10 @@ namespace GitMerge
 
             if(ours && GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
             {
-                ours.Highlight();
+                //Highlight the instance of the prefab, not the prefab itself
+                //Otherwise, "ours".
+                var objectToHighlight = GitMergeWindow.ourPrefabInstance ?? ours;
+                objectToHighlight.Highlight();
             }
             GUILayout.EndHorizontal();
 

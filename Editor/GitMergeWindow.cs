@@ -42,7 +42,7 @@ namespace GitMerge
 
         //Are we merging a scene?
         //If we're merging and this yields false, we're merging a prefab.
-        private static bool isMergingScene
+        public static bool isMergingScene
         {
             get { return ourPrefab == null; }
         }
@@ -510,7 +510,7 @@ namespace GitMerge
             allMergeActions = null;
 
             //Mark as merged for git
-            ExecuteGit("add " + fileName);
+            ExecuteGit("add \"" + fileName + "\"");
 
             //directly committing here might not be that smart, since there might be more conflicts
 
@@ -534,7 +534,7 @@ namespace GitMerge
             AssetDatabase.SaveAssets();
 
             //Mark as merged for git
-            ExecuteGit("add " + fileName);
+            ExecuteGit("add \"" + fileName + "\"");
 
             //directly committing here might not be that smart, since there might be more conflicts
 

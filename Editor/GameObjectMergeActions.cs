@@ -150,6 +150,18 @@ namespace GitMerge
                 {
                     theirProperty.NextVisible(false);
 
+                    if(ourObject is GameObject)
+                    {
+                        if(!GitMergeWindow.isMergingScene)
+                        {
+                            //If merging a prefab, ignore the gameobject name.
+                            if(ourProperty.GetPlainName() == "Name")
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    
                     if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
                     {
                         //We found a difference, accordingly add a MergeAction

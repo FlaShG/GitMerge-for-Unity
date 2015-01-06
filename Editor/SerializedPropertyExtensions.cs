@@ -25,8 +25,20 @@ namespace GitMerge
                     return p.enumValueIndex;
                 case SerializedPropertyType.Float:
                     return p.floatValue;
-                case SerializedPropertyType.Generic:
-                    return 0; //TODO: erm
+                case SerializedPropertyType.Generic: //(arrays)
+                    if(p.isArray)
+                    {
+                        var arr = new object[p.arraySize];
+                        for(int i = 0; i < arr.Length; ++i)
+                        {
+                            arr[i] = p.GetArrayElementAtIndex(i).GetValue();
+                        }
+                        return arr;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 case SerializedPropertyType.Gradient:
                     return 0; //TODO: erm
                 case SerializedPropertyType.Integer:
@@ -88,8 +100,32 @@ namespace GitMerge
                 case SerializedPropertyType.Float:
                     p.floatValue = (float)value;
                     break;
-                case SerializedPropertyType.Generic:
-                    //TODO: erm
+                case SerializedPropertyType.Generic: //(arrays)
+                    if(p.isArray)
+                    {
+                        //var size = p.arraySize;
+                        //var resetPath = p.propertyPath;
+                        var values = (object[])value;
+                        /*
+                        for(int i = 0; i < p.arraySize; ++i)
+                        {
+                            Debug.Log(i + ": " + p.GetArrayElementAtIndex(i).GetValue());
+                        }
+                        */
+                        p.ClearArray();
+                        for(int i = 0; i < values.Length; ++i)
+                        {
+                            p.InsertArrayElementAtIndex(i);
+                            //Debug.Log(i + ": " + pv.GetArrayElementAtIndex(i).GetValue());
+                            p.GetArrayElementAtIndex(i).SetValue(values[i]);
+                        }
+
+                        //p.FindPropertyRelative(resetPath);
+                    }
+                    else
+                    {
+                        //p.stringValue = (string)value;
+                    }
                     break;
                 case SerializedPropertyType.Gradient:
                     //TODO: erm
@@ -135,6 +171,11 @@ namespace GitMerge
                 s = s.Substring(i + 1);
             }
             return s;
+        }
+
+        public static bool IsRealArray(this SerializedProperty p)
+        {
+            return p.propertyType == SerializedPropertyType.Generic && p.isArray;
         }
     }
 }

@@ -142,10 +142,10 @@ namespace GitMerge
             var theirSerialized = new SerializedObject(theirObject);
 
             var ourProperty = ourSerialized.GetIterator();
-            if(ourProperty.Next(true))
+            if(ourProperty.NextVisible(true))
             {
                 var theirProperty = theirSerialized.GetIterator();
-                theirProperty.Next(true);
+                theirProperty.NextVisible(true);
                 while(ourProperty.NextVisible(false))
                 {
                     theirProperty.NextVisible(false);
@@ -176,12 +176,17 @@ namespace GitMerge
         /// </summary>
         private static bool DifferentValues(SerializedProperty ourProperty, SerializedProperty theirProperty)
         {
-            if(!ourProperty.GetValue(true).Equals(theirProperty.GetValue(true)))
+            if(!ourProperty.IsRealArray())
             {
-                return true;
+                //Regular single-value property
+                if(DifferentValuesFlat(ourProperty, theirProperty))
+                {
+                    return true;
+                }
             }
-            if(ourProperty.isArray)
+            else
             {
+                //Array property
                 if(ourProperty.arraySize != theirProperty.arraySize)
                 {
                     return true;
@@ -190,11 +195,17 @@ namespace GitMerge
                 var op = ourProperty.Copy();
                 var tp = theirProperty.Copy();
 
-                while(op.NextVisible(true))
-                {
-                    tp.NextVisible(true);
+                op.Next(true);
+                op.Next(true);
+                tp.Next(true);
+                tp.Next(true);
 
-                    if(!op.GetValue(true).Equals(tp.GetValue(true)))
+                for(int i = 0; i < ourProperty.arraySize; ++i)
+                {
+                    op.Next(false);
+                    tp.Next(false);
+
+                    if(DifferentValuesFlat(op, tp))
                     {
                         return true;
                     }
@@ -202,6 +213,14 @@ namespace GitMerge
             }
 
             return false;
+        }
+
+        private static bool DifferentValuesFlat(SerializedProperty ourProperty, SerializedProperty theirProperty)
+        {
+            var our = ourProperty.GetValue(true);
+            var their = theirProperty.GetValue(true);
+
+            return !object.Equals(our, their);
         }
 
         /// <summary>

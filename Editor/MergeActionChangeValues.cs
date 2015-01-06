@@ -13,26 +13,23 @@ namespace GitMerge
         protected SerializedProperty theirProperty;
         protected object ourInitialValue;
         protected object theirInitialValue;
-        protected string ourString
-        {
-            get { return ourInitialValue != null ? ourInitialValue.ToString() : "[none]"; }
-        }
-        protected string theirString
-        {
-            get { return theirInitialValue != null ? theirInitialValue.ToString() : "[none]"; }
-        }
+        protected readonly string ourString;
+        protected readonly string theirString;
         protected Object ourObject;
 
         public MergeActionChangeValues(GameObject ours, Object ourObject, SerializedProperty ourProperty, SerializedProperty theirProperty)
             : base(ours, null)
         {
             this.ourObject = ourObject;
-            
+
             this.ourProperty = ourProperty;
             this.theirProperty = theirProperty;
 
             ourInitialValue = ourProperty.GetValue();
             theirInitialValue = theirProperty.GetValue();
+
+            ourString = SerializedValueString(ourProperty);
+            theirString = SerializedValueString(theirProperty);
         }
 
         protected override void ApplyOurs()
@@ -72,7 +69,10 @@ namespace GitMerge
 
             GUILayout.BeginHorizontal();
 
+            GUILayout.BeginVertical();
             GUILayout.Label(ourString, GUILayout.Width(100));
+            DisplayArray(ourInitialValue);
+            GUILayout.EndVertical();
 
             if(MergeButton(">>>", usingOurs))
             {
@@ -82,19 +82,39 @@ namespace GitMerge
             var c = GUI.backgroundColor;
             GUI.backgroundColor = Color.white;
 
-            if(ourProperty.isArray)
+            //GUILayout.Label(ourProperty.propertyType + "/" + ourProperty.type + ": " + ourProperty.GetValue());
+
+            if(ourProperty.IsRealArray())
             {
-                GUILayout.Label("[Array]");
+                GUILayout.BeginVertical();
+                GUILayout.BeginHorizontal(GUILayout.Width(170));
+                EditorGUILayout.PropertyField(ourProperty, new GUIContent("Array"), GUILayout.Width(80));
+                if(ourProperty.isExpanded)
+                {
+                    var ourPropertyCopy = ourProperty.Copy();
+                    var size = ourPropertyCopy.arraySize;
+
+                    ourPropertyCopy.Next(true);
+                    ourPropertyCopy.Next(true);
+
+                    PropertyField(ourPropertyCopy, 70);
+                    GUILayout.EndHorizontal();
+
+                    for(int i = 0; i < size; ++i)
+                    {
+                        ourPropertyCopy.Next(false);
+                        PropertyField(ourPropertyCopy);
+                    }
+                }
+                else
+                {
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.EndVertical();
             }
             else
             {
-                var oldValue = ourProperty.GetValue();
-                EditorGUILayout.PropertyField(ourProperty, new GUIContent(""), GUILayout.Width(170));
-                if(!object.Equals(ourProperty.GetValue(), oldValue))
-                {
-                    ourProperty.serializedObject.ApplyModifiedProperties();
-                    UsedNew();
-                }
+                PropertyField(ourProperty);
             }
 
             GUI.backgroundColor = c;
@@ -103,10 +123,55 @@ namespace GitMerge
             {
                 UseTheirs();
             }
+
+            GUILayout.BeginVertical();
             GUILayout.Label(theirString, GUILayout.Width(100));
+            DisplayArray(theirInitialValue);
+            GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
+        }
+
+        private void DisplayArray(object value)
+        {
+            if(ourProperty.isExpanded)
+            {
+                var values = (object[])value;
+                for(int i = 0; i < values.Length; ++i)
+                {
+                    GUILayout.Label(ValueString(values[i]), GUILayout.Width(100));
+                }
+            }
+        }
+
+        private void PropertyField(SerializedProperty p, float width = 170)
+        {
+            var oldValue = p.GetValue();
+            EditorGUILayout.PropertyField(p, new GUIContent(""), GUILayout.Width(width));
+            if(!object.Equals(p.GetValue(), oldValue))
+            {
+                p.serializedObject.ApplyModifiedProperties();
+                UsedNew();
+            }
+        }
+
+        private static string SerializedValueString(SerializedProperty p)
+        {
+            if(p.IsRealArray())
+            {
+                return "Array[" + p.arraySize + "]";
+            }
+            return ValueString(p.GetValue());
+        }
+
+        private static string ValueString(object o)
+        {
+            if(o == null)
+            {
+                return "[none]";
+            }
+            return o.ToString();
         }
 
         private static bool MergeButton(string text, bool green)

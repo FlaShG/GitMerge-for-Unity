@@ -302,6 +302,7 @@ namespace GitMerge
             if(allMergeActions.Count == 0)
             {
                 allMergeActions = null;
+                ShowNotification(new GUIContent("No conflict found for this scene."));
             }
             else
             {
@@ -350,6 +351,9 @@ namespace GitMerge
             {
                 allMergeActions = null;
                 ourPrefab = null;
+                AssetDatabase.DeleteAsset(theirFilename);
+                OpenPreviousScene();
+                ShowNotification(new GUIContent("No conflict found for this prefab."));
             }
             else
             {

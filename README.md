@@ -1,11 +1,10 @@
 GitMerge-for-Unity
 ==================
 
-A Unity plugin which allows you to merge scene files when using git.
+A Unity plugin which allows you to merge scene and prefab files when using git.
 More information: http://flashg.github.io/GitMerge-for-Unity/
 
 ## Current state of the project
 
-The scene merging part works pretty fine now. See the project issues for what's up next.
-There are still some rough edges, and prefab support is missing.
-The creator(s) of this tool take no responsibility for any problems caused by this tool.
+Scene and prefab merging both work pretty well now.
+The UI has some rough edges, but you should be able to use the tool in your project.

@@ -10,8 +10,8 @@
     <title>GitMerge for Unity</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="additional.css">
-    <meta name="description" content="Use Git with Unity. Merge your Scenes with GitMerge for Unity." />
-    <meta name="keywords" content="Unity, Git, Merge, Scene" />
+    <meta name="description" content="Use Git with Unity. Merge your Scenes and Prefabs with GitMerge for Unity." />
+    <meta name="keywords" content="Unity, Git, Merge, Scene, Prefab" />
     
 </head>
 <body>
@@ -40,13 +40,9 @@
 
     <div class="container">
     <h1>Using Unity with Git, made painless for everyone.</h1>
-    <div class="alert alert-danger">
-        <i>GitMerge for Unity</i> is currently in an early stage of development.
-        Use it at your own risk.
-    </div>
     <p class="lead">
         <i>GitMerge for Unity</i> is a free, open source Unity Editor tool that allows you
-        to merge scene and (not yet) prefab files. This solves the main problem you currently get when using
+        to merge scene and prefab files. This solves the main problem you currently get when using
         Git to work with Unity.
     </p>
     
@@ -102,12 +98,10 @@
         </div>
     </div>
     <h2 id="howto">How to use</h2>
-    
-    <div class="alert alert-danger col-sm-8">
-        This tool is still under development. There are some features, like prefab support, that
-        are not yet implemented. Also, remember that you use the tool at your own risk.
+    <div class="alert alert-info col-sm-8">
+        <i>GitMerge for Unity</i> is an open source software and is constantly being developed.
+        If you find something that could be improved, please feel free to help!
     </div>
-
     <h3 id="instructions-start" class="clear">Start merging</h3>
     <p>
         <i>GitMerge for Unity</i> comes as an opt-in merge tool.
@@ -166,10 +160,16 @@
     
     <h3 id="instructions-prefab">Merge a prefab</h3>
     <p>
-        This has not been implemented yet, but will work pretty much like merging a scene.
-        You'll probably drag the prefab to merge into the tool window, causing it to create a temporary local scene
-        (like mecanim does when editing rigs).
-        The prefab will be instantiated, merged the same way you merge scenes, and saved.
+        Merging a prefab pretty much works like with a scene.
+    </p>
+    <p>
+        While in a merge conflict, open the "Merge Prefab" tab and drag your prefab into the field.<br />
+        A new scene will be opened. This scene contains an instance of said prefab.
+        You'll get the same type of list you already know from scene merging.
+        Merge your conflicts and see the result on the prefab instance.
+    </p>
+    <p>
+        When you hit "Apply merge" when done, you will be returned to the scene you were in before. The prefab file will be added to the Git stage, but remember that you'll have to commmit the merge yourself.
     </p>
     
     

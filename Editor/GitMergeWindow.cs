@@ -72,6 +72,10 @@ namespace GitMerge
             {
                 git = EditorPrefs.GetString(epGitpath);
             }
+            else
+            {
+                SetStandardGitPath();
+            }
             if(EditorPrefs.HasKey(epAutomerge))
             {
                 automerge = EditorPrefs.GetBool(epAutomerge);
@@ -87,6 +91,15 @@ namespace GitMerge
             else
             {
                 autofocus = true;
+            }
+        }
+
+        private static void SetStandardGitPath()
+        {
+            if(Application.platform == RuntimePlatform.OSXEditor)
+            {
+                //Set default git path to this for mac users
+                git = @"/usr/bin/git";
             }
         }
 

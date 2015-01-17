@@ -62,11 +62,11 @@ namespace GitMerge
 
         public static void RemoveOurObject(GameObject go)
         {
-            RemoveOurSingleObject(go);
             foreach(var c in go.GetComponents<Component>())
             {
                 RemoveOurSingleObject(c);
             }
+            RemoveOurSingleObject(go);
         }
 
         public static void RemoveOurObject(Component c)

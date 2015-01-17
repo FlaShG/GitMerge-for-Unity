@@ -131,7 +131,7 @@ namespace GitMerge
             //Otherwise, "ours".
             var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
 
-            if(objectToHighlight && inMergePhase)
+            if(objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
             {
                 objectToHighlight.Highlight();
             }

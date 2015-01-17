@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 namespace GitMerge
 {
@@ -7,16 +8,12 @@ namespace GitMerge
     /// </summary>
     public class MergeActionDeleteGameObject : MergeAction
     {
-        private GameObject copy;
         private bool oursWasActive;
 
         public MergeActionDeleteGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
         {
             oursWasActive = ours.activeSelf;
-            copy = GameObject.Instantiate(ours) as GameObject;
-            copy.name = ours.name;
-            copy.SetActiveForMerging(false);
 
             if(GitMergeWindow.automerge)
             {
@@ -26,21 +23,14 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
-            if(ours == null)
-            {
-                ours = ObjectDictionaries.InstantiateFromMerging(copy);
-                ours.SetActive(oursWasActive);
-                ObjectDictionaries.SetAsOurObject(ours);
-            }
+            ours.SetActiveForMerging(true);
+            ours.SetActive(oursWasActive);
         }
 
         protected override void ApplyTheirs()
         {
-            if(ours != null)
-            {
-                ObjectDictionaries.RemoveOurObject(ours);
-                GameObject.DestroyImmediate(ours, true);
-            }
+            ours.SetActiveForMerging(false);
+            SceneView.currentDrawingSceneView.Repaint();
         }
 
         public override void OnGUI()

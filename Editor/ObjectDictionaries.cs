@@ -23,6 +23,24 @@ namespace GitMerge
         //<GameObject, originallyActive>
         private static Dictionary<GameObject, bool> theirObjects = new Dictionary<GameObject, bool>();
 
+
+        public static void SetAsOurObjects(List<GameObject> objects)
+        {
+            foreach(var obj in objects)
+            {
+                SetAsOurObject(obj);
+            }
+        }
+
+        public static void SetAsTheirObjects(List<GameObject> objects)
+        {
+            foreach(var obj in objects)
+            {
+                SetAsTheirs(obj, false);
+            }
+        }
+
+
         public static void SetAsOurObject(GameObject go)
         {
             AddOurObject(go);

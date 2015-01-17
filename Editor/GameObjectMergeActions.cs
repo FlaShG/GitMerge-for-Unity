@@ -233,7 +233,7 @@ namespace GitMerge
             while(t.parent != null)
             {
                 t = t.parent;
-                sb.Append(t.name + "/", 0, 1);
+                sb.Insert(0, t.name + "/");
             }
             return sb.ToString();
         }

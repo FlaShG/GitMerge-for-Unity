@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="additional.css">
     <meta name="description" content="Use Git with Unity. Merge your Scenes and Prefabs with GitMerge for Unity." />
-    <meta name="keywords" content="Unity, Git, Merge, Scene, Prefab" />
+    <meta name="keywords" content="GitMerge for Unity, Unity, Git, Merge, Scene, Prefab" />
     
 </head>
 <body>
@@ -77,11 +77,25 @@
         and clone the repository into your Assets Folder.
     </p>
     <p>
-        Next, you make sure
+        Next, you make sure that Git doesn't try to merge scenes and prefabs automatically,
+        since this usually leads to broken files with Unity scenes and prefabs.
+    </p>
+    <p>
+        You have two ways to do that. The first one is to make sure that
         "<a href="http://docs.unity3d.com/Manual/class-EditorManager.html" target="_blank">Asset Serialization</a>"
-        is set to "Mixed" or "Binary".<br />
-        Otherwise, Unity will save scenes and prefabs in YAML text format and Git will
-        attempt to do its line-based automatic merge. This usually leads to broken files with Unity scenes and prefabs.
+        is set to "Mixed" or "Binary". Unity will save scenes and prefabs as binary files and Git won't touch them.
+    </p>
+    <p>
+        If you want your files serialized as YAML files, you can alternatively add a .gitattributes file
+        that tells Git to handle said filetypes as binary files, even though you want Unity so save them as YAML files.<br />
+        That .gitattributes file could look like this:
+        <pre># .gitattributes
+
+*.unity binary
+*.prefab binary
+*.asset binary
+
+# etc.</pre>
     </p>
     <p>
         That's it, you're ready to go!

@@ -283,6 +283,14 @@ namespace GitMerge
 
         private void InitializeSceneMerging()
         {
+            //Ask if the scene should be saved, because...
+            if(!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            {
+                return;
+            }
+            //...we are reloading it to prevent objects from not having a scene id.
+            EditorApplication.OpenScene(EditorApplication.currentScene);
+
             MergeAction.inMergePhase = false;
 
             //Do this just in case there is still a reference.

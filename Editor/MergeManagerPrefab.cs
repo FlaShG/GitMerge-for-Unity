@@ -13,8 +13,8 @@ namespace GitMerge
         private static string previouslyOpenedScene;
 
 
-        public MergeManagerPrefab(GitMergeWindow window)
-            : base(window)
+        public MergeManagerPrefab(GitMergeWindow window, VCS vcs)
+            : base(window, vcs)
         {
 
         }
@@ -107,7 +107,7 @@ namespace GitMerge
             AssetDatabase.SaveAssets();
 
             //Mark as merged for git
-            ExecuteGit("add \"" + fileName + "\"");
+            vcs.MarkAsMerged(fileName);
 
             //directly committing here might not be that smart, since there might be more conflicts
 

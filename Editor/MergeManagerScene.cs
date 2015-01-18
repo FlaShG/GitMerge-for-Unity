@@ -6,8 +6,8 @@ namespace GitMerge
 {
     public class MergeManagerScene : MergeManager
     {
-        public MergeManagerScene(GitMergeWindow window)
-            : base(window)
+        public MergeManagerScene(GitMergeWindow window, VCS vcs)
+            : base(window, vcs)
         {
 
         }
@@ -96,7 +96,7 @@ namespace GitMerge
             allMergeActions = null;
 
             //Mark as merged for git
-            ExecuteGit("add \"" + fileName + "\"");
+            vcs.MarkAsMerged(fileName);
 
             //directly committing here might not be that smart, since there might be more conflicts
 

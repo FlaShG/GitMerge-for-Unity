@@ -8,9 +8,8 @@ namespace GitMerge
 {
     public abstract class MergeManager
     {
-        internal static string git = @"C:\Program Files (x86)\Git\bin\git.exe";
-
-        protected GitMergeWindow window;
+        protected VCS vcs { private set; get; }
+        protected GitMergeWindow window { private set; get; }
 
         internal List<GameObjectMergeActions> allMergeActions;
 
@@ -21,9 +20,10 @@ namespace GitMerge
         public static bool isMergingPrefab { get { return !isMergingScene; } }
 
 
-        public MergeManager(GitMergeWindow window)
+        public MergeManager(GitMergeWindow window, VCS vcs)
         {
             this.window = window;
+            this.vcs = vcs;
             allMergeActions = new List<GameObjectMergeActions>();
         }
 
@@ -32,7 +32,7 @@ namespace GitMerge
         /// named filename--THEIRS.unity.
         /// </summary>
         /// <param name="path">The path of the file, relative to the project folder.</param>
-        protected static void GetTheirVersionOf(string path)
+        protected void GetTheirVersionOf(string path)
         {
             fileName = path;
 
@@ -46,9 +46,9 @@ namespace GitMerge
             File.Copy(path, ours);
             try
             {
-                ExecuteGit("checkout --theirs \"" + path + "\"");
+                vcs.GetTheirs(path);
             }
-            catch(GitException e)
+            catch(VCSException e)
             {
                 File.Delete(ours);
                 throw e;
@@ -118,45 +118,6 @@ namespace GitMerge
             allMergeActions = null;
 
             window.ShowNotification(new GUIContent("Merge aborted."));
-        }
-
-        /// <summary>
-        /// Executes git as a subprocess.
-        /// </summary>
-        /// <param name="args">The git parameters. Examples: "status", "add filename".</param>
-        /// <returns>Whatever git returns.</returns>
-        protected static string ExecuteGit(string args)
-        {
-            var process = new Process();
-            var startInfo = new ProcessStartInfo();
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.FileName = git;
-            startInfo.Arguments = args;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            process.StartInfo = startInfo;
-
-            try
-            {
-                process.Start();
-            }
-            catch(Win32Exception)
-            {
-                throw new GitException();
-            }
-
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            return output;
-        }
-
-        private class GitException : System.Exception
-        {
-            public override string Message
-            {
-                get { return "Could not find git.exe. Please enter a valid git.exe path in the settings."; }
-            }
         }
     }
 }

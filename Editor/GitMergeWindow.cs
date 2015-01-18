@@ -9,8 +9,9 @@ namespace GitMerge
     /// </summary>
     public class GitMergeWindow : EditorWindow
     {
+        private VCS vcs = new VCSGit();
+
         //EditorPrefs keys for settings
-        private const string epGitpath = "GitMerge_git";
         private const string epAutomerge = "GitMerge_automerge";
         private const string epAutofocus = "GitMerge_autofocus";
         
@@ -50,14 +51,6 @@ namespace GitMerge
 
         private static void LoadSettings()
         {
-            if(EditorPrefs.HasKey(epGitpath))
-            {
-                MergeManager.git = EditorPrefs.GetString(epGitpath);
-            }
-            else
-            {
-                SetStandardGitPath();
-            }
             if(EditorPrefs.HasKey(epAutomerge))
             {
                 automerge = EditorPrefs.GetBool(epAutomerge);
@@ -73,15 +66,6 @@ namespace GitMerge
             else
             {
                 autofocus = true;
-            }
-        }
-
-        private static void SetStandardGitPath()
-        {
-            if(Application.platform == RuntimePlatform.OSXEditor)
-            {
-                //Set default git path to this for mac users
-                MergeManager.git = @"/usr/bin/git";
             }
         }
 
@@ -140,7 +124,7 @@ namespace GitMerge
                && !mergeInProgress
                && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
             {
-                var mm = new MergeManagerScene(this);
+                var mm = new MergeManagerScene(this, vcs);
                 if(mm.InitializeMerge())
                 {
                     manager = mm;
@@ -161,7 +145,7 @@ namespace GitMerge
                 GUILayout.Label("Drag your prefab here to start merging:");
                 if(prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
                 {
-                    var mm = new MergeManagerPrefab(this);
+                    var mm = new MergeManagerPrefab(this, vcs);
                     if(mm.InitializeMerge(prefab))
                     {
                         manager = mm;
@@ -177,11 +161,11 @@ namespace GitMerge
         /// </summary>
         private void OnGUISettingsTab()
         {
-            var gitNew = EditorGUILayout.TextField("Path to git.exe", MergeManager.git);
-            if(MergeManager.git != gitNew)
+            var vcsPath = vcs.exe();
+            var vcsPathNew = EditorGUILayout.TextField("Path to git.exe", vcsPath);
+            if(vcsPath != vcsPathNew)
             {
-                MergeManager.git = gitNew;
-                EditorPrefs.SetString(epGitpath, MergeManager.git);
+                vcs.SetPath(vcsPathNew);
             }
 
             var amNew = EditorGUILayout.Toggle("Automerge", automerge);

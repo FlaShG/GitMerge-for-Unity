@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Linq;
 
 namespace GitMerge
 {
@@ -15,6 +16,7 @@ namespace GitMerge
         protected object theirInitialValue;
         protected readonly string ourString;
         protected readonly string theirString;
+        protected readonly string fieldname;
         protected Object ourObject;
 
         public MergeActionChangeValues(GameObject ours, Object ourObject, SerializedProperty ourProperty, SerializedProperty theirProperty)
@@ -24,6 +26,8 @@ namespace GitMerge
 
             this.ourProperty = ourProperty;
             this.theirProperty = theirProperty;
+
+            fieldname = ourObject.GetPlainType() + "." + ourProperty.GetPlainName();
 
             ourInitialValue = ourProperty.GetValue();
             theirInitialValue = theirProperty.GetValue();
@@ -65,7 +69,7 @@ namespace GitMerge
         public override void OnGUI()
         {
             GUILayout.BeginVertical();
-            GUILayout.Label(ourObject.GetPlainType() + "." + ourProperty.GetPlainName() + ": " + ourProperty.propertyType);
+            GUILayout.Label(fieldname + ": " + ourProperty.propertyType);
 
             GUILayout.BeginHorizontal();
 
@@ -83,39 +87,7 @@ namespace GitMerge
             GUI.backgroundColor = Color.white;
 
             //GUILayout.Label(ourProperty.propertyType + "/" + ourProperty.type + ": " + ourProperty.GetValue());
-
-            if(ourProperty.IsRealArray())
-            {
-                GUILayout.BeginVertical();
-                GUILayout.BeginHorizontal(GUILayout.Width(170));
-                EditorGUILayout.PropertyField(ourProperty, new GUIContent("Array"), GUILayout.Width(80));
-                if(ourProperty.isExpanded)
-                {
-                    var ourPropertyCopy = ourProperty.Copy();
-                    var size = ourPropertyCopy.arraySize;
-
-                    ourPropertyCopy.Next(true);
-                    ourPropertyCopy.Next(true);
-
-                    PropertyField(ourPropertyCopy, 70);
-                    GUILayout.EndHorizontal();
-
-                    for(int i = 0; i < size; ++i)
-                    {
-                        ourPropertyCopy.Next(false);
-                        PropertyField(ourPropertyCopy);
-                    }
-                }
-                else
-                {
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndVertical();
-            }
-            else
-            {
-                PropertyField(ourProperty);
-            }
+            PropertyField(ourProperty);
 
             GUI.backgroundColor = c;
 
@@ -135,7 +107,7 @@ namespace GitMerge
 
         private void DisplayArray(object value)
         {
-            if(ourProperty.isExpanded)
+            if(ourProperty.IsRealArray() && ourProperty.isExpanded)
             {
                 var values = (object[])value;
                 for(int i = 0; i < values.Length; ++i)
@@ -145,20 +117,128 @@ namespace GitMerge
             }
         }
 
+        /// <summary>
+        /// Displays the property field in the center of the window.
+        /// This method distinguishes between certain properties.
+        /// The GameObject tag, for example, shouldn't be displayed with a regular string field.
+        /// </summary>
+        /// <param name="p">The SerializedProerty to display</param>
+        /// <param name="width">The width of the whole thing in the ui</param>
         private void PropertyField(SerializedProperty p, float width = 170)
         {
-            var oldValue = p.GetValue();
-            EditorGUILayout.PropertyField(p, new GUIContent(""), GUILayout.Width(width));
-            if(!object.Equals(p.GetValue(), oldValue))
+            if(p.IsRealArray())
             {
-                p.serializedObject.ApplyModifiedProperties();
-                UsedNew();
+                DisplayArrayProperty(p, width);
+            }
+            else
+            {
+                var oldValue = p.GetValue();
+                if(fieldname == "GameObject.TagString")
+                {
+                    var oldTag = oldValue as string;
+                    var newTag = EditorGUILayout.TagField("", oldTag, GUILayout.Width(width));
+                    if(newTag != oldTag)
+                    {
+                        p.SetValue(newTag);
+                    }
+                }
+                else if(fieldname == "GameObject.StaticEditorFlags")
+                {
+                    DisplayStaticFlagChooser(p, width);
+                }
+                else
+                {
+                    EditorGUILayout.PropertyField(p, new GUIContent(""), GUILayout.Width(width));
+                }
+                if(!object.Equals(p.GetValue(), oldValue))
+                {
+                    p.serializedObject.ApplyModifiedProperties();
+                    UsedNew();
+                }
             }
         }
 
-        private static string SerializedValueString(SerializedProperty p)
+        private void DisplayArrayProperty(SerializedProperty p, float width)
         {
-            if(p.IsRealArray())
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal(GUILayout.Width(170));
+            EditorGUILayout.PropertyField(p, new GUIContent("Array"), GUILayout.Width(80));
+            if(p.isExpanded)
+            {
+                var copy = p.Copy();
+                var size = copy.arraySize;
+
+                copy.Next(true);
+                copy.Next(true);
+
+                PropertyField(copy, 70);
+                GUILayout.EndHorizontal();
+
+                for(int i = 0; i < size; ++i)
+                {
+                    copy.Next(false);
+                    PropertyField(copy);
+                }
+            }
+            else
+            {
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// Displays Toggles that let the user set the static flags of the object.
+        /// </summary>
+        /// <param name="p">The StaticEditorFlags SerializedProperty to display</param>
+        /// <param name="width">The width of the whole thing in the ui</param>
+        private void DisplayStaticFlagChooser(SerializedProperty p, float width)
+        {
+            var flags = (StaticEditorFlags)p.intValue;
+            GUILayout.BeginVertical(GUILayout.Width(width));
+
+            p.isExpanded = EditorGUILayout.Foldout(p.isExpanded, SerializedValueString(p));
+            var allOn = true;
+            if(p.isExpanded)
+            {
+                foreach(var flag in System.Enum.GetValues(typeof(StaticEditorFlags)).Cast<StaticEditorFlags>())
+                {
+                    var wasOn = (flags & flag) != 0;
+                    var on = EditorGUILayout.Toggle(flag + "", wasOn);
+                    if(wasOn != on)
+                    {
+                        flags = flags ^ flag;
+                    }
+                    if(!on)
+                    {
+                        allOn = false;
+                    }
+                }
+            }
+            if(allOn)
+            {
+                flags = (StaticEditorFlags)(-1);
+            }
+            p.intValue = (int)flags;
+
+            GUILayout.EndVertical();
+        }
+
+        private string SerializedValueString(SerializedProperty p)
+        {
+            if(fieldname == "GameObject.StaticEditorFlags")
+            {
+                switch(p.intValue)
+                {
+                    case 0:
+                        return "Not static";
+                    case -1:
+                        return "Static";
+                    default:
+                        return "Mixed static";
+                }
+            }
+            else if(p.IsRealArray())
             {
                 return "Array[" + p.arraySize + "]";
             }

@@ -102,5 +102,17 @@ namespace GitMerge
 
             window.ShowNotification(new GUIContent("Scene successfully merged."));
         }
+
+        /// <summary>
+        /// Aborts merge by using "our" version in all conflicts.
+        /// Cleans up merge related data.
+        /// </summary>
+        public override void AbortMerge()
+        {
+            base.AbortMerge();
+
+            //Save scene
+            EditorApplication.SaveScene();
+        }
     }
 }

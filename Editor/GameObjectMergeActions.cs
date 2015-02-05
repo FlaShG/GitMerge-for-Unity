@@ -103,11 +103,18 @@ namespace GitMerge
             var theirDict = new Dictionary<int, Component>();
             foreach(var theirComponent in theirComponents)
             {
-                theirDict.Add(ObjectIDFinder.GetIdentifierFor(theirComponent), theirComponent);
+                //Ignore null components
+                if(theirComponent != null)
+                {
+                    theirDict.Add(ObjectIDFinder.GetIdentifierFor(theirComponent), theirComponent);
+                }
             }
 
             foreach(var ourComponent in ourComponents)
             {
+                //Ignore null components
+                if(ourComponent == null) continue;
+
                 //Try to find "their" equivalent to our Components
                 var id = ObjectIDFinder.GetIdentifierFor(ourComponent);
                 Component theirComponent;

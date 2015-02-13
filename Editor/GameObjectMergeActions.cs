@@ -262,6 +262,17 @@ namespace GitMerge
             }
         }
 
+        /// <summary>
+        /// Use "their" version for all conflicts.
+        /// </summary>
+        public void UseTheirs()
+        {
+            foreach(var action in actions)
+            {
+                action.UseTheirs();
+            }
+        }
+
         //If the foldout is open
         private bool open;
         public void OnGUI()
@@ -299,6 +310,20 @@ namespace GitMerge
                         CheckIfMerged();
                     }
                 }
+            }
+            else
+            {
+                GUILayout.BeginHorizontal();
+                if(GUILayout.Button("Use ours >>>", EditorStyles.miniButton))
+                {
+                    UseOurs();
+                }
+
+                if(GUILayout.Button("<<< Use theirs", EditorStyles.miniButton))
+                {
+                    UseTheirs();
+                }
+                GUILayout.EndHorizontal();
             }
 
             //If "ours" is null, the GameObject doesn't exist in one of the versions.

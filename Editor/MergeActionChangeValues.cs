@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GitMerge
@@ -62,7 +63,35 @@ namespace GitMerge
                 value = obj;
             }
 
-            ourProperty.SetValue(value);
+            if(ourProperty.name == "m_Children")
+            {
+                Transform ourTransform = (Transform)ourObject;
+
+                object[] objs = (object[])value;
+                List<object> newValue = new List<object>();
+                foreach(object theirChild in objs)
+                {
+                    // we must find "our" version of the child object
+                    int childID = ObjectIDFinder.GetIdentifierFor((Object)theirChild);
+
+                    Object childObj = ObjectDictionaries.GetOurObject(childID);
+                    if(!childObj)
+                    {
+                        // child doesn't exist yet, let's make it.
+                        childObj = ObjectDictionaries.GetOurVersionOf((Object)theirChild);
+                    }
+                    newValue.Add(childObj);
+
+                    Transform childTransform = (Transform)childObj;
+                    childTransform.parent = ourTransform;
+                }
+                value = (object)(newValue.ToArray());
+            }
+            else
+            {
+                ourProperty.SetValue(value);
+            }
+
             ourProperty.serializedObject.ApplyModifiedProperties();
         }
 

@@ -149,13 +149,13 @@ namespace GitMerge
             var theirSerialized = new SerializedObject(theirObject);
 
             var ourProperty = ourSerialized.GetIterator();
-            if(ourProperty.NextVisible(true))
+            if(ourProperty.Next(true))
             {
                 var theirProperty = theirSerialized.GetIterator();
-                theirProperty.NextVisible(true);
-                while(ourProperty.NextVisible(false))
+                theirProperty.Next(true);
+                while(ourProperty.Next(false))
                 {
-                    theirProperty.NextVisible(false);
+                    theirProperty.Next(false);
 
                     if(ourObject is GameObject)
                     {

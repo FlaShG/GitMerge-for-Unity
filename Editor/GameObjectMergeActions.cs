@@ -260,6 +260,7 @@ namespace GitMerge
             {
                 action.UseOurs();
             }
+            merged = true;
         }
 
         /// <summary>
@@ -271,6 +272,7 @@ namespace GitMerge
             {
                 action.UseTheirs();
             }
+            merged = true;
         }
 
         //If the foldout is open

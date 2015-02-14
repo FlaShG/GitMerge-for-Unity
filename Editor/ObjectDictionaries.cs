@@ -11,7 +11,7 @@ namespace GitMerge
     {
         //This dict holds all of "our" objects
         //Needed for Reference handling
-        //<fileID, GameObject>
+        //<fileID, Object>
         private static Dictionary<int, Object> ourObjects = new Dictionary<int, Object>();
 
         //This dict maps our instances of their objects

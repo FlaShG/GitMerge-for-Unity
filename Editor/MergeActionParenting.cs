@@ -4,7 +4,7 @@ using UnityEditor;
 namespace GitMerge
 {
     /// <summary>
-    /// The MergeAction that handles a Component which exists in "their" version but not "ours".
+    /// The MergeAction that handles a differing parents for a Transform.
     /// </summary>
     public class MergeActionParenting : MergeAction
     {
@@ -27,7 +27,25 @@ namespace GitMerge
 
         protected override void ApplyTheirs()
         {
-            transform.parent = theirParent;
+            var ourVersion = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
+            if(theirParent && !ourVersion)
+            {
+                if(EditorUtility.DisplayDialog("The chosen parent currently does not exist.", "Do you want do add it?", "Yes", "No"))
+                {
+                    ObjectDictionaries.EnsureExistence(theirParent.gameObject);
+                    ourVersion = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
+
+                    transform.parent = ourVersion;
+                }
+                else
+                {
+                    throw new System.Exception("User Abort.");
+                }
+            }
+            else
+            {
+                transform.parent = ourVersion;
+            }
         }
 
         public override void OnGUI()

@@ -4,9 +4,9 @@ using UnityEditor;
 namespace GitMerge
 {
     /// <summary>
-    /// The MergeAction that handles GameObjects that exist in "our" version but not in "theirs".
+    /// The MergeAction that handles GameObjects that exist in "their" version but not in "ours".
     /// </summary>
-    public class MergeActionNewGameObject : MergeAction
+    public class MergeActionNewGameObject : MergeActionExistence
     {
         public MergeActionNewGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
@@ -33,6 +33,11 @@ namespace GitMerge
                 ours = ObjectDictionaries.InstantiateFromMerging(theirs);
                 ObjectDictionaries.SetAsCopy(ours, theirs);
             }
+        }
+
+        public override void EnsureExistence()
+        {
+            UseTheirs();
         }
 
         public override void OnGUI()

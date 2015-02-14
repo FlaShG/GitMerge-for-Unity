@@ -4,9 +4,9 @@ using UnityEditor;
 namespace GitMerge
 {
     /// <summary>
-    /// The MergeAction that handles a GameObject which exists in "their" version but not "ours".
+    /// The MergeAction that handles a GameObject which exists in "our" version but not "theirs".
     /// </summary>
-    public class MergeActionDeleteGameObject : MergeAction
+    public class MergeActionDeleteGameObject : MergeActionExistence
     {
         private bool oursWasActive;
 
@@ -31,6 +31,11 @@ namespace GitMerge
         {
             ours.SetActiveForMerging(false);
             SceneView.currentDrawingSceneView.Repaint();
+        }
+
+        public override void EnsureExistence()
+        {
+            UseOurs();
         }
 
         public override void OnGUI()

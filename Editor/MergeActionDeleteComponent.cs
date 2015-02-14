@@ -6,7 +6,7 @@ namespace GitMerge
     /// <summary>
     /// The MergeAction that handles a Component which exists in "their" version but not "ours".
     /// </summary>
-    public class MergeActionDeleteComponent : MergeAction
+    public class MergeActionDeleteComponent : MergeActionExistence
     {
         protected Component ourComponent;
         protected Component copy;
@@ -43,6 +43,11 @@ namespace GitMerge
                 ObjectDictionaries.RemoveOurObject(ourComponent);
                 Object.DestroyImmediate(ourComponent, true);
             }
+        }
+
+        public override void EnsureExistence()
+        {
+            UseOurs();
         }
 
         public override void OnGUI()

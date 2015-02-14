@@ -99,10 +99,6 @@ namespace GitMerge
             var transform = ours.GetComponent<Transform>();
             var ourParent = transform.parent;
             var theirParent = theirs.GetComponent<Transform>().parent;
-            if(theirParent != null)
-            {
-                theirParent = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
-            }
             if(ourParent != theirParent)
             {
                 actions.Add(new MergeActionParenting(transform, ourParent, theirParent));

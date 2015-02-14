@@ -18,7 +18,7 @@ namespace GitMerge
 
         //A MergeAction is considere "merged" when, at some point,
         //"our", "their" or a new version has been applied.
-        public bool merged { private set; get; }
+        public bool merged { protected set; get; }
 
         public GameObject ours { protected set; get; }
         public GameObject theirs { protected set; get; }
@@ -39,8 +39,15 @@ namespace GitMerge
 
         public void UseOurs()
         {
+            try
+            {
+                ApplyOurs();
+            }
+            catch
+            {
+                return;
+            }
             merged = true;
-            ApplyOurs();
             usingOurs = true;
             usingTheirs = false;
             usingNew = false;
@@ -56,8 +63,15 @@ namespace GitMerge
         }
         public void UseTheirs()
         {
+            try
+            {
+                ApplyTheirs();
+            }
+            catch
+            {
+                return;
+            }
             merged = true;
-            ApplyTheirs();
             usingOurs = false;
             usingTheirs = true;
             usingNew = false;

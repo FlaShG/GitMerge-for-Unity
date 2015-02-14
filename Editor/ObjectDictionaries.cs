@@ -134,7 +134,7 @@ namespace GitMerge
         /// </summary>
         /// <param name="obj">the original object</param>
         /// <returns>the instance of the original object</returns>
-        public static Object GetOurVersionOf(Object obj)
+        public static Object GetOurInstanceOfCopy(Object obj)
         {
             var result = obj;
             if(IsTheirs(obj))

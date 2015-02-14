@@ -56,7 +56,7 @@ namespace GitMerge
                 if(!obj)
                 {
                     //Get our copy of the new object if it exists
-                    obj = ObjectDictionaries.GetOurVersionOf(value as Object);
+                    obj = ObjectDictionaries.GetOurInstanceOfCopy(value as Object);
                 }
 
                 value = obj;

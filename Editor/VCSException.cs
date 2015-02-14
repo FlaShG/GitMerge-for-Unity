@@ -3,9 +3,8 @@ namespace GitMerge
 {
     public class VCSException : System.Exception
     {
-        public override string Message
+        public VCSException(string message = "Could not find the VCS executable. Please enter the path to your VCS in the settings.") : base(message)
         {
-            get { return "Could not find the VCS executable. Please enter the path to your VCS in the settings."; }
         }
     }
 }

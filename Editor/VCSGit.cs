@@ -27,5 +27,10 @@ namespace GitMerge
         {
             Execute("add \"" + path + "\"");
         }
+
+        public override void GetBase(string path)
+        {
+            Execute("checkout merge_head \"" + path + "\"");
+        }
     }
 }

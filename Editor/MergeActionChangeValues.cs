@@ -63,6 +63,7 @@ namespace GitMerge
                 value = obj;
             }
 
+            //Super hacky test, do not try this at home
             if(ourProperty.name == "m_Children")
             {
                 Transform ourTransform = (Transform)ourObject;
@@ -71,27 +72,32 @@ namespace GitMerge
                 List<object> newValue = new List<object>();
                 foreach(object theirChild in objs)
                 {
-                    // we must find "our" version of the child object
+                    //We must find "our" version of the child object
                     int childID = ObjectIDFinder.GetIdentifierFor((Object)theirChild);
 
                     Object childObj = ObjectDictionaries.GetOurObject(childID);
                     if(!childObj)
                     {
-                        // child doesn't exist yet, let's make it.
+                        //Child doesn't exist yet, let's make it.
                         childObj = ObjectDictionaries.GetOurVersionOf((Object)theirChild);
                     }
                     newValue.Add(childObj);
 
                     Transform childTransform = (Transform)childObj;
-                    childTransform.parent = ourTransform;
+
+                    if(childTransform.parent != ourTransform)
+                    {
+                        //This was causing a hard crash in the editor when
+                        //ourTransform was already the parent of childTransform,
+                        //so we check first to avoid problems.
+                        childTransform.parent = ourTransform;
+                    }
                 }
+
                 value = (object)(newValue.ToArray());
             }
-            else
-            {
-                ourProperty.SetValue(value);
-            }
 
+            ourProperty.SetValue(value);
             ourProperty.serializedObject.ApplyModifiedProperties();
         }
 

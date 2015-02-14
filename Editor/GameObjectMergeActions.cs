@@ -101,7 +101,7 @@ namespace GitMerge
             var theirParent = theirs.GetComponent<Transform>().parent;
             if(theirParent != null)
             {
-                theirParent = ObjectDictionaries.GetOurObject(ObjectIDFinder.GetIdentifierFor(theirParent)) as Transform;
+                theirParent = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
             }
             if(ourParent != theirParent)
             {

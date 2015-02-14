@@ -86,6 +86,24 @@ namespace GitMerge
             return result;
         }
 
+        /// <summary>
+        /// Returns:
+        /// * the given object if it is "ours"
+        /// * "our" counterprt of obj if it is "theirs"
+        /// * null if the object is deleted for some reason
+        /// </summary>
+        /// <param name="obj">the original object</param>
+        /// <returns>the counterpart of the object in "our" version</returns>
+        public static Object GetOurCounterpartFor(Object obj)
+        {
+            var result = obj;
+            if(IsTheirs(obj))
+            {
+                result = GetOurObject(ObjectIDFinder.GetIdentifierFor(obj));
+            }
+            return result;
+        }
+
         public static void Clear()
         {
             ourObjects.Clear();

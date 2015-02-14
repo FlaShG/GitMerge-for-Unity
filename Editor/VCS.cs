@@ -50,6 +50,7 @@ namespace GitMerge
             startInfo.Arguments = args;
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
+            startInfo.CreateNoWindow = true;
             process.StartInfo = startInfo;
 
             try

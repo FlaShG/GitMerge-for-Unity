@@ -90,7 +90,7 @@ namespace GitMerge
                         //This was causing a hard crash in the editor when
                         //ourTransform was already the parent of childTransform,
                         //so we check first to avoid problems.
-                        childTransform.parent = ourTransform;
+                        childTransform.SetParent(ourTransform, false);
                     }
                 }
 

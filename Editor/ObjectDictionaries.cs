@@ -202,9 +202,11 @@ namespace GitMerge
                 wasActive = go.activeSelf;
             }
 
+            //Apply some special properties of the GameObject
             copy.SetActive(wasActive);
             copy.hideFlags = HideFlags.None;
             copy.name = go.name;
+            copy.GetComponent<Transform>().parent = GetOurCounterpartFor(go.GetComponent<Transform>().parent) as Transform;
 
             return copy;
         }

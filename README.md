@@ -6,5 +6,7 @@ More information: http://flashg.github.io/GitMerge-for-Unity/
 
 ## Current state of the project
 
-Scene and prefab merging both work pretty well now.
-The UI has some rough edges, but you should be able to use the tool in your project.
+You can merge both scenes and prefabs.
+Working with the scene hierarchy is currently being improved.
+
+There are still a few bugs to work on. If the tool messes up something, remember to git reset --hard :wink:

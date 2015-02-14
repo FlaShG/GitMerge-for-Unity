@@ -25,9 +25,9 @@ namespace GitMerge
             return localIdProp.intValue;
         }
 
-		public static int GetSerializedIdentifier(this Object o)
-		{
-			return GetIdentifierFor(o);
-		}
+        public static int GetSerializedIdentifier(this Object o)
+        {
+            return GetIdentifierFor(o);
+        }
     }
 }

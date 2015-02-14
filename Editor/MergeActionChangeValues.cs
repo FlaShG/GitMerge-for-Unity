@@ -44,42 +44,7 @@ namespace GitMerge
             //Super hacky test, do not try this at home
             if(ourProperty.name == "m_Children")
             {
-                Transform ourTransform = (Transform)ourObject;
-
-                //Hide all of our existing children
-                foreach(Transform child in ourTransform)
-                {
-                    child.gameObject.SetActiveForMerging(false);
-                }
-
-                object[] objs = (object[])value;
-                List<object> newValue = new List<object>();
-                foreach(object theirChild in objs)
-                {
-                    //We must find "our" version of the child object
-                    int childID = ObjectIDFinder.GetIdentifierFor((Object)theirChild);
-
-                    Object childObj = ObjectDictionaries.GetOurObject(childID);
-                    if(!childObj)
-                    {
-                        //Child doesn't exist yet, let's make it.
-                        childObj = ObjectDictionaries.GetOurVersionOf((Object)theirChild);
-                    }
-                    newValue.Add(childObj);
-
-                    Transform childTransform = (Transform)childObj;
-                    childTransform.gameObject.SetActiveForMerging(true);
-
-                    if(childTransform.parent != ourTransform)
-                    {
-                        //This was causing a hard crash in the editor when
-                        //ourTransform was already the parent of childTransform,
-                        //so we check first to avoid problems.
-                        childTransform.SetParent(ourTransform, false);
-                    }
-                }
-
-                value = (object)(newValue.ToArray());
+                value = ApplyChildren(value);
             }
 
             ourProperty.SetValue(value);
@@ -109,46 +74,51 @@ namespace GitMerge
             //Super hacky test, do not try this at home
             if(ourProperty.name == "m_Children")
             {
-                Transform ourTransform = (Transform)ourObject;
-
-                //Hide all of our existing children
-                foreach(Transform child in ourTransform)
-                {
-                    child.gameObject.SetActiveForMerging(false);
-                }
-
-                object[] objs = (object[])value;
-                List<object> newValue = new List<object>();
-                foreach(object theirChild in objs)
-                {
-                    //We must find "our" version of the child object
-                    int childID = ObjectIDFinder.GetIdentifierFor((Object)theirChild);
-
-                    Object childObj = ObjectDictionaries.GetOurObject(childID);
-                    if(!childObj)
-                    {
-                        //Child doesn't exist yet, let's make it.
-                        childObj = ObjectDictionaries.GetOurVersionOf((Object)theirChild);
-                    }
-                    newValue.Add(childObj);
-
-                    Transform childTransform = (Transform)childObj;
-                    childTransform.gameObject.SetActiveForMerging(true);
-
-                    if(childTransform.parent != ourTransform)
-                    {
-                        //This was causing a hard crash in the editor when
-                        //ourTransform was already the parent of childTransform,
-                        //so we check first to avoid problems.
-                        childTransform.SetParent(ourTransform, false);
-                    }
-                }
-
-                value = (object)(newValue.ToArray());
+                value = ApplyChildren(value);
             }
 
             ourProperty.SetValue(value);
             ourProperty.serializedObject.ApplyModifiedProperties();
+        }
+
+        object ApplyChildren(object value)
+        {
+            Transform ourTransform = (Transform)ourObject;
+
+            //Hide all of our existing children
+            foreach(Transform child in ourTransform)
+            {
+                child.gameObject.SetActiveForMerging(false);
+            }
+
+            object[] objs = (object[])value;
+            List<object> newValue = new List<object>();
+            foreach(object theirChild in objs)
+            {
+                //We must find "our" version of the child object
+                int childID = ObjectIDFinder.GetIdentifierFor((Object)theirChild);
+
+                Object childObj = ObjectDictionaries.GetOurObject(childID);
+                if(!childObj)
+                {
+                    //Child doesn't exist yet, let's make it.
+                    childObj = ObjectDictionaries.GetOurVersionOf((Object)theirChild);
+                }
+                newValue.Add(childObj);
+
+                Transform childTransform = (Transform)childObj;
+                childTransform.gameObject.SetActiveForMerging(true);
+
+                if(childTransform.parent != ourTransform)
+                {
+                    //This was causing a hard crash in the editor when
+                    //ourTransform was already the parent of childTransform,
+                    //so we check first to avoid problems.
+                    childTransform.SetParent(ourTransform, false);
+                }
+            }
+
+            return (object)(newValue.ToArray());
         }
 
         public override void OnGUI()

@@ -62,7 +62,15 @@ namespace GitMerge
 
         private static void AddOurObject(Object o)
         {
-            ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
+            int objectID = ObjectIDFinder.GetIdentifierFor(o);
+            if(!ourObjects.ContainsKey(objectID))
+            {
+                ourObjects.Add(objectID, o);
+            }
+            else
+            {
+                Debug.LogWarning("Duplicate object " + o);
+            }
         }
 
         public static void RemoveOurObject(GameObject go)

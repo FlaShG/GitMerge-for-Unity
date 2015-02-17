@@ -62,6 +62,9 @@ namespace GitMerge
 
         private static void AddOurObject(Object o)
         {
+            if(o == null)
+                return;
+
             ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
         }
 
@@ -81,6 +84,9 @@ namespace GitMerge
 
         private static void RemoveOurSingleObject(Object o)
         {
+            if(o == null)
+                return;
+
             ourObjects.Remove(ObjectIDFinder.GetIdentifierFor(o));
         }
 
@@ -138,6 +144,9 @@ namespace GitMerge
 
         public static void SetAsCopy(Component c, Component theirs)
         {
+            if(c == null)
+                return;
+
             ourInstances.Add(theirs, c);
         }
 
@@ -146,7 +155,10 @@ namespace GitMerge
             ourInstances.Remove(theirs);
             foreach(var c in theirs.GetComponents<Component>())
             {
-                ourInstances.Remove(c);
+                if(c != null)
+                {
+                    ourInstances.Remove(c);
+                }
             }
         }
 

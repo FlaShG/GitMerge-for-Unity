@@ -16,7 +16,14 @@ namespace GitMerge
         {
             var c = go.AddComponent(original.GetType());
 
+            if(c == null)
+            {
+                Debug.LogWarning("Component " + original + " could not be added to game object " + go);
+                return null;
+            }
+
             var originalSerialized = new SerializedObject(original).GetIterator();
+
             var nso = new SerializedObject(c);
             var newSerialized = nso.GetIterator();
 

@@ -18,7 +18,7 @@ namespace GitMerge
             }
         }
 
-        static Resources()
+        public void OnEnable()
         {
             styles = UnityEngine.Resources.Load<Resources>("GitMergeStyles");
         }

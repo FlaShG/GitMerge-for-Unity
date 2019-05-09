@@ -21,7 +21,7 @@ namespace GitMerge
 
         public bool InitializeMerge(GameObject prefab)
         {
-            if(!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            if (!EditorApplication.SaveCurrentSceneIfUserWantsTo())
             {
                 return false;
             }
@@ -57,7 +57,7 @@ namespace GitMerge
             //create list of differences that have to be merged
             BuildAllMergeActions(ourObjects, theirObjects);
 
-            if(allMergeActions.Count == 0)
+            if (allMergeActions.Count == 0)
             {
                 AssetDatabase.DeleteAsset(theirFilename);
                 OpenPreviousScene();
@@ -77,13 +77,13 @@ namespace GitMerge
         /// <returns>The list with all the objects</returns>
         private static List<GameObject> GetAllObjects(GameObject prefab, List<GameObject> list = null)
         {
-            if(list == null)
+            if (list == null)
             {
                 list = new List<GameObject>();
             }
 
             list.Add(prefab);
-            foreach(Transform t in prefab.transform)
+            foreach (Transform t in prefab.transform)
             {
                 GetAllObjects(t.gameObject, list);
             }
@@ -139,7 +139,7 @@ namespace GitMerge
         /// </summary>
         private static void OpenPreviousScene()
         {
-            if(!string.IsNullOrEmpty(previouslyOpenedScene))
+            if (!string.IsNullOrEmpty(previouslyOpenedScene))
             {
                 EditorApplication.OpenScene(previouslyOpenedScene);
                 previouslyOpenedScene = "";

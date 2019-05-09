@@ -16,7 +16,7 @@ namespace GitMerge
         {
             this.theirComponent = theirComponent;
 
-            if(GitMergeWindow.automerge)
+            if (GitMergeWindow.automerge)
             {
                 UseOurs();
             }
@@ -24,7 +24,7 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
-            if(ourComponent)
+            if (ourComponent)
             {
                 ObjectDictionaries.RemoveCopyOf(theirComponent);
                 Object.DestroyImmediate(ourComponent, true);
@@ -33,7 +33,7 @@ namespace GitMerge
 
         protected override void ApplyTheirs()
         {
-            if(!ourComponent)
+            if (!ourComponent)
             {
                 ourComponent = ours.AddComponent(theirComponent);
                 ObjectDictionaries.SetAsCopy(ourComponent, theirComponent);
@@ -52,12 +52,12 @@ namespace GitMerge
             var defaultOptionColor = merged ? Color.gray : Color.white;
 
             GUI.color = usingOurs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Don't add Component"))
+            if (GUILayout.Button("Don't add Component"))
             {
                 UseOurs();
             }
             GUI.color = usingTheirs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Add new Component"))
+            if (GUILayout.Button("Add new Component"))
             {
                 UseTheirs();
             }

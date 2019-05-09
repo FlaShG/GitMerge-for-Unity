@@ -54,7 +54,7 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            if(GitMergeWindow.autofocus)
+            if (GitMergeWindow.autofocus)
             {
                 HighlightObject();
             }
@@ -78,7 +78,7 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            if(GitMergeWindow.autofocus)
+            if (GitMergeWindow.autofocus)
             {
                 HighlightObject();
             }
@@ -103,7 +103,7 @@ namespace GitMerge
         /// </summary>
         private static void RefreshPrefabInstance()
         {
-            if(MergeManager.isMergingPrefab)
+            if (MergeManager.isMergingPrefab)
             {
                 PrefabUtility.ResetToPrefabState(MergeManagerPrefab.ourPrefabInstance);
             }
@@ -120,7 +120,7 @@ namespace GitMerge
         public bool OnGUIMerge()
         {
             var wasMerged = merged;
-            if(merged)
+            if (merged)
             {
                 GUI.backgroundColor = automatic ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
             }
@@ -145,7 +145,7 @@ namespace GitMerge
             //Otherwise, "ours".
             var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
 
-            if(objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
+            if (objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
             {
                 objectToHighlight.Highlight();
             }

@@ -42,15 +42,15 @@ namespace GitMerge
             this.theirs = theirs;
             GenerateName();
 
-            if(theirs && !ours)
+            if (theirs && !ours)
             {
                 actions.Add(new MergeActionNewGameObject(ours, theirs));
             }
-            if(ours && !theirs)
+            if (ours && !theirs)
             {
                 actions.Add(new MergeActionDeleteGameObject(ours, theirs));
             }
-            if(ours && theirs)
+            if (ours && theirs)
             {
                 FindPropertyDifferences();
                 FindComponentDifferences();
@@ -67,13 +67,13 @@ namespace GitMerge
         private void GenerateName()
         {
             name = "";
-            if(ours)
+            if (ours)
             {
                 name = "Your[" + GetPath(ours) + "]";
             }
-            if(theirs)
+            if (theirs)
             {
-                if(ours)
+                if (ours)
                 {
                     name += " vs. ";
                 }
@@ -99,7 +99,7 @@ namespace GitMerge
             var transform = ours.GetComponent<Transform>();
             var ourParent = transform.parent;
             var theirParent = theirs.GetComponent<Transform>().parent;
-            if(ourParent != theirParent)
+            if (ourParent != theirParent)
             {
                 actions.Add(new MergeActionParenting(transform, ourParent, theirParent));
             }
@@ -116,26 +116,26 @@ namespace GitMerge
 
             //Map "their" Components to their respective ids
             var theirDict = new Dictionary<int, Component>();
-            foreach(var theirComponent in theirComponents)
+            foreach (var theirComponent in theirComponents)
             {
                 //Ignore null components
-                if(theirComponent != null)
+                if (theirComponent != null)
                 {
                     theirDict.Add(ObjectIDFinder.GetIdentifierFor(theirComponent), theirComponent);
                 }
             }
 
-            foreach(var ourComponent in ourComponents)
+            foreach (var ourComponent in ourComponents)
             {
                 //Ignore null components
-                if(ourComponent == null) continue;
+                if (ourComponent == null) continue;
 
                 //Try to find "their" equivalent to our Components
                 var id = ObjectIDFinder.GetIdentifierFor(ourComponent);
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
 
-                if(theirComponent) //Both Components exist
+                if (theirComponent) //Both Components exist
                 {
                     FindPropertyDifferences(ourComponent, theirComponent);
                     //Remove "their" Component from the dict to only keep those new to us
@@ -148,7 +148,7 @@ namespace GitMerge
             }
 
             //Everything left in the dict is a...
-            foreach(var theirComponent in theirDict.Values)
+            foreach (var theirComponent in theirDict.Values)
             {
                 //...new Component from them
                 actions.Add(new MergeActionNewComponent(ours, theirComponent));
@@ -164,27 +164,27 @@ namespace GitMerge
             var theirSerialized = new SerializedObject(theirObject);
 
             var ourProperty = ourSerialized.GetIterator();
-            if(ourProperty.NextVisible(true))
+            if (ourProperty.NextVisible(true))
             {
                 var theirProperty = theirSerialized.GetIterator();
                 theirProperty.NextVisible(true);
-                while(ourProperty.NextVisible(false))
+                while (ourProperty.NextVisible(false))
                 {
                     theirProperty.NextVisible(false);
 
-                    if(ourObject is GameObject)
+                    if (ourObject is GameObject)
                     {
-                        if(MergeManager.isMergingPrefab)
+                        if (MergeManager.isMergingPrefab)
                         {
                             //If merging a prefab, ignore the gameobject name.
-                            if(ourProperty.GetPlainName() == "Name")
+                            if (ourProperty.GetPlainName() == "Name")
                             {
                                 continue;
                             }
                         }
                     }
 
-                    if(DifferentValues(ourProperty, theirProperty))
+                    if (DifferentValues(ourProperty, theirProperty))
                     {
                         //We found a difference, accordingly add a MergeAction
                         actions.Add(new MergeActionChangeValues(ours, ourObject, ourProperty.Copy(), theirProperty.Copy()));
@@ -198,10 +198,10 @@ namespace GitMerge
         /// </summary>
         private static bool DifferentValues(SerializedProperty ourProperty, SerializedProperty theirProperty)
         {
-            if(!ourProperty.IsRealArray())
+            if (!ourProperty.IsRealArray())
             {
                 //Regular single-value property
-                if(DifferentValuesFlat(ourProperty, theirProperty))
+                if (DifferentValuesFlat(ourProperty, theirProperty))
                 {
                     return true;
                 }
@@ -209,7 +209,7 @@ namespace GitMerge
             else
             {
                 //Array property
-                if(ourProperty.arraySize != theirProperty.arraySize)
+                if (ourProperty.arraySize != theirProperty.arraySize)
                 {
                     return true;
                 }
@@ -222,12 +222,12 @@ namespace GitMerge
                 tp.Next(true);
                 tp.Next(true);
 
-                for(int i = 0; i < ourProperty.arraySize; ++i)
+                for (int i = 0; i < ourProperty.arraySize; ++i)
                 {
                     op.Next(false);
                     tp.Next(false);
 
-                    if(DifferentValuesFlat(op, tp))
+                    if (DifferentValuesFlat(op, tp))
                     {
                         return true;
                     }
@@ -252,7 +252,7 @@ namespace GitMerge
         {
             var t = g.transform;
             var sb = new StringBuilder(t.name);
-            while(t.parent != null)
+            while (t.parent != null)
             {
                 t = t.parent;
                 sb.Insert(0, t.name + "/");
@@ -271,7 +271,7 @@ namespace GitMerge
         /// </summary>
         public void UseOurs()
         {
-            foreach(var action in actions)
+            foreach (var action in actions)
             {
                 action.UseOurs();
             }
@@ -283,7 +283,7 @@ namespace GitMerge
         /// </summary>
         public void UseTheirs()
         {
-            foreach(var action in actions)
+            foreach (var action in actions)
             {
                 action.UseTheirs();
             }
@@ -294,7 +294,7 @@ namespace GitMerge
         private bool open;
         public void OnGUI()
         {
-            if(open)
+            if (open)
             {
                 GUI.backgroundColor = new Color(0, 0, 0, .8f);
             }
@@ -308,7 +308,7 @@ namespace GitMerge
             GUILayout.BeginHorizontal();
             open = EditorGUILayout.Foldout(open, new GUIContent(name));
 
-            if(ours && GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
+            if (ours && GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
             {
                 //Highlight the instance of the prefab, not the prefab itself
                 //Otherwise, "ours".
@@ -317,12 +317,12 @@ namespace GitMerge
             }
             GUILayout.EndHorizontal();
 
-            if(open)
+            if (open)
             {
                 //Display all merge actions.
-                foreach(var action in actions)
+                foreach (var action in actions)
                 {
-                    if(action.OnGUIMerge())
+                    if (action.OnGUIMerge())
                     {
                         CheckIfMerged();
                     }
@@ -331,12 +331,12 @@ namespace GitMerge
             else
             {
                 GUILayout.BeginHorizontal();
-                if(GUILayout.Button("Use ours >>>", EditorStyles.miniButton))
+                if (GUILayout.Button("Use ours >>>", EditorStyles.miniButton))
                 {
                     UseOurs();
                 }
 
-                if(GUILayout.Button("<<< Use theirs", EditorStyles.miniButton))
+                if (GUILayout.Button("<<< Use theirs", EditorStyles.miniButton))
                 {
                     UseTheirs();
                 }
@@ -346,9 +346,9 @@ namespace GitMerge
             //If "ours" is null, the GameObject doesn't exist in one of the versions.
             //Try to get a reference if the object exists in the current merging state.
             //If it exists, the new/gelete MergeAction will have a reference.
-            if(!ours)
+            if (!ours)
             {
-                foreach(var action in actions)
+                foreach (var action in actions)
                 {
                     ours = action.ours;
                 }

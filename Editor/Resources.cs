@@ -10,7 +10,7 @@ namespace GitMerge
         {
             get
             {
-                if(!_logo)
+                if (!_logo)
                 {
                     _logo = UnityEngine.Resources.Load<Texture2D>("GitMergeLogo");
                 }

@@ -28,9 +28,9 @@ namespace GitMerge
         protected override void ApplyTheirs()
         {
             var ourVersion = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
-            if(theirParent && !ourVersion)
+            if (theirParent && !ourVersion)
             {
-                if(EditorUtility.DisplayDialog("The chosen parent currently does not exist.", "Do you want do add it?", "Yes", "No"))
+                if (EditorUtility.DisplayDialog("The chosen parent currently does not exist.", "Do you want do add it?", "Yes", "No"))
                 {
                     ObjectDictionaries.EnsureExistence(theirParent.gameObject);
                     ourVersion = ObjectDictionaries.GetOurCounterpartFor(theirParent) as Transform;
@@ -57,7 +57,7 @@ namespace GitMerge
 
             GUILayout.Label(ourParent ? ourParent.ToString() : "None", GUILayout.Width(100));
 
-            if(MergeButton(">>>", usingOurs))
+            if (MergeButton(">>>", usingOurs))
             {
                 UseOurs();
             }
@@ -65,14 +65,14 @@ namespace GitMerge
             var c = GUI.backgroundColor;
             GUI.backgroundColor = Color.white;
             var newParent = EditorGUILayout.ObjectField(transform.parent, typeof(Transform), true, GUILayout.Width(170)) as Transform;
-            if(newParent != transform.parent)
+            if (newParent != transform.parent)
             {
                 transform.parent = newParent;
                 UsedNew();
             }
             GUI.backgroundColor = c;
 
-            if(MergeButton("<<<", usingTheirs))
+            if (MergeButton("<<<", usingTheirs))
             {
                 UseTheirs();
             }
@@ -85,7 +85,7 @@ namespace GitMerge
 
         private static bool MergeButton(string text, bool green)
         {
-            if(green)
+            if (green)
             {
                 GUI.color = Color.green;
             }

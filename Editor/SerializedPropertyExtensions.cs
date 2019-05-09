@@ -7,7 +7,7 @@ namespace GitMerge
     {
         public static object GetValue(this SerializedProperty p, bool forComparison = false)
         {
-            switch(p.propertyType)
+            switch (p.propertyType)
             {
                 case SerializedPropertyType.AnimationCurve:
                     return p.animationCurveValue;
@@ -26,10 +26,10 @@ namespace GitMerge
                 case SerializedPropertyType.Float:
                     return p.floatValue;
                 case SerializedPropertyType.Generic: //(arrays)
-                    if(p.isArray)
+                    if (p.isArray)
                     {
                         var arr = new object[p.arraySize];
-                        for(int i = 0; i < arr.Length; ++i)
+                        for (int i = 0; i < arr.Length; ++i)
                         {
                             arr[i] = p.GetArrayElementAtIndex(i).GetValue();
                         }
@@ -46,7 +46,7 @@ namespace GitMerge
                 case SerializedPropertyType.LayerMask:
                     return p.intValue;
                 case SerializedPropertyType.ObjectReference:
-                    if(forComparison)
+                    if (forComparison)
                     {
                         return ObjectIDFinder.GetIdentifierFor(p.objectReferenceValue);
                     }
@@ -73,7 +73,7 @@ namespace GitMerge
 
         public static void SetValue(this SerializedProperty p, object value)
         {
-            switch(p.propertyType)
+            switch (p.propertyType)
             {
                 case SerializedPropertyType.AnimationCurve:
                     p.animationCurveValue = value as AnimationCurve;
@@ -101,7 +101,7 @@ namespace GitMerge
                     p.floatValue = (float)value;
                     break;
                 case SerializedPropertyType.Generic: //(arrays)
-                    if(p.isArray)
+                    if (p.isArray)
                     {
                         //var size = p.arraySize;
                         //var resetPath = p.propertyPath;
@@ -113,7 +113,7 @@ namespace GitMerge
                         }
                         */
                         p.ClearArray();
-                        for(int i = 0; i < values.Length; ++i)
+                        for (int i = 0; i < values.Length; ++i)
                         {
                             p.InsertArrayElementAtIndex(i);
                             //Debug.Log(i + ": " + pv.GetArrayElementAtIndex(i).GetValue());
@@ -166,7 +166,7 @@ namespace GitMerge
         {
             var s = p.name;
             var i = s.IndexOf('_');
-            if(i >= 0)
+            if (i >= 0)
             {
                 s = s.Substring(i + 1);
             }

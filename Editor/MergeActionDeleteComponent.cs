@@ -21,7 +21,7 @@ namespace GitMerge
 
             copy = go.AddComponent(ourComponent);
 
-            if(GitMergeWindow.automerge)
+            if (GitMergeWindow.automerge)
             {
                 UseOurs();
             }
@@ -29,7 +29,7 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
-            if(ourComponent == null)
+            if (ourComponent == null)
             {
                 ourComponent = ours.AddComponent(copy);
                 ObjectDictionaries.SetAsOurObject(ourComponent);
@@ -38,7 +38,7 @@ namespace GitMerge
 
         protected override void ApplyTheirs()
         {
-            if(ourComponent != null)
+            if (ourComponent != null)
             {
                 ObjectDictionaries.RemoveOurObject(ourComponent);
                 Object.DestroyImmediate(ourComponent, true);
@@ -57,12 +57,12 @@ namespace GitMerge
             var defaultOptionColor = merged ? Color.gray : Color.white;
 
             GUI.color = usingOurs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Keep Component"))
+            if (GUILayout.Button("Keep Component"))
             {
                 UseOurs();
             }
             GUI.color = usingTheirs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Delete Component"))
+            if (GUILayout.Button("Delete Component"))
             {
                 UseTheirs();
             }

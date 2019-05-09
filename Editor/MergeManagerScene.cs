@@ -17,7 +17,7 @@ namespace GitMerge
             isMergingScene = true;
 
             //Ask if the scene should be saved, because...
-            if(!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            if (!EditorApplication.SaveCurrentSceneIfUserWantsTo())
             {
                 return false;
             }
@@ -49,7 +49,7 @@ namespace GitMerge
             //create list of differences that have to be merged
             BuildAllMergeActions(ourObjects, addedObjects);
 
-            if(allMergeActions.Count == 0)
+            if (allMergeActions.Count == 0)
             {
                 window.ShowNotification(new GUIContent("No conflict found for this scene."));
                 return false;
@@ -72,7 +72,7 @@ namespace GitMerge
             var all = GetAllSceneObjects();
             var old = oldObjects;
 
-            foreach(var obj in old)
+            foreach (var obj in old)
             {
                 all.Remove(obj);
             }

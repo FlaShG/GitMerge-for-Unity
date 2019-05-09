@@ -14,7 +14,7 @@ namespace GitMerge
         {
             var s = o.GetType().ToString();
             var i = s.LastIndexOf('.');
-            if(i >= 0)
+            if (i >= 0)
             {
                 s = s.Substring(i + 1);
             }

@@ -14,7 +14,7 @@ namespace GitMerge
         //EditorPrefs keys for settings
         private const string epAutomerge = "GitMerge_automerge";
         private const string epAutofocus = "GitMerge_autofocus";
-        
+
         //Settings
         public static bool automerge { private set; get; }
         public static bool autofocus { private set; get; }
@@ -51,7 +51,7 @@ namespace GitMerge
 
         private static void LoadSettings()
         {
-            if(EditorPrefs.HasKey(epAutomerge))
+            if (EditorPrefs.HasKey(epAutomerge))
             {
                 automerge = EditorPrefs.GetBool(epAutomerge);
             }
@@ -59,7 +59,7 @@ namespace GitMerge
             {
                 automerge = true;
             }
-            if(EditorPrefs.HasKey(epAutofocus))
+            if (EditorPrefs.HasKey(epAutofocus))
             {
                 autofocus = EditorPrefs.GetBool(epAutofocus);
             }
@@ -78,7 +78,7 @@ namespace GitMerge
         //Always check for editor state changes, and abort the active merge process if needed
         void Update()
         {
-            if(MergeAction.inMergePhase
+            if (MergeAction.inMergePhase
             && (EditorApplication.isCompiling
             || EditorApplication.isPlayingOrWillChangePlaymode))
             {
@@ -98,7 +98,7 @@ namespace GitMerge
             Resources.DrawLogo();
             DrawTabButtons();
 
-            switch(tab)
+            switch (tab)
             {
                 case 0:
                     OnGUISceneTab();
@@ -120,12 +120,12 @@ namespace GitMerge
         private void OnGUISceneTab()
         {
             GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
-            if(EditorApplication.currentScene != ""
+            if (EditorApplication.currentScene != ""
                && !mergeInProgress
                && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
             {
                 var mm = new MergeManagerScene(this, vcs);
-                if(mm.InitializeMerge())
+                if (mm.InitializeMerge())
                 {
                     manager = mm;
                 }
@@ -140,13 +140,13 @@ namespace GitMerge
         private void OnGUIPrefabTab()
         {
             GameObject prefab;
-            if(!mergeInProgress)
+            if (!mergeInProgress)
             {
                 GUILayout.Label("Drag your prefab here to start merging:");
-                if(prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
+                if (prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
                 {
                     var mm = new MergeManagerPrefab(this, vcs);
-                    if(mm.InitializeMerge(prefab))
+                    if (mm.InitializeMerge(prefab))
                     {
                         manager = mm;
                     }
@@ -163,13 +163,13 @@ namespace GitMerge
         {
             var vcsPath = vcs.exe();
             var vcsPathNew = EditorGUILayout.TextField("Path to git.exe", vcsPath);
-            if(vcsPath != vcsPathNew)
+            if (vcsPath != vcsPathNew)
             {
                 vcs.SetPath(vcsPathNew);
             }
 
             var amNew = EditorGUILayout.Toggle("Automerge", automerge);
-            if(automerge != amNew)
+            if (automerge != amNew)
             {
                 automerge = amNew;
                 EditorPrefs.SetBool(epAutomerge, automerge);
@@ -177,7 +177,7 @@ namespace GitMerge
             GUILayout.Label("(Automerge new/deleted GameObjects/Components upon merge start)");
 
             var afNew = EditorGUILayout.Toggle("Auto Highlight", autofocus);
-            if(autofocus != afNew)
+            if (autofocus != afNew)
             {
                 autofocus = afNew;
                 EditorPrefs.SetBool(epAutofocus, autofocus);
@@ -191,15 +191,15 @@ namespace GitMerge
         /// </summary>
         private void DrawTabButtons()
         {
-            if(!mergeInProgress)
+            if (!mergeInProgress)
             {
                 string[] tabs = { "Merge Scene", "Merge Prefab", "Settings" };
                 tab = GUI.SelectionGrid(new Rect(72, 36, 300, 22), tab, tabs, 3);
             }
             else
             {
-                GUI.backgroundColor = new Color(1,0.4f,0.4f,1);
-                if(GUI.Button(new Rect(72, 36, 300, 22), "Abort merge"))
+                GUI.backgroundColor = new Color(1, 0.4f, 0.4f, 1);
+                if (GUI.Button(new Rect(72, 36, 300, 22), "Abort merge"))
                 {
                     manager.AbortMerge();
                     manager = null;
@@ -213,11 +213,11 @@ namespace GitMerge
         /// </summary>
         private void DisplayMergeProcess()
         {
-            if(mergeInProgress)
+            if (mergeInProgress)
             {
                 var done = DisplayMergeActions();
                 GUILayout.BeginHorizontal();
-                if(done && GUILayout.Button("Apply merge"))
+                if (done && GUILayout.Button("Apply merge"))
                 {
                     manager.CompleteMerge();
                     manager = null;
@@ -239,7 +239,7 @@ namespace GitMerge
             GUI.skin.label.normal.textColor = Color.black;
 
             var done = true;
-            foreach(var actions in manager.allMergeActions)
+            foreach (var actions in manager.allMergeActions)
             {
                 actions.OnGUI();
                 done = done && actions.merged;

@@ -12,7 +12,7 @@ namespace GitMerge
 
         public static int GetIdentifierFor(Object o)
         {
-            if(o == null)
+            if (o == null)
             {
                 return -1;
             }

@@ -7,7 +7,7 @@ namespace GitMerge
     {
         protected override string GetDefaultPath()
         {
-            if(Application.platform == RuntimePlatform.WindowsEditor)
+            if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 return @"C:\Program Files (x86)\Git\bin\git.exe";
             }
@@ -33,7 +33,7 @@ namespace GitMerge
         {
             var head = GetCommitID(Execute("show head"));
             var mergeHead = GetCommitID(Execute("show merge_head"));
-            var mergeBase = Execute("merge-base "+head+" "+mergeHead);
+            var mergeBase = Execute("merge-base " + head + " " + mergeHead);
 
             Execute("checkout " + mergeBase + " \"" + path + "\"");
         }
@@ -47,7 +47,7 @@ namespace GitMerge
         {
             var pattern = @"(?<=(commit ))[\dabcdef]+\b";
             var match = Regex.Match(showResult, pattern);
-            if(!match.Success)
+            if (!match.Success)
             {
                 throw new VCSException("Could not find commit ID.");
             }

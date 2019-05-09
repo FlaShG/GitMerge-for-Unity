@@ -48,7 +48,7 @@ namespace GitMerge
             {
                 vcs.GetTheirs(path);
             }
-            catch(VCSException e)
+            catch (VCSException e)
             {
                 File.Delete(ours);
                 throw e;
@@ -69,12 +69,12 @@ namespace GitMerge
 
             //Map "their" GameObjects to their respective ids
             var theirObjectsDict = new Dictionary<int, GameObject>();
-            foreach(var theirs in theirObjects)
+            foreach (var theirs in theirObjects)
             {
                 theirObjectsDict.Add(ObjectIDFinder.GetIdentifierFor(theirs), theirs);
             }
 
-            foreach(var ours in ourObjects)
+            foreach (var ours in ourObjects)
             {
                 //Try to find "their" equivalent to "our" GameObjects
                 var id = ObjectIDFinder.GetIdentifierFor(ours);
@@ -83,7 +83,7 @@ namespace GitMerge
 
                 //If theirs is null, mergeActions.hasActions will be false
                 var mergeActions = new GameObjectMergeActions(ours, theirs);
-                if(mergeActions.hasActions)
+                if (mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
                 }
@@ -92,11 +92,11 @@ namespace GitMerge
             }
 
             //Every GameObject left in the dict is a...
-            foreach(var theirs in theirObjectsDict.Values)
+            foreach (var theirs in theirObjectsDict.Values)
             {
                 //...new GameObject from them
                 var mergeActions = new GameObjectMergeActions(null, theirs);
-                if(mergeActions.hasActions)
+                if (mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
                 }
@@ -109,7 +109,7 @@ namespace GitMerge
         {
             MergeAction.inMergePhase = false;
 
-            foreach(var actions in allMergeActions)
+            foreach (var actions in allMergeActions)
             {
                 actions.UseOurs();
             }

@@ -23,7 +23,7 @@ namespace GitMerge
 
         public string exe()
         {
-            if(EditorPrefs.HasKey(EditorPrefsKey()))
+            if (EditorPrefs.HasKey(EditorPrefsKey()))
             {
                 return EditorPrefs.GetString(EditorPrefsKey());
             }
@@ -57,7 +57,7 @@ namespace GitMerge
             {
                 process.Start();
             }
-            catch(Win32Exception)
+            catch (Win32Exception)
             {
                 throw new VCSException();
             }

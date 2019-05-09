@@ -31,7 +31,7 @@ namespace GitMerge
 
         public static void SetAsOurObjects(List<GameObject> objects)
         {
-            foreach(var obj in objects)
+            foreach (var obj in objects)
             {
                 SetAsOurObject(obj);
             }
@@ -39,7 +39,7 @@ namespace GitMerge
 
         public static void SetAsTheirObjects(List<GameObject> objects)
         {
-            foreach(var obj in objects)
+            foreach (var obj in objects)
             {
                 SetAsTheirs(obj, false);
             }
@@ -49,7 +49,7 @@ namespace GitMerge
         public static void SetAsOurObject(GameObject go)
         {
             AddOurObject(go);
-            foreach(var c in go.GetComponents<Component>())
+            foreach (var c in go.GetComponents<Component>())
             {
                 AddOurObject(c);
             }
@@ -62,7 +62,7 @@ namespace GitMerge
 
         private static void AddOurObject(Object o)
         {
-            if(o == null)
+            if (o == null)
                 return;
 
             ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
@@ -70,7 +70,7 @@ namespace GitMerge
 
         public static void RemoveOurObject(GameObject go)
         {
-            foreach(var c in go.GetComponents<Component>())
+            foreach (var c in go.GetComponents<Component>())
             {
                 RemoveOurSingleObject(c);
             }
@@ -84,7 +84,7 @@ namespace GitMerge
 
         private static void RemoveOurSingleObject(Object o)
         {
-            if(o == null)
+            if (o == null)
                 return;
 
             ourObjects.Remove(ObjectIDFinder.GetIdentifierFor(o));
@@ -109,10 +109,10 @@ namespace GitMerge
         public static Object GetOurCounterpartFor(Object obj)
         {
             var result = obj;
-            if(IsTheirs(obj))
+            if (IsTheirs(obj))
             {
                 result = GetOurObject(ObjectIDFinder.GetIdentifierFor(obj));
-                if(!result)
+                if (!result)
                 {
                     result = GetOurInstanceOfCopy(obj);
                 }
@@ -136,7 +136,7 @@ namespace GitMerge
             ourInstances.Add(theirs, o);
             var instanceComponents = o.GetComponents<Component>();
             var theirComponents = theirs.GetComponents<Component>();
-            for(int i = 0; i < instanceComponents.Length; ++i)
+            for (int i = 0; i < instanceComponents.Length; ++i)
             {
                 SetAsCopy(instanceComponents[i], theirComponents[i]);
             }
@@ -144,7 +144,7 @@ namespace GitMerge
 
         public static void SetAsCopy(Component c, Component theirs)
         {
-            if(c == null)
+            if (c == null)
                 return;
 
             ourInstances.Add(theirs, c);
@@ -153,9 +153,9 @@ namespace GitMerge
         public static void RemoveCopyOf(GameObject theirs)
         {
             ourInstances.Remove(theirs);
-            foreach(var c in theirs.GetComponents<Component>())
+            foreach (var c in theirs.GetComponents<Component>())
             {
-                if(c != null)
+                if (c != null)
                 {
                     ourInstances.Remove(c);
                 }
@@ -178,7 +178,7 @@ namespace GitMerge
         public static Object GetOurInstanceOfCopy(Object obj)
         {
             var result = obj;
-            if(IsTheirs(obj))
+            if (IsTheirs(obj))
             {
                 ourInstances.TryGetValue(obj, out result);
             }
@@ -188,12 +188,12 @@ namespace GitMerge
         private static bool IsTheirs(Object obj)
         {
             var go = obj as GameObject;
-            if(go)
+            if (go)
             {
                 return theirObjects.ContainsKey(go);
             }
             var c = obj as Component;
-            if(c)
+            if (c)
             {
                 return theirObjects.ContainsKey(c.gameObject);
             }
@@ -202,7 +202,7 @@ namespace GitMerge
 
         public static void SetAsTheirs(GameObject go, bool active)
         {
-            if(!theirObjects.ContainsKey(go))
+            if (!theirObjects.ContainsKey(go))
             {
                 theirObjects.Add(go, go.activeSelf);
             }
@@ -220,13 +220,13 @@ namespace GitMerge
             var copy = GameObject.Instantiate(go) as GameObject;
 
             //Destroy children
-            foreach(Transform t in copy.GetComponent<Transform>())
+            foreach (Transform t in copy.GetComponent<Transform>())
             {
                 Object.DestroyImmediate(t.gameObject);
             }
 
             bool wasActive;
-            if(!theirObjects.TryGetValue(go, out wasActive))
+            if (!theirObjects.TryGetValue(go, out wasActive))
             {
                 wasActive = go.activeSelf;
             }
@@ -242,7 +242,7 @@ namespace GitMerge
 
         public static void DestroyTheirObjects()
         {
-            foreach(var obj in theirObjects.Keys)
+            foreach (var obj in theirObjects.Keys)
             {
                 Object.DestroyImmediate(obj);
             }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 
 namespace GitMerge
 {
@@ -10,7 +11,7 @@ namespace GitMerge
         public static GameObject ourPrefab { private set; get; }
         private static GameObject theirPrefab;
         public static GameObject ourPrefabInstance { private set; get; }
-        private static string previouslyOpenedScene;
+        private static UnityEngine.SceneManagement.Scene previouslyOpenedScene;
 
 
         public MergeManagerPrefab(GitMergeWindow window, VCS vcs)
@@ -21,7 +22,7 @@ namespace GitMerge
 
         public bool InitializeMerge(GameObject prefab)
         {
-            if (!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return false;
             }
@@ -38,11 +39,8 @@ namespace GitMerge
             ourPrefab = prefab;
 
             //Open a new Scene that will only display the prefab
-            previouslyOpenedScene = EditorApplication.currentScene;
-            EditorApplication.NewScene();
-
-            //make the new scene empty
-            Object.DestroyImmediate(Camera.main.gameObject);
+            previouslyOpenedScene = EditorSceneManager.GetActiveScene();
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
 
             //instantiate our object in order to view it while merging
             ourPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
@@ -139,10 +137,10 @@ namespace GitMerge
         /// </summary>
         private static void OpenPreviousScene()
         {
-            if (!string.IsNullOrEmpty(previouslyOpenedScene))
+            if (!string.IsNullOrEmpty(previouslyOpenedScene.path))
             {
-                EditorApplication.OpenScene(previouslyOpenedScene);
-                previouslyOpenedScene = "";
+                EditorSceneManager.OpenScene(previouslyOpenedScene.path);
+                previouslyOpenedScene = new UnityEngine.SceneManagement.Scene();
             }
         }
     }

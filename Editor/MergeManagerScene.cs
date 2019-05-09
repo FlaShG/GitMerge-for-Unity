@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 
 namespace GitMerge
 {
@@ -17,30 +18,36 @@ namespace GitMerge
             isMergingScene = true;
 
             //Ask if the scene should be saved, because...
-            if (!EditorApplication.SaveCurrentSceneIfUserWantsTo())
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return false;
             }
             //...we are reloading it to prevent objects from not having a scene id.
-            EditorApplication.OpenScene(EditorApplication.currentScene);
+            EditorSceneManager.OpenScene(EditorSceneManager.GetActiveScene().path);
 
             MergeAction.inMergePhase = false;
 
             ObjectDictionaries.Clear();
 
             //checkout "their" version
-            GetTheirVersionOf(EditorApplication.currentScene);
+            GetTheirVersionOf(EditorSceneManager.GetActiveScene().path);
             AssetDatabase.Refresh();
 
-            //find all of "our" objects
-            var ourObjects = GetAllSceneObjects();
-            ObjectDictionaries.SetAsOurObjects(ourObjects);
+            List<GameObject> ourObjects;
+            try
+            {
+                //find all of "our" objects
+                ourObjects = GetAllSceneObjects();
+                ObjectDictionaries.SetAsOurObjects(ourObjects);
 
-            //add "their" objects
-            EditorApplication.OpenSceneAdditive(theirFilename);
-
-            //delete scene file
-            AssetDatabase.DeleteAsset(theirFilename);
+                //add "their" objects
+                EditorSceneManager.OpenScene(theirFilename, OpenSceneMode.Additive);
+            }
+            finally
+            {
+                //delete scene file
+                AssetDatabase.DeleteAsset(theirFilename);
+            }
 
             //find all of "their" objects
             var addedObjects = GetAllNewSceneObjects(ourObjects);
@@ -91,11 +98,10 @@ namespace GitMerge
 
             ObjectDictionaries.DestroyTheirObjects();
             ObjectDictionaries.Clear();
-            EditorApplication.SaveScene();
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 
             allMergeActions = null;
-
-            //Mark as merged for git
+            
             vcs.MarkAsMerged(fileName);
 
             //directly committing here might not be that smart, since there might be more conflicts
@@ -110,9 +116,8 @@ namespace GitMerge
         public override void AbortMerge()
         {
             base.AbortMerge();
-
-            //Save scene
-            EditorApplication.SaveScene();
+            
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
         }
     }
 }

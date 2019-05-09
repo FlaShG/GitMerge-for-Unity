@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace GitMerge
 {
@@ -119,8 +119,10 @@ namespace GitMerge
         /// </summary>
         private void OnGUISceneTab()
         {
-            GUILayout.Label("Open Scene: " + EditorApplication.currentScene);
-            if (EditorApplication.currentScene != ""
+            var activeScene = SceneManager.GetActiveScene();
+
+            GUILayout.Label("Open Scene: " + activeScene.path);
+            if (activeScene.path != ""
                && !mergeInProgress
                && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
             {

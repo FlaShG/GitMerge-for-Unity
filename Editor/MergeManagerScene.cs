@@ -130,9 +130,9 @@ namespace GitMerge
         /// Aborts merge by using "our" version in all conflicts.
         /// Cleans up merge related data.
         /// </summary>
-        public override void AbortMerge()
+        public override void AbortMerge(bool showNotification = true)
         {
-            base.AbortMerge();
+            base.AbortMerge(showNotification);
             
             EditorSceneManager.CloseScene(theirScene, true);
 

@@ -1,13 +1,13 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
-using UnityEditor.SceneManagement;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System.Collections.Generic;
+    using UnityEditor.SceneManagement;
+
     public class MergeManagerPrefab : MergeManager
     {
-        //Stuff needed for prefab merging
         public static GameObject ourPrefab { private set; get; }
         private static GameObject theirPrefab;
         public static GameObject ourPrefabInstance { private set; get; }
@@ -19,8 +19,7 @@ namespace GitMerge
         {
 
         }
-
-        // TODO Copy new stuff from other manager
+        
         public bool InitializeMerge(GameObject prefab)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
@@ -33,27 +32,27 @@ namespace GitMerge
 
             ObjectDictionaries.Clear();
 
-            //checkout "their" version
-            CheckoutTheirVersionOf(AssetDatabase.GetAssetOrScenePath(prefab));
+            var filePath = AssetDatabase.GetAssetOrScenePath(prefab);
+            
+            vcs.CheckoutOurs(filePath);
+            CheckoutTheirVersionOf(filePath);
             AssetDatabase.Refresh();
 
             ourPrefab = prefab;
 
-            //Open a new Scene that will only display the prefab
+            // Open a new Scene that will only display the prefab.
             previouslyOpenedScene = EditorSceneManager.GetActiveScene();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            //instantiate our object in order to view it while merging
+            // Instantiate our object in order to view it while merging.
             ourPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-
-            //find all of "our" objects in the prefab
+            
             var ourObjects = GetAllObjects(prefab);
 
             theirPrefab = AssetDatabase.LoadAssetAtPath(theirFilename, typeof(GameObject)) as GameObject;
             theirPrefab.hideFlags = HideFlags.HideAndDontSave;
             var theirObjects = GetAllObjects(theirPrefab);
-
-            //create list of differences that have to be merged
+            
             BuildAllMergeActions(ourObjects, theirObjects);
 
             if (allMergeActions.Count == 0)
@@ -98,21 +97,20 @@ namespace GitMerge
         {
             MergeAction.inMergePhase = false;
 
-            //ObjectDictionaries.Clear();
+            // ObjectDictionaries.Clear();
 
             allMergeActions = null;
 
-            //TODO: Could we explicitly just save the prefab?
+            // TODO: Could we explicitly just save the prefab?
             AssetDatabase.SaveAssets();
-
-            //Mark as merged for git
+            
             vcs.MarkAsMerged(fileName);
 
-            //directly committing here might not be that smart, since there might be more conflicts
+            // Directly committing here might not be that smart, since there might be more conflicts.
 
             ourPrefab = null;
 
-            //delete their prefab file
+            // Delete their prefab file.
             AssetDatabase.DeleteAsset(theirFilename);
 
             OpenPreviousScene();
@@ -123,9 +121,9 @@ namespace GitMerge
         /// Aborts merge by using "our" version in all conflicts.
         /// Cleans up merge related data.
         /// </summary>
-        public override void AbortMerge()
+        public override void AbortMerge(bool showNotification = true)
         {
-            base.AbortMerge();
+            base.AbortMerge(showNotification);
 
             //delete prefab file
             AssetDatabase.DeleteAsset(theirFilename);

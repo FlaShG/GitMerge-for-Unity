@@ -105,7 +105,7 @@ namespace GitMerge
 
         public abstract void CompleteMerge();
 
-        public virtual void AbortMerge()
+        public virtual void AbortMerge(bool showNotification = true)
         {
             MergeAction.inMergePhase = false;
 
@@ -117,7 +117,10 @@ namespace GitMerge
             ObjectDictionaries.Clear();
             allMergeActions = null;
 
-            window.ShowNotification(new GUIContent("Merge aborted."));
+            if (showNotification)
+            {
+                window.ShowNotification(new GUIContent("Merge aborted."));
+            }
         }
     }
 }

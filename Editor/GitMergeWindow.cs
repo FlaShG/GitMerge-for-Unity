@@ -83,13 +83,13 @@ namespace GitMerge
             || EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 ShowNotification(new GUIContent("Aborting merge due to editor state change."));
-                AbortMerge();
+                AbortMerge(false);
             }
         }
 
-        private void AbortMerge()
+        private void AbortMerge(bool showNotification = true)
         {
-            manager.AbortMerge();
+            manager.AbortMerge(showNotification);
             manager = null;
         }
 

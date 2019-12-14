@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+
     /// <summary>
     /// Each MergeAction represents a single, specific merge conflict.
     /// This can be a GameObject added or deleted in one of the versions,
@@ -16,7 +16,7 @@ namespace GitMerge
         //Prevents highlighting while automerging.
         public static bool inMergePhase;
 
-        //A MergeAction is considere "merged" when, at some point,
+        //A MergeAction is considered "merged" when, at some point,
         //"our", "their" or a new version has been applied.
         public bool merged { protected set; get; }
 
@@ -54,7 +54,7 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            if(GitMergeWindow.autofocus)
+            if (GitMergeWindow.autofocus)
             {
                 HighlightObject();
             }
@@ -78,7 +78,7 @@ namespace GitMerge
 
             automatic = !inMergePhase;
 
-            if(GitMergeWindow.autofocus)
+            if (GitMergeWindow.autofocus)
             {
                 HighlightObject();
             }
@@ -103,9 +103,9 @@ namespace GitMerge
         /// </summary>
         private static void RefreshPrefabInstance()
         {
-            if(MergeManager.isMergingPrefab)
+            if (MergeManager.isMergingPrefab)
             {
-                PrefabUtility.ResetToPrefabState(MergeManagerPrefab.ourPrefabInstance);
+                PrefabUtility.RevertObjectOverride(MergeManagerPrefab.ourPrefabInstance, InteractionMode.AutomatedAction);
             }
         }
 
@@ -120,7 +120,7 @@ namespace GitMerge
         public bool OnGUIMerge()
         {
             var wasMerged = merged;
-            if(merged)
+            if (merged)
             {
                 GUI.backgroundColor = automatic ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
             }
@@ -145,7 +145,7 @@ namespace GitMerge
             //Otherwise, "ours".
             var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
 
-            if(objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
+            if (objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
             {
                 objectToHighlight.Highlight();
             }

@@ -11,7 +11,7 @@ namespace GitMerge
         public MergeActionNewGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
         {
-            if(GitMergeWindow.automerge)
+            if (GitMergeWindow.automerge)
             {
                 UseTheirs();
             }
@@ -19,7 +19,7 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
-            if(ours)
+            if (ours)
             {
                 ObjectDictionaries.RemoveCopyOf(theirs);
                 GameObject.DestroyImmediate(ours, true);
@@ -28,7 +28,7 @@ namespace GitMerge
 
         protected override void ApplyTheirs()
         {
-            if(!ours)
+            if (!ours)
             {
                 ours = ObjectDictionaries.InstantiateFromMerging(theirs);
                 ObjectDictionaries.SetAsCopy(ours, theirs);
@@ -45,12 +45,12 @@ namespace GitMerge
             var defaultOptionColor = merged ? Color.gray : Color.white;
 
             GUI.color = usingOurs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Don't add GameObject"))
+            if (GUILayout.Button("Don't add GameObject"))
             {
                 UseOurs();
             }
             GUI.color = usingTheirs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Add new GameObject"))
+            if (GUILayout.Button("Add new GameObject"))
             {
                 UseTheirs();
             }

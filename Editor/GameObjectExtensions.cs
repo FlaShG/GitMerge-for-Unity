@@ -20,11 +20,11 @@ namespace GitMerge
             var nso = new SerializedObject(c);
             var newSerialized = nso.GetIterator();
 
-            if(originalSerialized.Next(true))
+            if (originalSerialized.Next(true))
             {
                 newSerialized.Next(true);
 
-                while(originalSerialized.NextVisible(true))
+                while (originalSerialized.NextVisible(true))
                 {
                     newSerialized.NextVisible(true);
                     newSerialized.SetValue(originalSerialized.GetValue());
@@ -58,7 +58,7 @@ namespace GitMerge
             EditorGUIUtility.PingObject(go);
 
             var view = SceneView.lastActiveSceneView;
-            if(view)
+            if (view)
             {
                 view.FrameSelected();
             }

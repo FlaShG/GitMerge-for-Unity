@@ -4,23 +4,29 @@ namespace GitMerge
 {
     public class Resources : ScriptableObject
     {
-        public static Resources styles { private set; get; }
+        private static Resources _styles;
+        public static Resources styles
+        {
+            get
+            {
+                if (!_styles)
+                {
+                    _styles = UnityEngine.Resources.Load<Resources>("GitMergeStyles");
+                }
+                return _styles;
+            }
+        }
         private static Texture2D _logo;
         public static Texture2D logo
         {
             get
             {
-                if(!_logo)
+                if (!_logo)
                 {
                     _logo = UnityEngine.Resources.Load<Texture2D>("GitMergeLogo");
                 }
                 return _logo;
             }
-        }
-
-        public void OnEnable()
-        {
-            styles = UnityEngine.Resources.Load<Resources>("GitMergeStyles");
         }
 
         public GUIStyle mergeActions;

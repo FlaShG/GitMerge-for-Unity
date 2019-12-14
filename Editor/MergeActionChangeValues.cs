@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-using System.Linq;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System.Linq;
+
     /// <summary>
     /// The MergeAction allowing to merge the value of a single property of a Component.
     /// </summary>
@@ -17,17 +17,14 @@ namespace GitMerge
         protected readonly string ourString;
         protected readonly string theirString;
         protected readonly string fieldname;
-        protected Object ourObject;
 
-        public MergeActionChangeValues(GameObject ours, Object ourObject, SerializedProperty ourProperty, SerializedProperty theirProperty)
+        public MergeActionChangeValues(GameObject ours, SerializedProperty ourProperty, SerializedProperty theirProperty)
             : base(ours, null)
         {
-            this.ourObject = ourObject;
-
             this.ourProperty = ourProperty;
             this.theirProperty = theirProperty;
 
-            fieldname = ourObject.GetPlainType() + "." + ourProperty.GetPlainName();
+            fieldname = ourProperty.serializedObject.targetObject.GetPlainType() + "." + ourProperty.GetPlainName();
 
             ourInitialValue = ourProperty.GetValue();
             theirInitialValue = theirProperty.GetValue();
@@ -47,13 +44,13 @@ namespace GitMerge
             var value = theirInitialValue;
 
             //If we're about references here, get "our" version of the object.
-            if(ourProperty.propertyType == SerializedPropertyType.ObjectReference)
+            if (ourProperty.propertyType == SerializedPropertyType.ObjectReference)
             {
-                var id = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
+                var id = ObjectID.GetFor(theirInitialValue as Object);
                 var obj = ObjectDictionaries.GetOurObject(id);
 
                 //If we didn't have our own version of the object before, it must be new
-                if(!obj)
+                if (!obj)
                 {
                     //Get our copy of the new object if it exists
                     obj = ObjectDictionaries.GetOurInstanceOfCopy(value as Object);
@@ -78,7 +75,7 @@ namespace GitMerge
             DisplayArray(ourInitialValue);
             GUILayout.EndVertical();
 
-            if(MergeButton(">>>", usingOurs))
+            if (MergeButton(">>>", usingOurs))
             {
                 UseOurs();
             }
@@ -91,7 +88,7 @@ namespace GitMerge
 
             GUI.backgroundColor = c;
 
-            if(MergeButton("<<<", usingTheirs))
+            if (MergeButton("<<<", usingTheirs))
             {
                 UseTheirs();
             }
@@ -107,10 +104,10 @@ namespace GitMerge
 
         private void DisplayArray(object value)
         {
-            if(ourProperty.IsRealArray() && ourProperty.isExpanded)
+            if (ourProperty.IsRealArray() && ourProperty.isExpanded)
             {
                 var values = (object[])value;
-                for(int i = 0; i < values.Length; ++i)
+                for (int i = 0; i < values.Length; ++i)
                 {
                     GUILayout.Label(ValueString(values[i]), GUILayout.Width(100));
                 }
@@ -126,23 +123,23 @@ namespace GitMerge
         /// <param name="width">The width of the whole thing in the ui</param>
         private void PropertyField(SerializedProperty p, float width = 170)
         {
-            if(p.IsRealArray())
+            if (p.IsRealArray())
             {
                 DisplayArrayProperty(p, width);
             }
             else
             {
                 var oldValue = p.GetValue();
-                if(fieldname == "GameObject.TagString")
+                if (fieldname == "GameObject.TagString")
                 {
                     var oldTag = oldValue as string;
                     var newTag = EditorGUILayout.TagField("", oldTag, GUILayout.Width(width));
-                    if(newTag != oldTag)
+                    if (newTag != oldTag)
                     {
                         p.SetValue(newTag);
                     }
                 }
-                else if(fieldname == "GameObject.StaticEditorFlags")
+                else if (fieldname == "GameObject.StaticEditorFlags")
                 {
                     DisplayStaticFlagChooser(p, width);
                 }
@@ -150,7 +147,7 @@ namespace GitMerge
                 {
                     EditorGUILayout.PropertyField(p, new GUIContent(""), GUILayout.Width(width));
                 }
-                if(!object.Equals(p.GetValue(), oldValue))
+                if (!object.Equals(p.GetValue(), oldValue))
                 {
                     p.serializedObject.ApplyModifiedProperties();
                     UsedNew();
@@ -163,7 +160,7 @@ namespace GitMerge
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal(GUILayout.Width(170));
             EditorGUILayout.PropertyField(p, new GUIContent("Array"), GUILayout.Width(80));
-            if(p.isExpanded)
+            if (p.isExpanded)
             {
                 var copy = p.Copy();
                 var size = copy.arraySize;
@@ -174,7 +171,7 @@ namespace GitMerge
                 PropertyField(copy, 70);
                 GUILayout.EndHorizontal();
 
-                for(int i = 0; i < size; ++i)
+                for (int i = 0; i < size; ++i)
                 {
                     copy.Next(false);
                     PropertyField(copy);
@@ -199,23 +196,23 @@ namespace GitMerge
 
             p.isExpanded = EditorGUILayout.Foldout(p.isExpanded, SerializedValueString(p));
             var allOn = true;
-            if(p.isExpanded)
+            if (p.isExpanded)
             {
-                foreach(var flag in System.Enum.GetValues(typeof(StaticEditorFlags)).Cast<StaticEditorFlags>())
+                foreach (var flag in System.Enum.GetValues(typeof(StaticEditorFlags)).Cast<StaticEditorFlags>())
                 {
                     var wasOn = (flags & flag) != 0;
                     var on = EditorGUILayout.Toggle(flag + "", wasOn);
-                    if(wasOn != on)
+                    if (wasOn != on)
                     {
                         flags = flags ^ flag;
                     }
-                    if(!on)
+                    if (!on)
                     {
                         allOn = false;
                     }
                 }
             }
-            if(allOn)
+            if (allOn)
             {
                 flags = (StaticEditorFlags)(-1);
             }
@@ -226,9 +223,9 @@ namespace GitMerge
 
         private string SerializedValueString(SerializedProperty p)
         {
-            if(fieldname == "GameObject.StaticEditorFlags")
+            if (fieldname == "GameObject.StaticEditorFlags")
             {
-                switch(p.intValue)
+                switch (p.intValue)
                 {
                     case 0:
                         return "Not static";
@@ -238,7 +235,7 @@ namespace GitMerge
                         return "Mixed static";
                 }
             }
-            else if(p.IsRealArray())
+            else if (p.IsRealArray())
             {
                 return "Array[" + p.arraySize + "]";
             }
@@ -247,7 +244,7 @@ namespace GitMerge
 
         private static string ValueString(object o)
         {
-            if(o == null)
+            if (o == null)
             {
                 return "[none]";
             }
@@ -256,7 +253,7 @@ namespace GitMerge
 
         private static bool MergeButton(string text, bool green)
         {
-            if(green)
+            if (green)
             {
                 GUI.color = Color.green;
             }

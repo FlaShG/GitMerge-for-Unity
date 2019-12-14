@@ -15,7 +15,7 @@ namespace GitMerge
         {
             oursWasActive = ours.activeSelf;
 
-            if(GitMergeWindow.automerge)
+            if (GitMergeWindow.automerge)
             {
                 UseOurs();
             }
@@ -43,12 +43,12 @@ namespace GitMerge
             var defaultOptionColor = merged ? Color.gray : Color.white;
 
             GUI.color = usingOurs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Keep GameObject"))
+            if (GUILayout.Button("Keep GameObject"))
             {
                 UseOurs();
             }
             GUI.color = usingTheirs ? Color.green : defaultOptionColor;
-            if(GUILayout.Button("Delete GameObject"))
+            if (GUILayout.Button("Delete GameObject"))
             {
                 UseTheirs();
             }

@@ -5,7 +5,7 @@ namespace GitMerge
 {
     public static class SerializedPropertyExtensions
     {
-        public static object GetValue(this SerializedProperty p, bool forComparison = false)
+        public static object GetValue(this SerializedProperty p)
         {
             switch (p.propertyType)
             {
@@ -46,14 +46,7 @@ namespace GitMerge
                 case SerializedPropertyType.LayerMask:
                     return p.intValue;
                 case SerializedPropertyType.ObjectReference:
-                    if (forComparison)
-                    {
-                        return ObjectID.GetFor(p.objectReferenceValue);
-                    }
-                    else
-                    {
-                        return p.objectReferenceValue;
-                    }
+                    return p.objectReferenceValue;
                 case SerializedPropertyType.Quaternion:
                     return p.quaternionValue;
                 case SerializedPropertyType.Rect:

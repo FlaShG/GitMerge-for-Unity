@@ -135,14 +135,15 @@ namespace GitMerge
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
 
-                if (theirComponent) //Both Components exist
+                if (theirComponent) // Both Components exist.
                 {
                     FindPropertyDifferences(ourComponent, theirComponent);
-                    //Remove "their" Component from the dict to only keep those new to us
+                    // Remove "their" Component from the dict to only keep those new to us.
                     theirDict.Remove(id);
                 }
-                else //Component doesn't exist in their version, offer a deletion
+                else
                 {
+                    // Component doesn't exist in their version, offer a deletion.
                     actions.Add(new MergeActionDeleteComponent(ours, ourComponent));
                 }
             }
@@ -150,7 +151,7 @@ namespace GitMerge
             // Everything left in the dict is a...
             foreach (var theirComponent in theirDict.Values)
             {
-                // ...new Component from them
+                // ...new Component from them.
                 actions.Add(new MergeActionNewComponent(ours, theirComponent));
             }
         }
@@ -186,7 +187,7 @@ namespace GitMerge
 
                     if (DifferentValues(ourProperty, theirProperty))
                     {
-                        // We found a difference, accordingly add a MergeAction
+                        // We found a difference, accordingly add a MergeAction.
                         actions.Add(new MergeActionChangeValues(ours, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
@@ -236,9 +237,9 @@ namespace GitMerge
 
         private static bool DifferentValuesFlat(SerializedProperty ourProperty, SerializedProperty theirProperty)
         {
-            var our = ourProperty.GetValue(true);
-            var their = theirProperty.GetValue(true);
-
+            var our = ourProperty.GetValue();
+            var their = theirProperty.GetValue();
+            
             return !object.Equals(our, their);
         }
 

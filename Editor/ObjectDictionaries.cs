@@ -10,23 +10,22 @@ namespace GitMerge
     /// </summary>
     public static class ObjectDictionaries
     {
-        //This dict holds all of "our" objects
-        //Needed for Reference handling
-        //<fileID, Object>
+        // This dict holds all of "our" objects.
+        // Needed for Reference handling.
         private static Dictionary<ObjectID, Object> ourObjects = new Dictionary<ObjectID, Object>();
 
-        //This dict maps our instances of their objects
-        //Whenever we instantiate a copy of "their" new object, they're both added here
+        // This dict maps our instances of their objects.
+        // Whenever we instantiate a copy of "their" new object, they're both added here.
         private static Dictionary<Object, Object> ourInstances = new Dictionary<Object, Object>();
 
-        //This dict holds all of "their" GameObjects
-        //Needed for scene cleaning after merge
-        //<GameObject, originallyActive>
+        // This dict holds all of "their" GameObjects.
+        // Needed for scene cleaning after merge.
+        // <GameObject, originallyActive>
         private static Dictionary<GameObject, bool> theirObjects = new Dictionary<GameObject, bool>();
 
-        //This dict holds all GameObjects that might or might not exist,
-        //depending on the current merge state. The referenced objects are the versions that will definitely exist throughout the merge.
-        //Also maps the MergeActions responsible for their existence to them.
+        // This dict holds all GameObjects that might or might not exist,
+        // depending on the current merge state. The referenced objects are the versions that will definitely exist throughout the merge.
+        // Also maps the MergeActions responsible for their existence to them.
         private static Dictionary<GameObject, MergeActionExistence> schroedingersObjects = new Dictionary<GameObject, MergeActionExistence>();
 
 
@@ -220,7 +219,7 @@ namespace GitMerge
         {
             var copy = GameObject.Instantiate(go) as GameObject;
 
-            //Destroy children
+            // Destroy children.
             foreach (Transform t in copy.GetComponent<Transform>())
             {
                 Object.DestroyImmediate(t.gameObject);
@@ -232,7 +231,7 @@ namespace GitMerge
                 wasActive = go.activeSelf;
             }
 
-            //Apply some special properties of the GameObject
+            // Apply some special properties of the GameObject.
             copy.SetActive(wasActive);
             copy.hideFlags = HideFlags.None;
             copy.name = go.name;

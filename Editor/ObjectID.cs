@@ -1,4 +1,4 @@
-﻿#define DEBUG_IDS
+﻿// #define DEBUG_IDS
 
 namespace GitMerge
 {
@@ -54,8 +54,8 @@ namespace GitMerge
         [MenuItem("Window/GitMerge Test ObjectID")]
         private static void Test()
         {
-            Debug.Log(GlobalObjectId.GetGlobalObjectIdSlow(Selection.activeGameObject));
-            //Debug.Log(GetFor(Selection.activeGameObject));
+            // Debug.Log(GlobalObjectId.GetGlobalObjectIdSlow(Selection.activeGameObject));
+            Debug.Log(GetFor(Selection.activeGameObject));
         }
 #endif
     }

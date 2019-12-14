@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+
     public static class GameObjectExtensions
     {
         /// <summary>

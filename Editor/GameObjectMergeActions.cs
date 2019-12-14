@@ -56,8 +56,8 @@ namespace GitMerge
                 FindComponentDifferences();
             }
 
-            //Some Actions have a default and are merged from the beginning.
-            //If all the others did was to add GameObjects, we're done with merging from the start.
+            // Some Actions have a default and are merged from the beginning.
+            // If all the others did was to add GameObjects, we're done with merging from the start.
             CheckIfMerged();
         }
 
@@ -114,11 +114,11 @@ namespace GitMerge
             var ourComponents = ours.GetComponents<Component>();
             var theirComponents = theirs.GetComponents<Component>();
 
-            //Map "their" Components to their respective ids
+            // Map "their" Components to their respective ids.
             var theirDict = new Dictionary<ObjectID, Component>();
             foreach (var theirComponent in theirComponents)
             {
-                //Ignore null components
+                // Ignore null components.
                 if (theirComponent != null)
                 {
                     theirDict.Add(ObjectID.GetFor(theirComponent), theirComponent);
@@ -127,10 +127,10 @@ namespace GitMerge
 
             foreach (var ourComponent in ourComponents)
             {
-                //Ignore null components
+                // Ignore null components.
                 if (ourComponent == null) continue;
 
-                //Try to find "their" equivalent to our Components
+                // Try to find "their" equivalent to our Components.
                 var id = ObjectID.GetFor(ourComponent);
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
@@ -147,10 +147,10 @@ namespace GitMerge
                 }
             }
 
-            //Everything left in the dict is a...
+            // Everything left in the dict is a...
             foreach (var theirComponent in theirDict.Values)
             {
-                //...new Component from them
+                // ...new Component from them
                 actions.Add(new MergeActionNewComponent(ours, theirComponent));
             }
         }
@@ -176,7 +176,7 @@ namespace GitMerge
                     {
                         if (MergeManager.isMergingPrefab)
                         {
-                            //If merging a prefab, ignore the gameobject name.
+                            // If merging a prefab, ignore the gameobject name.
                             if (ourProperty.GetPlainName() == "Name")
                             {
                                 continue;
@@ -186,7 +186,7 @@ namespace GitMerge
 
                     if (DifferentValues(ourProperty, theirProperty))
                     {
-                        //We found a difference, accordingly add a MergeAction
+                        // We found a difference, accordingly add a MergeAction
                         actions.Add(new MergeActionChangeValues(ours, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
@@ -200,15 +200,12 @@ namespace GitMerge
         {
             if (!ourProperty.IsRealArray())
             {
-                //Regular single-value property
-                if (DifferentValuesFlat(ourProperty, theirProperty))
-                {
-                    return true;
-                }
+                // Regular single-value property.
+                return DifferentValuesFlat(ourProperty, theirProperty);
             }
             else
             {
-                //Array property
+                // Array property.
                 if (ourProperty.arraySize != theirProperty.arraySize)
                 {
                     return true;
@@ -310,8 +307,8 @@ namespace GitMerge
 
             if (ours && GUILayout.Button("Focus", EditorStyles.miniButton, GUILayout.Width(100)))
             {
-                //Highlight the instance of the prefab, not the prefab itself
-                //Otherwise, "ours".
+                // Highlight the instance of the prefab, not the prefab itself.
+                // Otherwise, "ours".
                 var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
                 objectToHighlight.Highlight();
             }
@@ -319,7 +316,7 @@ namespace GitMerge
 
             if (open)
             {
-                //Display all merge actions.
+                // Display all merge actions.
                 foreach (var action in actions)
                 {
                     if (action.OnGUIMerge())
@@ -343,9 +340,9 @@ namespace GitMerge
                 GUILayout.EndHorizontal();
             }
 
-            //If "ours" is null, the GameObject doesn't exist in one of the versions.
-            //Try to get a reference if the object exists in the current merging state.
-            //If it exists, the new/gelete MergeAction will have a reference.
+            // If "ours" is null, the GameObject doesn't exist in one of the versions.
+            // Try to get a reference if the object exists in the current merging state.
+            // If it exists, the new/gelete MergeAction will have a reference.
             if (!ours)
             {
                 foreach (var action in actions)

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 
 namespace GitMerge
@@ -15,46 +16,53 @@ namespace GitMerge
 
         public bool InitializeMerge()
         {
-            isMergingScene = true;
+            var activeScene = EditorSceneManager.GetActiveScene();
 
-            //Ask if the scene should be saved, because...
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            if (activeScene.isDirty)
             {
+                window.ShowNotification(new GUIContent("Please make sure there are no unsaved changes before attempting to merge."));
                 return false;
             }
-            //...we are reloading it to prevent objects from not having a scene id.
-            EditorSceneManager.OpenScene(EditorSceneManager.GetActiveScene().path);
 
+            isMergingScene = true;
+            var scenePath = activeScene.path;
+            
+            vcs.CheckoutOurs(scenePath);
+            EditorSceneManager.OpenScene(scenePath);
+            
             MergeAction.inMergePhase = false;
 
             ObjectDictionaries.Clear();
 
             //checkout "their" version
-            GetTheirVersionOf(EditorSceneManager.GetActiveScene().path);
+            CheckoutTheirVersionOf(scenePath);
             AssetDatabase.Refresh();
 
             List<GameObject> ourObjects;
+            Scene theirScene;
             try
             {
                 //find all of "our" objects
                 ourObjects = GetAllSceneObjects();
-                ObjectDictionaries.SetAsOurObjects(ourObjects);
+                ObjectDictionaries.AddToOurObjects(ourObjects);
 
                 //add "their" objects
-                EditorSceneManager.OpenScene(theirFilename, OpenSceneMode.Additive);
+                theirScene = EditorSceneManager.OpenScene(theirFilename, OpenSceneMode.Additive);
             }
             finally
             {
                 //delete scene file
                 AssetDatabase.DeleteAsset(theirFilename);
             }
-
+            
             //find all of "their" objects
             var addedObjects = GetAllNewSceneObjects(ourObjects);
-            ObjectDictionaries.SetAsTheirObjects(addedObjects);
+            ObjectDictionaries.AddToTheirObjects(addedObjects);
 
             //create list of differences that have to be merged
             BuildAllMergeActions(ourObjects, addedObjects);
+
+            EditorSceneManager.UnloadSceneAsync(theirScene);
 
             if (allMergeActions.Count == 0)
             {
@@ -77,9 +85,8 @@ namespace GitMerge
         private static List<GameObject> GetAllNewSceneObjects(List<GameObject> oldObjects)
         {
             var all = GetAllSceneObjects();
-            var old = oldObjects;
 
-            foreach (var obj in old)
+            foreach (var obj in oldObjects)
             {
                 all.Remove(obj);
             }
@@ -101,7 +108,7 @@ namespace GitMerge
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 
             allMergeActions = null;
-            
+
             vcs.MarkAsMerged(fileName);
 
             //directly committing here might not be that smart, since there might be more conflicts
@@ -116,7 +123,7 @@ namespace GitMerge
         public override void AbortMerge()
         {
             base.AbortMerge();
-            
+
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
         }
     }

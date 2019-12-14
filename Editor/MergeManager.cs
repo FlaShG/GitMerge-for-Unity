@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.IO;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Collections.Generic;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using System.IO;
+    using System.Collections.Generic;
+    using UnityEditor;
+
     public abstract class MergeManager
     {
         protected VCS vcs { private set; get; }
@@ -32,29 +32,29 @@ namespace GitMerge
         /// named filename--THEIRS.unity.
         /// </summary>
         /// <param name="path">The path of the file, relative to the project folder.</param>
-        protected void GetTheirVersionOf(string path)
+        protected void CheckoutTheirVersionOf(string path)
         {
             fileName = path;
 
             string basepath = Path.GetDirectoryName(path);
-            string sname = Path.GetFileNameWithoutExtension(path);
+            string sceneName = Path.GetFileNameWithoutExtension(path);
             string extension = Path.GetExtension(path);
 
-            string ours = Path.Combine(basepath, sname + "--OURS" + extension);
-            theirFilename = Path.Combine(basepath, sname + "--THEIRS" + extension);
+            string ourFilename = Path.Combine(basepath, sceneName + "--OURS" + extension);
+            theirFilename = Path.Combine(basepath, sceneName + "--THEIRS" + extension);
 
-            File.Copy(path, ours);
+            File.Copy(path, ourFilename);
             try
             {
-                vcs.GetTheirs(path);
+                vcs.CheckoutTheirs(path);
             }
             catch (VCSException e)
             {
-                File.Delete(ours);
+                File.Delete(ourFilename);
                 throw e;
             }
             File.Move(path, theirFilename);
-            File.Move(ours, path);
+            File.Move(ourFilename, path);
         }
 
         /// <summary>
@@ -68,16 +68,16 @@ namespace GitMerge
             allMergeActions = new List<GameObjectMergeActions>();
 
             //Map "their" GameObjects to their respective ids
-            var theirObjectsDict = new Dictionary<int, GameObject>();
+            var theirObjectsDict = new Dictionary<GlobalObjectId, GameObject>();
             foreach (var theirs in theirObjects)
             {
-                theirObjectsDict.Add(ObjectIDFinder.GetIdentifierFor(theirs), theirs);
+                theirObjectsDict.Add(ObjectIDUtility.GetIdentifierFor(theirs), theirs);
             }
 
             foreach (var ours in ourObjects)
             {
                 //Try to find "their" equivalent to "our" GameObjects
-                var id = ObjectIDFinder.GetIdentifierFor(ours);
+                var id = ObjectIDUtility.GetIdentifierFor(ours);
                 GameObject theirs;
                 theirObjectsDict.TryGetValue(id, out theirs);
 

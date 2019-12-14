@@ -115,13 +115,13 @@ namespace GitMerge
             var theirComponents = theirs.GetComponents<Component>();
 
             //Map "their" Components to their respective ids
-            var theirDict = new Dictionary<int, Component>();
+            var theirDict = new Dictionary<GlobalObjectId, Component>();
             foreach (var theirComponent in theirComponents)
             {
                 //Ignore null components
                 if (theirComponent != null)
                 {
-                    theirDict.Add(ObjectIDFinder.GetIdentifierFor(theirComponent), theirComponent);
+                    theirDict.Add(ObjectIDUtility.GetIdentifierFor(theirComponent), theirComponent);
                 }
             }
 
@@ -131,7 +131,7 @@ namespace GitMerge
                 if (ourComponent == null) continue;
 
                 //Try to find "their" equivalent to our Components
-                var id = ObjectIDFinder.GetIdentifierFor(ourComponent);
+                var id = ObjectIDUtility.GetIdentifierFor(ourComponent);
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
 

@@ -105,7 +105,7 @@ namespace GitMerge
         {
             if (MergeManager.isMergingPrefab)
             {
-                PrefabUtility.ResetToPrefabState(MergeManagerPrefab.ourPrefabInstance);
+                PrefabUtility.RevertObjectOverride(MergeManagerPrefab.ourPrefabInstance, InteractionMode.AutomatedAction);
             }
         }
 

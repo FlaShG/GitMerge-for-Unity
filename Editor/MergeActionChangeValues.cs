@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-using System.Linq;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System.Linq;
+
     /// <summary>
     /// The MergeAction allowing to merge the value of a single property of a Component.
     /// </summary>
@@ -49,7 +49,7 @@ namespace GitMerge
             //If we're about references here, get "our" version of the object.
             if (ourProperty.propertyType == SerializedPropertyType.ObjectReference)
             {
-                var id = ObjectIDFinder.GetIdentifierFor(theirInitialValue as Object);
+                var id = ObjectIDUtility.GetIdentifierFor(theirInitialValue as Object);
                 var obj = ObjectDictionaries.GetOurObject(id);
 
                 //If we didn't have our own version of the object before, it must be new

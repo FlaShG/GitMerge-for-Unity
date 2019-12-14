@@ -1,8 +1,10 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Dictionaries that categorize the scene's objects into our objects, their objects, and temporary
     /// copies of their objects that have been instantiated while merging.
@@ -12,7 +14,7 @@ namespace GitMerge
         //This dict holds all of "our" objects
         //Needed for Reference handling
         //<fileID, Object>
-        private static Dictionary<int, Object> ourObjects = new Dictionary<int, Object>();
+        private static Dictionary<GlobalObjectId, Object> ourObjects = new Dictionary<GlobalObjectId, Object>();
 
         //This dict maps our instances of their objects
         //Whenever we instantiate a copy of "their" new object, they're both added here
@@ -29,7 +31,7 @@ namespace GitMerge
         private static Dictionary<GameObject, MergeActionExistence> schroedingersObjects = new Dictionary<GameObject, MergeActionExistence>();
 
 
-        public static void SetAsOurObjects(List<GameObject> objects)
+        public static void AddToOurObjects(List<GameObject> objects)
         {
             foreach (var obj in objects)
             {
@@ -37,7 +39,7 @@ namespace GitMerge
             }
         }
 
-        public static void SetAsTheirObjects(List<GameObject> objects)
+        public static void AddToTheirObjects(List<GameObject> objects)
         {
             foreach (var obj in objects)
             {
@@ -65,7 +67,7 @@ namespace GitMerge
             if (o == null)
                 return;
 
-            ourObjects.Add(ObjectIDFinder.GetIdentifierFor(o), o);
+            ourObjects.Add(ObjectIDUtility.GetIdentifierFor(o), o);
         }
 
         public static void RemoveOurObject(GameObject go)
@@ -87,10 +89,10 @@ namespace GitMerge
             if (o == null)
                 return;
 
-            ourObjects.Remove(ObjectIDFinder.GetIdentifierFor(o));
+            ourObjects.Remove(ObjectIDUtility.GetIdentifierFor(o));
         }
 
-        public static Object GetOurObject(int id)
+        public static Object GetOurObject(GlobalObjectId id)
         {
             Object result = null;
             ourObjects.TryGetValue(id, out result);
@@ -111,7 +113,7 @@ namespace GitMerge
             var result = obj;
             if (IsTheirs(obj))
             {
-                result = GetOurObject(ObjectIDFinder.GetIdentifierFor(obj));
+                result = GetOurObject(ObjectIDUtility.GetIdentifierFor(obj));
                 if (!result)
                 {
                     result = GetOurInstanceOfCopy(obj);

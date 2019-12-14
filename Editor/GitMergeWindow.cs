@@ -163,7 +163,7 @@ namespace GitMerge
         /// </summary>
         private void OnGUISettingsTab()
         {
-            var vcsPath = vcs.exe();
+            var vcsPath = vcs.GetExePath();
             var vcsPathNew = EditorGUILayout.TextField("Path to git.exe", vcsPath);
             if (vcsPath != vcsPathNew)
             {

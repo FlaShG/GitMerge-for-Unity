@@ -33,7 +33,7 @@ namespace GitMerge
             ObjectDictionaries.Clear();
 
             //checkout "their" version
-            GetTheirVersionOf(AssetDatabase.GetAssetOrScenePath(prefab));
+            CheckoutTheirVersionOf(AssetDatabase.GetAssetOrScenePath(prefab));
             AssetDatabase.Refresh();
 
             ourPrefab = prefab;

@@ -68,16 +68,16 @@ namespace GitMerge
             allMergeActions = new List<GameObjectMergeActions>();
 
             //Map "their" GameObjects to their respective ids
-            var theirObjectsDict = new Dictionary<GlobalObjectId, GameObject>();
+            var theirObjectsDict = new Dictionary<ObjectID, GameObject>();
             foreach (var theirs in theirObjects)
             {
-                theirObjectsDict.Add(ObjectIDUtility.GetIdentifierFor(theirs), theirs);
+                theirObjectsDict.Add(ObjectID.GetFor(theirs), theirs);
             }
 
             foreach (var ours in ourObjects)
             {
                 //Try to find "their" equivalent to "our" GameObjects
-                var id = ObjectIDUtility.GetIdentifierFor(ours);
+                var id = ObjectID.GetFor(ours);
                 GameObject theirs;
                 theirObjectsDict.TryGetValue(id, out theirs);
 

@@ -2,7 +2,6 @@
 namespace GitMerge
 {
     using UnityEngine;
-    using UnityEditor;
     using System.Collections.Generic;
 
     /// <summary>
@@ -14,7 +13,7 @@ namespace GitMerge
         //This dict holds all of "our" objects
         //Needed for Reference handling
         //<fileID, Object>
-        private static Dictionary<GlobalObjectId, Object> ourObjects = new Dictionary<GlobalObjectId, Object>();
+        private static Dictionary<ObjectID, Object> ourObjects = new Dictionary<ObjectID, Object>();
 
         //This dict maps our instances of their objects
         //Whenever we instantiate a copy of "their" new object, they're both added here
@@ -67,7 +66,7 @@ namespace GitMerge
             if (o == null)
                 return;
 
-            ourObjects.Add(ObjectIDUtility.GetIdentifierFor(o), o);
+            ourObjects.Add(ObjectID.GetFor(o), o);
         }
 
         public static void RemoveOurObject(GameObject go)
@@ -89,10 +88,10 @@ namespace GitMerge
             if (o == null)
                 return;
 
-            ourObjects.Remove(ObjectIDUtility.GetIdentifierFor(o));
+            ourObjects.Remove(ObjectID.GetFor(o));
         }
 
-        public static Object GetOurObject(GlobalObjectId id)
+        public static Object GetOurObject(ObjectID id)
         {
             Object result = null;
             ourObjects.TryGetValue(id, out result);
@@ -113,7 +112,7 @@ namespace GitMerge
             var result = obj;
             if (IsTheirs(obj))
             {
-                result = GetOurObject(ObjectIDUtility.GetIdentifierFor(obj));
+                result = GetOurObject(ObjectID.GetFor(obj));
                 if (!result)
                 {
                     result = GetOurInstanceOfCopy(obj);
@@ -246,7 +245,10 @@ namespace GitMerge
         {
             foreach (var obj in theirObjects.Keys)
             {
-                Object.DestroyImmediate(obj);
+                if (obj.transform.parent == null)
+                {
+                    Object.DestroyImmediate(obj);
+                }
             }
             theirObjects.Clear();
         }

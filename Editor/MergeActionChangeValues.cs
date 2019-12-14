@@ -17,17 +17,14 @@ namespace GitMerge
         protected readonly string ourString;
         protected readonly string theirString;
         protected readonly string fieldname;
-        protected Object ourObject;
 
-        public MergeActionChangeValues(GameObject ours, Object ourObject, SerializedProperty ourProperty, SerializedProperty theirProperty)
+        public MergeActionChangeValues(GameObject ours, SerializedProperty ourProperty, SerializedProperty theirProperty)
             : base(ours, null)
         {
-            this.ourObject = ourObject;
-
             this.ourProperty = ourProperty;
             this.theirProperty = theirProperty;
 
-            fieldname = ourObject.GetPlainType() + "." + ourProperty.GetPlainName();
+            fieldname = ourProperty.serializedObject.targetObject.GetPlainType() + "." + ourProperty.GetPlainName();
 
             ourInitialValue = ourProperty.GetValue();
             theirInitialValue = theirProperty.GetValue();
@@ -49,7 +46,7 @@ namespace GitMerge
             //If we're about references here, get "our" version of the object.
             if (ourProperty.propertyType == SerializedPropertyType.ObjectReference)
             {
-                var id = ObjectIDUtility.GetIdentifierFor(theirInitialValue as Object);
+                var id = ObjectID.GetFor(theirInitialValue as Object);
                 var obj = ObjectDictionaries.GetOurObject(id);
 
                 //If we didn't have our own version of the object before, it must be new

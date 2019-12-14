@@ -48,7 +48,7 @@ namespace GitMerge
                 case SerializedPropertyType.ObjectReference:
                     if (forComparison)
                     {
-                        return ObjectIDUtility.GetIdentifierFor(p.objectReferenceValue);
+                        return ObjectID.GetFor(p.objectReferenceValue);
                     }
                     else
                     {

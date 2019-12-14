@@ -20,6 +20,7 @@ namespace GitMerge
 
         }
 
+        // TODO Copy new stuff from other manager
         public bool InitializeMerge(GameObject prefab)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
@@ -40,7 +41,7 @@ namespace GitMerge
 
             //Open a new Scene that will only display the prefab
             previouslyOpenedScene = EditorSceneManager.GetActiveScene();
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             //instantiate our object in order to view it while merging
             ourPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;

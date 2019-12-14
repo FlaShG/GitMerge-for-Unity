@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System.Collections.Generic;
+    using System.Text;
+
     /// <summary>
     /// One instance of this class represents one GameObject with relevance to the merge process.
     /// Holds all MergeActions that can be applied to the GameObject or its Components.
@@ -99,7 +99,7 @@ namespace GitMerge
             var transform = ours.GetComponent<Transform>();
             var ourParent = transform.parent;
             var theirParent = theirs.GetComponent<Transform>().parent;
-            if (ourParent != theirParent)
+            if (!ObjectID.GetFor(ourParent).Equals(ObjectID.GetFor(theirParent)))
             {
                 actions.Add(new MergeActionParenting(transform, ourParent, theirParent));
             }
@@ -115,13 +115,13 @@ namespace GitMerge
             var theirComponents = theirs.GetComponents<Component>();
 
             //Map "their" Components to their respective ids
-            var theirDict = new Dictionary<GlobalObjectId, Component>();
+            var theirDict = new Dictionary<ObjectID, Component>();
             foreach (var theirComponent in theirComponents)
             {
                 //Ignore null components
                 if (theirComponent != null)
                 {
-                    theirDict.Add(ObjectIDUtility.GetIdentifierFor(theirComponent), theirComponent);
+                    theirDict.Add(ObjectID.GetFor(theirComponent), theirComponent);
                 }
             }
 
@@ -131,7 +131,7 @@ namespace GitMerge
                 if (ourComponent == null) continue;
 
                 //Try to find "their" equivalent to our Components
-                var id = ObjectIDUtility.GetIdentifierFor(ourComponent);
+                var id = ObjectID.GetFor(ourComponent);
                 Component theirComponent;
                 theirDict.TryGetValue(id, out theirComponent);
 
@@ -187,7 +187,7 @@ namespace GitMerge
                     if (DifferentValues(ourProperty, theirProperty))
                     {
                         //We found a difference, accordingly add a MergeAction
-                        actions.Add(new MergeActionChangeValues(ours, ourObject, ourProperty.Copy(), theirProperty.Copy()));
+                        actions.Add(new MergeActionChangeValues(ours, ourProperty.Copy(), theirProperty.Copy()));
                     }
                 }
             }

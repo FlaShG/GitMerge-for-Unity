@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+    using UnityEditor;
+
     /// <summary>
     /// Each MergeAction represents a single, specific merge conflict.
     /// This can be a GameObject added or deleted in one of the versions,
@@ -16,7 +16,7 @@ namespace GitMerge
         //Prevents highlighting while automerging.
         public static bool inMergePhase;
 
-        //A MergeAction is considere "merged" when, at some point,
+        //A MergeAction is considered "merged" when, at some point,
         //"our", "their" or a new version has been applied.
         public bool merged { protected set; get; }
 

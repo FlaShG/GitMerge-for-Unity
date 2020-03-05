@@ -244,7 +244,7 @@ namespace GitMerge
         {
             foreach (var obj in theirObjects.Keys)
             {
-                if (obj.transform.parent == null)
+                if (obj != null && obj.transform.parent == null)
                 {
                     Object.DestroyImmediate(obj);
                 }

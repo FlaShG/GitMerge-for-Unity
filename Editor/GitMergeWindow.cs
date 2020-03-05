@@ -269,7 +269,7 @@ namespace GitMerge
         private bool DisplayMergeActions()
         {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
-            GUILayout.BeginVertical(GUILayout.MinWidth(480));
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
 
             var textColor = GUI.skin.label.normal.textColor;
             GUI.skin.label.normal.textColor = Color.black;

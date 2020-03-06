@@ -22,7 +22,7 @@ namespace GitMerge
         /// </summary>
         public GameObject theirs { private set; get; }
 
-        private string name;
+        public string name { private set; get; }
         public bool merged { private set; get; }
         public bool hasActions
         {

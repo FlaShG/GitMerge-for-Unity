@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace GitMerge
 {
@@ -21,6 +22,8 @@ namespace GitMerge
 
         //The MergeManager that has the actual merging logic
         private MergeManager manager;
+        private MergeFilter filter = new MergeFilter();
+        private MergeFilterBar filterBar = new MergeFilterBar();
 
         public bool mergeInProgress
         {
@@ -46,6 +49,7 @@ namespace GitMerge
 
         void OnEnable()
         {
+            filterBar.filter = filter;
             LoadSettings();
         }
 
@@ -97,7 +101,6 @@ namespace GitMerge
         {
             Resources.DrawLogo();
             DrawTabButtons();
-
             switch (tab)
             {
                 case 0:
@@ -217,6 +220,8 @@ namespace GitMerge
         {
             if (mergeInProgress)
             {
+                DrawCommandBar();
+
                 var done = DisplayMergeActions();
                 GUILayout.BeginHorizontal();
                 if (done && GUILayout.Button("Apply merge"))
@@ -229,13 +234,42 @@ namespace GitMerge
         }
 
         /// <summary>
+        /// Display extra commands to simplify merge process
+        /// </summary>
+        private void DrawCommandBar()
+        {
+            DrawQuickMergeSideSelectionCommands();
+            filterBar.Draw();
+        }
+
+        /// <summary>
+        /// Allow to select easily 'use ours' or 'use theirs' for all actions
+        /// </summary>
+        private void DrawQuickMergeSideSelectionCommands()
+        {
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button(new GUIContent("Use ours", "Use theirs for all. Do not apply merge automatically.")))
+                {
+                    manager.allMergeActions.ForEach((action) => action.UseOurs());
+                }
+                if (GUILayout.Button(new GUIContent("Use theirs", "Use theirs for all. Do not apply merge automatically.")))
+                {
+                    manager.allMergeActions.ForEach((action) => action.UseTheirs());
+                }
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary>
         /// Displays all GameObjectMergeActions.
         /// </summary>
         /// <returns>True, if all MergeActions are flagged as "merged".</returns>
         private bool DisplayMergeActions()
         {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
-            GUILayout.BeginVertical(GUILayout.MinWidth(480));
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
 
             var textColor = GUI.skin.label.normal.textColor;
             GUI.skin.label.normal.textColor = Color.black;
@@ -243,8 +277,11 @@ namespace GitMerge
             var done = true;
             foreach (var actions in manager.allMergeActions)
             {
-                actions.OnGUI();
-                done = done && actions.merged;
+                if (filter.IsPassingFilter(actions.name))
+                {
+                    actions.OnGUI();
+                    done = done && actions.merged;
+                }
             }
 
             GUI.skin.label.normal.textColor = textColor;

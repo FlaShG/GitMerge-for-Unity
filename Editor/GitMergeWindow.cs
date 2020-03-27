@@ -2,6 +2,9 @@
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using GitMerge.Utilities;
 
 namespace GitMerge
 {
@@ -33,9 +36,10 @@ namespace GitMerge
             }
         }
 
+        private PageView pageView = new PageView();
         private Vector2 scrollPosition = Vector2.zero;
         private int tab = 0;
-
+        private List<GameObjectMergeActions> mergeActionsFiltered;
 
         [MenuItem("Window/GitMerge")]
         static void OpenEditor()
@@ -49,7 +53,9 @@ namespace GitMerge
 
         void OnEnable()
         {
+            pageView.NumElementsPerPage = 200;
             filterBar.filter = filter;
+            filter.OnChanged += CacheMergeActions;
             LoadSettings();
         }
 
@@ -133,6 +139,7 @@ namespace GitMerge
                 if (mm.InitializeMerge())
                 {
                     manager = mm;
+                    CacheMergeActions();
                 }
             }
 
@@ -154,6 +161,7 @@ namespace GitMerge
                     if (mm.InitializeMerge(prefab))
                     {
                         manager = mm;
+                        CacheMergeActions();
                     }
                 }
             }
@@ -268,27 +276,32 @@ namespace GitMerge
         /// <returns>True, if all MergeActions are flagged as "merged".</returns>
         private bool DisplayMergeActions()
         {
-            scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
-            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-
             var textColor = GUI.skin.label.normal.textColor;
             GUI.skin.label.normal.textColor = Color.black;
 
-            var done = true;
-            foreach (var actions in manager.allMergeActions)
+            bool done = true;
+
+            pageView.Draw(mergeActionsFiltered.Count, (index) =>
             {
-                if (filter.IsPassingFilter(actions.name))
-                {
-                    actions.OnGUI();
-                    done = done && actions.merged;
-                }
-            }
+                var actions = mergeActionsFiltered[index];
+                actions.OnGUI();
+                done = done && actions.merged;
+            });
 
             GUI.skin.label.normal.textColor = textColor;
-
-            GUILayout.EndVertical();
-            GUILayout.EndScrollView();
             return done;
+        }
+
+        private void CacheMergeActions()
+        {
+            if (filter.useFilter)
+            {
+                mergeActionsFiltered = manager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions)).ToList();
+            }
+            else
+            {
+                mergeActionsFiltered = manager.allMergeActions;
+            }
         }
     }
 }

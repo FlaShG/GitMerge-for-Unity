@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GitMerge;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
@@ -17,13 +18,15 @@ public class MergeFilterBar
         {
             using (new EditorGUI.IndentLevelScope())
             {
-                filter.filterMode = (MergeFilter.FilterMode)EditorGUILayout.EnumPopup("Mode", filter.filterMode, GUILayout.ExpandWidth(false));
                 filter.isRegex = EditorGUILayout.Toggle("Regex?", filter.isRegex);
                 if (!filter.isRegex)
                 {
                     filter.isCaseSensitive = EditorGUILayout.Toggle("Case Sensitive", filter.isCaseSensitive);
                 }
                 filter.expression = EditorGUILayout.TextField("Expression", filter.expression, GUILayout.ExpandWidth(true));
+
+                filter.filterMode = (MergeFilter.FilterMode)EditorGUILayout.EnumPopup("Mode", filter.filterMode, GUILayout.Width(300), GUILayout.ExpandWidth(false));
+                filter.filterState = (MergeFilter.FilterState)EditorGUILayout.EnumFlagsField("Conflict State", filter.filterState, GUILayout.Width(300), GUILayout.ExpandWidth(false));
             }
         }
     }

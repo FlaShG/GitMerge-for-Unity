@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using GitMerge.Utilities;
 
 namespace GitMerge
 {
@@ -278,7 +279,7 @@ namespace GitMerge
             var textColor = GUI.skin.label.normal.textColor;
             GUI.skin.label.normal.textColor = Color.black;
 
-            bool done = false;
+            bool done = true;
 
             pageView.Draw(mergeActionsFiltered.Count, (index) =>
             {
@@ -295,7 +296,7 @@ namespace GitMerge
         {
             if (filter.useFilter)
             {
-                mergeActionsFiltered = manager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions.name)).ToList();
+                mergeActionsFiltered = manager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions)).ToList();
             }
             else
             {

@@ -1,0 +1,19 @@
+{
+  "name": "de.thirteenpixels.gitmerge",
+  "version": "0.1.0",
+  "displayName": "GitMerge for Unity",
+  "description": "Allows merging scene, prefab and ScriptableObject files.",
+  "unity": "2019.2",
+  "dependencies": {
+  },
+  "keywords": [
+    "VCS",
+    "Git",
+    "Merging"
+  ],
+  "author": {
+    "name": "13Pixels",
+    "email": "assetstore@13pixels.de",
+    "url": "https://www.13pixels.de"
+  }
+}

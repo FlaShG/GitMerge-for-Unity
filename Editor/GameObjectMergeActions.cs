@@ -239,7 +239,16 @@ namespace GitMerge
         {
             var our = ourProperty.GetValue();
             var their = theirProperty.GetValue();
-            
+
+            if (ourProperty.propertyType == SerializedPropertyType.ObjectReference)
+            {
+                if (our != null && their != null)
+                {
+                    our = ObjectID.GetFor(our as Object);
+                    their = ObjectID.GetFor(their as Object);
+                }
+            }
+
             return !object.Equals(our, their);
         }
 

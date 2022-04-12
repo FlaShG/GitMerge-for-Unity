@@ -54,7 +54,6 @@ namespace GitMerge
             var ourObjects = GetAllObjects(ourPrefab);
 
             theirPrefab = AssetDatabase.LoadAssetAtPath(theirFilename, typeof(GameObject)) as GameObject;
-            // theirPrefab.hideFlags = HideFlags.HideAndDontSave;
             var theirObjects = GetAllObjects(theirPrefab);
             
             BuildAllMergeActions(ourObjects, theirObjects);

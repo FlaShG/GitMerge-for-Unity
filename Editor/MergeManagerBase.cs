@@ -7,6 +7,9 @@ namespace GitMerge
 
     public abstract class MergeManagerBase
     {
+        internal const string OUR_FILE_POSTFIX = "--OURS";
+        internal const string THEIR_FILE_POSTFIX = "--THEIRS";
+
         protected VCS vcs { private set; get; }
         protected GitMergeWindow window { private set; get; }
 
@@ -39,8 +42,8 @@ namespace GitMerge
             string sceneName = Path.GetFileNameWithoutExtension(path);
             string extension = Path.GetExtension(path);
 
-            string ourFilename = Path.Combine(basepath, sceneName + "--OURS" + extension);
-            theirFilename = Path.Combine(basepath, sceneName + "--THEIRS" + extension);
+            string ourFilename = Path.Combine(basepath, sceneName + OUR_FILE_POSTFIX + extension);
+            theirFilename = Path.Combine(basepath, sceneName + THEIR_FILE_POSTFIX + extension);
 
             File.Copy(path, ourFilename);
             try

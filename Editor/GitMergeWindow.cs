@@ -50,7 +50,7 @@ namespace GitMerge
             window.minSize = new Vector2(500, 100);
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             pageView.NumElementsPerPage = 200;
             filterBar.filter = filter;
@@ -150,14 +150,13 @@ namespace GitMerge
         /// </summary>
         private void OnGUIPrefabTab()
         {
-            GameObject prefab;
             if (!mergeInProgress)
             {
-                GUILayout.Label("Drag your prefab here to start merging:");
-                if (prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
+                var path = PathDetectingDragAndDropField("Drag your prefab here to start merging", 60);
+                if (path != null)
                 {
                     var manager = new MergeManagerPrefab(this, vcs);
-                    if (manager.TryInitializeMerge(prefab))
+                    if (manager.TryInitializeMerge(path))
                     {
                         this.manager = manager;
                         CacheMergeActions();
@@ -166,6 +165,33 @@ namespace GitMerge
             }
 
             DisplayMergeProcess();
+        }
+
+        private static string PathDetectingDragAndDropField(string text, float height)
+        {
+            var currentEvent = Event.current;
+
+            GUILayout.Box(text, GUILayout.ExpandWidth(true), GUILayout.Height(height));
+            var rect = GUILayoutUtility.GetLastRect();
+
+            if (rect.Contains(currentEvent.mousePosition))
+            {
+                if (DragAndDrop.objectReferences.Length == 1)
+                {
+                    switch (currentEvent.type)
+                    {
+                        case EventType.DragUpdated:
+                            DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+                            break;
+                        case EventType.DragPerform:
+                            var result = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[0]);
+                            DragAndDrop.AcceptDrag();
+                            return result;
+                    }
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -231,7 +257,7 @@ namespace GitMerge
 
                 var done = DisplayMergeActions();
                 GUILayout.BeginHorizontal();
-                if (done && GUILayout.Button("Apply merge"))
+                if (done && GUILayout.Button("Apply merge", GUILayout.Height(40)))
                 {
                     manager.CompleteMerge();
                     manager = null;

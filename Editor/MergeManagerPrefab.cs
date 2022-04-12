@@ -20,7 +20,7 @@ namespace GitMerge
 
         }
         
-        public bool TryInitializeMerge(GameObject prefab)
+        public bool TryInitializeMerge(string prefabPath)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
@@ -31,40 +31,51 @@ namespace GitMerge
             MergeAction.inMergePhase = false;
 
             ObjectDictionaries.Clear();
-
-            var filePath = AssetDatabase.GetAssetOrScenePath(prefab);
             
-            vcs.CheckoutOurs(filePath);
-            CheckoutTheirVersionOf(filePath);
+            vcs.CheckoutOurs(prefabPath);
+            CheckoutTheirVersionOf(prefabPath);
             AssetDatabase.Refresh();
 
-            ourPrefab = prefab;
+            ourPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            if (ourPrefab == null)
+            {
+                DeleteTheirPrefabAndLoadPreviousScene();
+                return false;
+            }
 
             // Open a new Scene that will only display the prefab.
             previouslyOpenedScenePath = EditorSceneManager.GetActiveScene().path;
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             // Instantiate our object in order to view it while merging.
-            ourPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+            ourPrefabInstance = PrefabUtility.InstantiatePrefab(ourPrefab) as GameObject;
             
-            var ourObjects = GetAllObjects(prefab);
+            var ourObjects = GetAllObjects(ourPrefab);
 
             theirPrefab = AssetDatabase.LoadAssetAtPath(theirFilename, typeof(GameObject)) as GameObject;
-            theirPrefab.hideFlags = HideFlags.HideAndDontSave;
+            // theirPrefab.hideFlags = HideFlags.HideAndDontSave;
             var theirObjects = GetAllObjects(theirPrefab);
             
             BuildAllMergeActions(ourObjects, theirObjects);
 
+            AssetDatabase.DeleteAsset(theirFilename);
+
             if (allMergeActions.Count == 0)
             {
-                AssetDatabase.DeleteAsset(theirFilename);
-                OpenPreviousScene();
+                DeleteTheirPrefabAndLoadPreviousScene();
                 window.ShowNotification(new GUIContent("No conflict found for this prefab."));
                 return false;
             }
             MergeAction.inMergePhase = true;
             ourPrefabInstance.Highlight();
             return true;
+        }
+
+        private static void DeleteTheirPrefabAndLoadPreviousScene()
+        {
+            AssetDatabase.DeleteAsset(theirFilename);
+            OpenPreviousScene();
         }
 
         /// <summary>
@@ -110,10 +121,7 @@ namespace GitMerge
 
             ourPrefab = null;
 
-            // Delete their prefab file.
-            AssetDatabase.DeleteAsset(theirFilename);
-
-            OpenPreviousScene();
+            DeleteTheirPrefabAndLoadPreviousScene();
             window.ShowNotification(new GUIContent("Prefab successfully merged."));
         }
 
@@ -125,9 +133,7 @@ namespace GitMerge
         {
             base.AbortMerge(showNotification);
 
-            //delete prefab file
-            AssetDatabase.DeleteAsset(theirFilename);
-            OpenPreviousScene();
+            DeleteTheirPrefabAndLoadPreviousScene();
             ourPrefab = null;
         }
 

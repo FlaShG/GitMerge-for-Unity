@@ -255,16 +255,26 @@ namespace GitMerge
         /// <summary>
         /// Get the path of a GameObject in the hierarchy.
         /// </summary>
-        private static string GetPath(GameObject g)
+        private static string GetPath(GameObject gameObject)
         {
-            var t = g.transform;
-            var sb = new StringBuilder(t.name);
+            var t = gameObject.transform;
+            var sb = new StringBuilder(RemovePostfix(t.name));
             while (t.parent != null)
             {
                 t = t.parent;
-                sb.Insert(0, t.name + "/");
+                sb.Insert(0, RemovePostfix(t.name) + "/");
             }
             return sb.ToString();
+        }
+
+        private static string RemovePostfix(string name)
+        {
+            if (name.EndsWith(MergeManagerBase.THEIR_FILE_POSTFIX))
+            {
+                return name.Substring(0, name.Length - MergeManagerBase.THEIR_FILE_POSTFIX.Length);
+            }
+
+            return name;
         }
 
         private void CheckIfMerged()

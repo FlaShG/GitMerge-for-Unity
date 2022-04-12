@@ -109,11 +109,7 @@ namespace GitMerge
             switch (tab)
             {
                 case 0:
-                    OnGUISceneTab();
-                    break;
-
-                case 1:
-                    OnGUIPrefabTab();
+                    OnGUIStartMergeTab();
                     break;
 
                 default:
@@ -125,7 +121,19 @@ namespace GitMerge
         /// <summary>
         /// Tab that offers scene merging.
         /// </summary>
-        private void OnGUISceneTab()
+        private void OnGUIStartMergeTab()
+        {
+            if (!mergeInProgress)
+            {
+                DisplaySceneMergeButton();
+                GUILayout.Space(20);
+                DisplayPrefabMergeField();
+            }
+
+            DisplayMergeProcess();
+        }
+
+        private void DisplaySceneMergeButton()
         {
             var activeScene = SceneManager.GetActiveScene();
 
@@ -141,18 +149,13 @@ namespace GitMerge
                     CacheMergeActions();
                 }
             }
-
-            DisplayMergeProcess();
         }
 
-        /// <summary>
-        /// Tab that offers prefab merging.
-        /// </summary>
-        private void OnGUIPrefabTab()
+        private void DisplayPrefabMergeField()
         {
             if (!mergeInProgress)
             {
-                var path = PathDetectingDragAndDropField("Drag your prefab here to start merging", 60);
+                var path = PathDetectingDragAndDropField("Drag your prefab here to start merging", 80);
                 if (path != null)
                 {
                     var manager = new MergeManagerPrefab(this, vcs);
@@ -231,7 +234,7 @@ namespace GitMerge
         {
             if (!mergeInProgress)
             {
-                string[] tabs = { "Merge Scene", "Merge Prefab", "Settings" };
+                string[] tabs = { "Merge", "Settings" };
                 tab = GUI.SelectionGrid(new Rect(72, 36, 300, 22), tab, tabs, 3);
             }
             else

@@ -11,7 +11,7 @@ namespace GitMerge
         public static GameObject ourPrefab { private set; get; }
         private static GameObject theirPrefab;
         public static GameObject ourPrefabInstance { private set; get; }
-        private static UnityEngine.SceneManagement.Scene previouslyOpenedScene;
+        private static string previouslyOpenedScenePath;
 
 
         public MergeManagerPrefab(GitMergeWindow window, VCS vcs)
@@ -41,7 +41,7 @@ namespace GitMerge
             ourPrefab = prefab;
 
             // Open a new Scene that will only display the prefab.
-            previouslyOpenedScene = EditorSceneManager.GetActiveScene();
+            previouslyOpenedScenePath = EditorSceneManager.GetActiveScene().path;
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             // Instantiate our object in order to view it while merging.
@@ -137,9 +137,10 @@ namespace GitMerge
         private static void OpenPreviousScene()
         {
             if (!string.IsNullOrEmpty(previouslyOpenedScene.path))
+            if (!string.IsNullOrEmpty(previouslyOpenedScenePath))
             {
-                EditorSceneManager.OpenScene(previouslyOpenedScene.path);
-                previouslyOpenedScene = new UnityEngine.SceneManagement.Scene();
+                EditorSceneManager.OpenScene(previouslyOpenedScenePath);
+                previouslyOpenedScenePath = null;
             }
         }
     }

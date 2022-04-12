@@ -7,7 +7,7 @@ namespace GitMerge
     using UnityEditor.SceneManagement;
     using System.Collections.Generic;
 
-    public class MergeManagerScene : MergeManager
+    public class MergeManagerScene : MergeManagerBase
     {
         private Scene theirScene;
 

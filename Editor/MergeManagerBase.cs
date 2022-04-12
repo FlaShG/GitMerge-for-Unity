@@ -4,9 +4,8 @@ namespace GitMerge
     using UnityEngine;
     using System.IO;
     using System.Collections.Generic;
-    using UnityEditor;
 
-    public abstract class MergeManager
+    public abstract class MergeManagerBase
     {
         protected VCS vcs { private set; get; }
         protected GitMergeWindow window { private set; get; }
@@ -20,7 +19,7 @@ namespace GitMerge
         public static bool isMergingPrefab { get { return !isMergingScene; } }
 
 
-        public MergeManager(GitMergeWindow window, VCS vcs)
+        public MergeManagerBase(GitMergeWindow window, VCS vcs)
         {
             this.window = window;
             this.vcs = vcs;
@@ -67,7 +66,7 @@ namespace GitMerge
         {
             allMergeActions = new List<GameObjectMergeActions>();
 
-            //Map "their" GameObjects to their respective ids
+            // Map "their" GameObjects to their respective ids
             var theirObjectsDict = new Dictionary<ObjectID, GameObject>();
             foreach (var theirs in theirObjects)
             {
@@ -76,25 +75,25 @@ namespace GitMerge
 
             foreach (var ours in ourObjects)
             {
-                //Try to find "their" equivalent to "our" GameObjects
+                // Try to find "their" equivalent to "our" GameObjects
                 var id = ObjectID.GetFor(ours);
                 GameObject theirs;
                 theirObjectsDict.TryGetValue(id, out theirs);
 
-                //If theirs is null, mergeActions.hasActions will be false
+                // If theirs is null, mergeActions.hasActions will be false
                 var mergeActions = new GameObjectMergeActions(ours, theirs);
                 if (mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
                 }
-                //Remove "their" GameObject from the dict to only keep those new to us
+                // Remove "their" GameObject from the dict to only keep those new to us
                 theirObjectsDict.Remove(id);
             }
 
-            //Every GameObject left in the dict is a...
+            // Every GameObject left in the dict is a...
             foreach (var theirs in theirObjectsDict.Values)
             {
-                //...new GameObject from them
+                // ...new GameObject from them
                 var mergeActions = new GameObjectMergeActions(null, theirs);
                 if (mergeActions.hasActions)
                 {

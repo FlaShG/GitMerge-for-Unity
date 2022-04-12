@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using GitMerge.Utilities;
@@ -24,7 +23,7 @@ namespace GitMerge
         public static bool autofocus { private set; get; }
 
         //The MergeManager that has the actual merging logic
-        private MergeManager manager;
+        private MergeManagerBase manager;
         private MergeFilter filter = new MergeFilter();
         private MergeFilterBar filterBar = new MergeFilterBar();
 
@@ -45,8 +44,8 @@ namespace GitMerge
         static void OpenEditor()
         {
             var window = EditorWindow.GetWindow(typeof(GitMergeWindow), false, "GitMerge");
-            //In case we're merging and the scene becomes edited,
-            //the shown SerializedProperties should be repainted
+            // In case we're merging and the scene becomes edited,
+            // the shown SerializedProperties should be repainted
             window.autoRepaintOnSceneChange = true;
             window.minSize = new Vector2(500, 100);
         }
@@ -81,16 +80,16 @@ namespace GitMerge
 
         void OnHierarchyChange()
         {
-            //Repaint if we changed the scene
+            // Repaint if we changed the scene
             this.Repaint();
         }
 
-        //Always check for editor state changes, and abort the active merge process if needed
-        void Update()
+        // Always check for editor state changes, and abort the active merge process if needed
+        private void Update()
         {
             if (MergeAction.inMergePhase
-            && (EditorApplication.isCompiling
-            || EditorApplication.isPlayingOrWillChangePlaymode))
+                && (EditorApplication.isCompiling
+                    || EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 ShowNotification(new GUIContent("Aborting merge due to editor state change."));
                 AbortMerge(false);
@@ -103,7 +102,7 @@ namespace GitMerge
             manager = null;
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             Resources.DrawLogo();
             DrawTabButtons();
@@ -162,6 +161,10 @@ namespace GitMerge
                     {
                         manager = mm;
                         CacheMergeActions();
+                    }
+                    else
+                    {
+                        mm.AbortMerge();
                     }
                 }
             }

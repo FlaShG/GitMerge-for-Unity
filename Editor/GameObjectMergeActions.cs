@@ -175,7 +175,7 @@ namespace GitMerge
 
                     if (ourObject is GameObject)
                     {
-                        if (MergeManager.isMergingPrefab)
+                        if (MergeManagerBase.isMergingPrefab)
                         {
                             // If merging a prefab, ignore the gameobject name.
                             if (ourProperty.GetPlainName() == "Name")
@@ -319,7 +319,7 @@ namespace GitMerge
             {
                 // Highlight the instance of the prefab, not the prefab itself.
                 // Otherwise, "ours".
-                var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
+                var objectToHighlight = MergeManagerBase.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
                 objectToHighlight.Highlight();
             }
             GUILayout.EndHorizontal();

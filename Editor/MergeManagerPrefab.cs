@@ -6,7 +6,7 @@ namespace GitMerge
     using System.Collections.Generic;
     using UnityEditor.SceneManagement;
 
-    public class MergeManagerPrefab : MergeManager
+    public class MergeManagerPrefab : MergeManagerBase
     {
         public static GameObject ourPrefab { private set; get; }
         private static GameObject theirPrefab;

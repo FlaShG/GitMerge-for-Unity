@@ -103,7 +103,7 @@ namespace GitMerge
         /// </summary>
         private static void RefreshPrefabInstance()
         {
-            if (MergeManager.isMergingPrefab)
+            if (MergeManagerBase.isMergingPrefab)
             {
                 PrefabUtility.RevertObjectOverride(MergeManagerPrefab.ourPrefabInstance, InteractionMode.AutomatedAction);
             }
@@ -143,7 +143,7 @@ namespace GitMerge
         {
             //Highlight the instance of the prefab, not the prefab itself
             //Otherwise, "ours".
-            var objectToHighlight = MergeManager.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
+            var objectToHighlight = MergeManagerBase.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
 
             if (objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
             {

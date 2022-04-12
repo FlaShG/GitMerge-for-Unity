@@ -46,11 +46,11 @@ namespace GitMerge
             {
                 actions.Add(new MergeActionNewGameObject(ours, theirs));
             }
-            if (ours && !theirs)
+            else if (ours && !theirs)
             {
                 actions.Add(new MergeActionDeleteGameObject(ours, theirs));
             }
-            if (ours && theirs)
+            else if (ours && theirs)
             {
                 FindPropertyDifferences();
                 FindComponentDifferences();
@@ -161,28 +161,27 @@ namespace GitMerge
         /// </summary>
         private void FindPropertyDifferences(Object ourObject, Object theirObject)
         {
-            var ourSerialized = new SerializedObject(ourObject);
-            var theirSerialized = new SerializedObject(theirObject);
+            var ourSerializedObject = new SerializedObject(ourObject);
+            var theirSerializedObject = new SerializedObject(theirObject);
 
-            var ourProperty = ourSerialized.GetIterator();
-            if (ourProperty.NextVisible(true))
+            var ourProperty = ourSerializedObject.GetIterator();
+            if (ourProperty.Next(true))
             {
-                var theirProperty = theirSerialized.GetIterator();
-                theirProperty.NextVisible(true);
-                while (ourProperty.NextVisible(false))
-                {
-                    theirProperty.NextVisible(false);
+                var theirProperty = theirSerializedObject.GetIterator();
+                theirProperty.Next(true);
 
-                    if (ourObject is GameObject)
+                var shouldEnterChildren = ourProperty.hasVisibleChildren;
+
+                while (ourProperty.NextVisible(shouldEnterChildren))
+                {
+                    theirProperty.NextVisible(shouldEnterChildren);
+
+                    // If merging a prefab, ignore the gameobject name.
+                    if (ourObject is GameObject
+                        && MergeManagerBase.isMergingPrefab
+                        && ourProperty.GetPlainName() == "Name")
                     {
-                        if (MergeManagerBase.isMergingPrefab)
-                        {
-                            // If merging a prefab, ignore the gameobject name.
-                            if (ourProperty.GetPlainName() == "Name")
-                            {
-                                continue;
-                            }
-                        }
+                        continue;
                     }
 
                     if (DifferentValues(ourProperty, theirProperty))

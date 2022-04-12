@@ -14,26 +14,26 @@ namespace GitMerge
         /// <returns>The reference to the newly added Component copy</returns>
         public static Component AddComponent(this GameObject go, Component original)
         {
-            var c = go.AddComponent(original.GetType());
+            var newComponent = go.AddComponent(original.GetType());
 
-            var originalSerialized = new SerializedObject(original).GetIterator();
-            var nso = new SerializedObject(c);
-            var newSerialized = nso.GetIterator();
+            var originalProperty = new SerializedObject(original).GetIterator();
+            var newSerializedObject = new SerializedObject(newComponent);
+            var newProperty = newSerializedObject.GetIterator();
 
-            if (originalSerialized.Next(true))
+            if (originalProperty.Next(true))
             {
-                newSerialized.Next(true);
+                newProperty.Next(true);
 
-                while (originalSerialized.NextVisible(true))
+                while (originalProperty.NextVisible(true))
                 {
-                    newSerialized.NextVisible(true);
-                    newSerialized.SetValue(originalSerialized.GetValue());
+                    newProperty.NextVisible(true);
+                    newProperty.SetValue(originalProperty.GetValue());
                 }
             }
 
-            nso.ApplyModifiedProperties();
+            newSerializedObject.ApplyModifiedProperties();
 
-            return c;
+            return newComponent;
         }
 
         /// <summary>

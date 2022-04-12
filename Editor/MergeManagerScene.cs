@@ -17,7 +17,7 @@ namespace GitMerge
 
         }
 
-        public bool InitializeMerge()
+        public bool TryInitializeMerge()
         {
             var activeScene = EditorSceneManager.GetActiveScene();
 

@@ -134,10 +134,10 @@ namespace GitMerge
                && !mergeInProgress
                && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
             {
-                var mm = new MergeManagerScene(this, vcs);
-                if (mm.InitializeMerge())
+                var manager = new MergeManagerScene(this, vcs);
+                if (manager.TryInitializeMerge())
                 {
-                    manager = mm;
+                    this.manager = manager;
                     CacheMergeActions();
                 }
             }
@@ -156,15 +156,11 @@ namespace GitMerge
                 GUILayout.Label("Drag your prefab here to start merging:");
                 if (prefab = EditorGUILayout.ObjectField(null, typeof(GameObject), false, GUILayout.Height(60)) as GameObject)
                 {
-                    var mm = new MergeManagerPrefab(this, vcs);
-                    if (mm.InitializeMerge(prefab))
+                    var manager = new MergeManagerPrefab(this, vcs);
+                    if (manager.TryInitializeMerge(prefab))
                     {
-                        manager = mm;
+                        this.manager = manager;
                         CacheMergeActions();
-                    }
-                    else
-                    {
-                        mm.AbortMerge();
                     }
                 }
             }

@@ -20,7 +20,7 @@ namespace GitMerge
 
         }
         
-        public bool InitializeMerge(GameObject prefab)
+        public bool TryInitializeMerge(GameObject prefab)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
@@ -136,7 +136,6 @@ namespace GitMerge
         /// </summary>
         private static void OpenPreviousScene()
         {
-            if (!string.IsNullOrEmpty(previouslyOpenedScene.path))
             if (!string.IsNullOrEmpty(previouslyOpenedScenePath))
             {
                 EditorSceneManager.OpenScene(previouslyOpenedScenePath);

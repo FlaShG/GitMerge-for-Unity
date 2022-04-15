@@ -65,9 +65,9 @@ namespace GitMerge
         // Always check for editor state changes, and abort the active merge process if needed
         private void Update()
         {
-            if (MergeAction.inMergePhase
-                && (EditorApplication.isCompiling
-                    || EditorApplication.isPlayingOrWillChangePlaymode))
+            if (MergeAction.inMergePhase &&
+                (EditorApplication.isCompiling ||
+                 EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 ShowNotification(new GUIContent("Aborting merge due to editor state change."));
                 AbortMerge(false);
@@ -118,9 +118,9 @@ namespace GitMerge
             var activeScene = SceneManager.GetActiveScene();
 
             GUILayout.Label("Open Scene: " + activeScene.path);
-            if (activeScene.path != ""
-               && !mergeInProgress
-               && GUILayout.Button("Start merging the open scene", GUILayout.Height(30)))
+            if (activeScene.path != "" &&
+                !mergeInProgress &&
+                GUILayout.Button("Start merging the open scene", GUILayout.Height(30)))
             {
                 var manager = new MergeManagerScene(this, vcs);
                 if (manager.TryInitializeMerge())
@@ -139,9 +139,8 @@ namespace GitMerge
                 if (path != null)
                 {
                     var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
-
-                    var assetType = asset.GetType();
-                    if (assetType == typeof(GameObject))
+                    
+                    if (IsPrefabAsset(asset))
                     {
                         var manager = new MergeManagerPrefab(this, vcs);
                         if (manager.TryInitializeMerge(path))
@@ -150,7 +149,7 @@ namespace GitMerge
                             CacheMergeActions();
                         }
                     }
-                    else if (assetType == typeof(SceneAsset))
+                    else if (IsSceneAsset(asset))
                     {
                         var manager = new MergeManagerScene(this, vcs);
                         if (manager.TryInitializeMerge(path))
@@ -161,6 +160,19 @@ namespace GitMerge
                     }
                 }
             }
+        }
+
+        private static bool IsPrefabAsset(Object asset)
+        {
+            var assetType = asset.GetType();
+            return assetType == typeof(GameObject) ||
+                   assetType == typeof(DefaultAsset);
+        }
+
+        private static bool IsSceneAsset(Object asset)
+        {
+            var assetType = asset.GetType();
+            return assetType == typeof(SceneAsset);
         }
 
         private static string PathDetectingDragAndDropField(string text, float height)
@@ -178,8 +190,7 @@ namespace GitMerge
                     {
                         case EventType.DragUpdated:
                             var asset = DragAndDrop.objectReferences[0];
-                            var assetType = asset.GetType();
-                            if (assetType == typeof(GameObject) || assetType == typeof(SceneAsset))
+                            if (IsPrefabAsset(asset) || IsSceneAsset(asset))
                             {
                                 DragAndDrop.visualMode = DragAndDropVisualMode.Move;
                             }

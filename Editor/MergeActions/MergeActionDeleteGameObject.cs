@@ -30,7 +30,7 @@ namespace GitMerge
         protected override void ApplyTheirs()
         {
             ours.SetActiveForMerging(false);
-            SceneView.currentDrawingSceneView.Repaint();
+            SceneView.RepaintAll();
         }
 
         public override void EnsureExistence()

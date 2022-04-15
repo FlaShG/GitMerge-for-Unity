@@ -13,27 +13,19 @@ namespace GitMerge
     public class GitMergeWindow : EditorWindow
     {
         private VCS vcs = new VCSGit();
-
-        //EditorPrefs keys for settings
-        private const string epAutomerge = "GitMerge_automerge";
-        private const string epAutofocus = "GitMerge_autofocus";
-
-        //Settings
+        
+        private const string EDITOR_PREFS_AUTOMERGE = "GitMerge_automerge";
+        private const string EDITOR_PREFS_AUTOFOCUS = "GitMerge_autofocus";
+        
         public static bool automerge { private set; get; }
         public static bool autofocus { private set; get; }
-
-        //The MergeManager that has the actual merging logic
+        
         private MergeManagerBase manager;
+
         private MergeFilter filter = new MergeFilter();
         private MergeFilterBar filterBar = new MergeFilterBar();
 
-        public bool mergeInProgress
-        {
-            get
-            {
-                return manager != null;
-            }
-        }
+        public bool mergeInProgress => manager != null;
 
         private PageView pageView = new PageView();
         private Vector2 scrollPosition = Vector2.zero;
@@ -60,22 +52,8 @@ namespace GitMerge
 
         private static void LoadSettings()
         {
-            if (EditorPrefs.HasKey(epAutomerge))
-            {
-                automerge = EditorPrefs.GetBool(epAutomerge);
-            }
-            else
-            {
-                automerge = true;
-            }
-            if (EditorPrefs.HasKey(epAutofocus))
-            {
-                autofocus = EditorPrefs.GetBool(epAutofocus);
-            }
-            else
-            {
-                autofocus = true;
-            }
+            automerge = EditorPrefs.GetBool(EDITOR_PREFS_AUTOMERGE, true);
+            autofocus = EditorPrefs.GetBool(EDITOR_PREFS_AUTOFOCUS, true);
         }
 
         void OnHierarchyChange()
@@ -209,21 +187,26 @@ namespace GitMerge
                 vcs.SetPath(vcsPathNew);
             }
 
-            var amNew = EditorGUILayout.Toggle("Automerge", automerge);
-            if (automerge != amNew)
-            {
-                automerge = amNew;
-                EditorPrefs.SetBool(epAutomerge, automerge);
-            }
-            GUILayout.Label("(Automerge new/deleted GameObjects/Components upon merge start)");
+            automerge = DisplaySettingsToggle(automerge,
+                EDITOR_PREFS_AUTOMERGE,
+                "Automerge",
+                "(Automerge new/deleted GameObjects/Components upon merge start)");
+            
+            autofocus = DisplaySettingsToggle(autofocus,
+                EDITOR_PREFS_AUTOFOCUS,
+                "Auto Highlight",
+                "(Highlight GameObjects when applying a MergeAction to it)");
+        }
 
-            var afNew = EditorGUILayout.Toggle("Auto Highlight", autofocus);
-            if (autofocus != afNew)
+        private static bool DisplaySettingsToggle(bool value, string editorPrefsKey, string title, string description)
+        {
+            var newValue = EditorGUILayout.Toggle(title, value);
+            if (value != newValue)
             {
-                autofocus = afNew;
-                EditorPrefs.SetBool(epAutofocus, autofocus);
+                EditorPrefs.SetBool(editorPrefsKey, value);
             }
-            GUILayout.Label("(Highlight GameObjects when applying a MergeAction to it)");
+            GUILayout.Label(description);
+            return newValue;
         }
 
         /// <summary>

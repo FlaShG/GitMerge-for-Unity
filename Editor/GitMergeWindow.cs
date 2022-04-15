@@ -179,7 +179,22 @@ namespace GitMerge
         {
             var currentEvent = Event.current;
 
-            GUILayout.Box(text, GUILayout.ExpandWidth(true), GUILayout.Height(height));
+            using (new GUIBackgroundColor(Color.black))
+            {
+                // Caching these sounds good on paper, but Unity tends to forget them randomly
+                var content = EditorGUIUtility.IconContent("RectMask2D Icon", string.Empty);
+                content.text = text;
+                
+                var buttonStyle = GUI.skin.GetStyle("Button");
+                var style = new GUIStyle(GUI.skin.GetStyle("Box"));
+                style.stretchWidth = true;
+                style.normal.background = buttonStyle.normal.background;
+                style.normal.textColor = buttonStyle.normal.textColor;
+                style.alignment = TextAnchor.MiddleCenter;
+                style.imagePosition = ImagePosition.ImageAbove;
+
+                GUILayout.Box(content, style, GUILayout.Height(height));
+            }
             var rect = GUILayoutUtility.GetLastRect();
 
             if (rect.Contains(currentEvent.mousePosition))

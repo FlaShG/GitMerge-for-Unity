@@ -17,7 +17,7 @@ namespace GitMerge
 
         }
 
-        public bool TryInitializeMerge()
+        public bool TryInitializeMerge(string path = null)
         {
             var activeScene = EditorSceneManager.GetActiveScene();
 
@@ -28,7 +28,7 @@ namespace GitMerge
             }
 
             isMergingScene = true;
-            var scenePath = activeScene.path;
+            var scenePath = path ?? activeScene.path;
 
             // Overwrite the current scene to prevent the reload/ignore dialog that pops up after the upcoming changes to the file.
             // Pressing "reload" on it would invalidate the GameObject references we're about to collect.

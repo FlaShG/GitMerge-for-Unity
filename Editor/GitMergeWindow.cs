@@ -20,12 +20,12 @@ namespace GitMerge
         public static bool automerge { private set; get; }
         public static bool autofocus { private set; get; }
         
-        private MergeManagerBase manager;
+        private MergeManagerBase mergeManager;
 
         private MergeFilter filter = new MergeFilter();
         private MergeFilterBar filterBar = new MergeFilterBar();
 
-        public bool mergeInProgress => manager != null;
+        public bool mergeInProgress => mergeManager != null;
 
         private PageView pageView = new PageView();
         private Vector2 scrollPosition = Vector2.zero;
@@ -76,8 +76,8 @@ namespace GitMerge
 
         private void AbortMerge(bool showNotification = true)
         {
-            manager.AbortMerge(showNotification);
-            manager = null;
+            mergeManager.AbortMerge(showNotification);
+            mergeManager = null;
         }
 
         private void OnGUI()
@@ -103,12 +103,14 @@ namespace GitMerge
         {
             if (!mergeInProgress)
             {
-                DisplaySceneMergeButton();
-                GUILayout.Space(20);
                 DisplayPrefabMergeField();
+                GUILayout.Space(20);
+                DisplaySceneMergeButton();
             }
-
-            DisplayMergeProcess();
+            else
+            {
+                DisplayMergeProcess();
+            }
         }
 
         private void DisplaySceneMergeButton()
@@ -118,12 +120,12 @@ namespace GitMerge
             GUILayout.Label("Open Scene: " + activeScene.path);
             if (activeScene.path != ""
                && !mergeInProgress
-               && GUILayout.Button("Start merging this scene", GUILayout.Height(80)))
+               && GUILayout.Button("Start merging the open scene", GUILayout.Height(30)))
             {
                 var manager = new MergeManagerScene(this, vcs);
                 if (manager.TryInitializeMerge())
                 {
-                    this.manager = manager;
+                    this.mergeManager = manager;
                     CacheMergeActions();
                 }
             }
@@ -133,19 +135,32 @@ namespace GitMerge
         {
             if (!mergeInProgress)
             {
-                var path = PathDetectingDragAndDropField("Drag your prefab here to start merging", 80);
+                var path = PathDetectingDragAndDropField("Drag a scene or prefab here to start merging", 80);
                 if (path != null)
                 {
-                    var manager = new MergeManagerPrefab(this, vcs);
-                    if (manager.TryInitializeMerge(path))
+                    var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+
+                    var assetType = asset.GetType();
+                    if (assetType == typeof(GameObject))
                     {
-                        this.manager = manager;
-                        CacheMergeActions();
+                        var manager = new MergeManagerPrefab(this, vcs);
+                        if (manager.TryInitializeMerge(path))
+                        {
+                            this.mergeManager = manager;
+                            CacheMergeActions();
+                        }
+                    }
+                    else if (assetType == typeof(SceneAsset))
+                    {
+                        var manager = new MergeManagerScene(this, vcs);
+                        if (manager.TryInitializeMerge(path))
+                        {
+                            this.mergeManager = manager;
+                            CacheMergeActions();
+                        }
                     }
                 }
             }
-
-            DisplayMergeProcess();
         }
 
         private static string PathDetectingDragAndDropField(string text, float height)
@@ -162,12 +177,17 @@ namespace GitMerge
                     switch (currentEvent.type)
                     {
                         case EventType.DragUpdated:
-                            DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+                            var asset = DragAndDrop.objectReferences[0];
+                            var assetType = asset.GetType();
+                            if (assetType == typeof(GameObject) || assetType == typeof(SceneAsset))
+                            {
+                                DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+                            }
                             break;
                         case EventType.DragPerform:
-                            var result = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[0]);
+                            var path = AssetDatabase.GetAssetPath(DragAndDrop.objectReferences[0]);
                             DragAndDrop.AcceptDrag();
-                            return result;
+                            return path;
                     }
                 }
             }
@@ -225,8 +245,8 @@ namespace GitMerge
                 GUI.backgroundColor = new Color(1, 0.4f, 0.4f, 1);
                 if (GUI.Button(new Rect(72, 36, 300, 22), "Abort merge"))
                 {
-                    manager.AbortMerge();
-                    manager = null;
+                    mergeManager.AbortMerge();
+                    mergeManager = null;
                 }
                 GUI.backgroundColor = Color.white;
             }
@@ -237,19 +257,16 @@ namespace GitMerge
         /// </summary>
         private void DisplayMergeProcess()
         {
-            if (mergeInProgress)
-            {
-                DrawCommandBar();
+            DrawCommandBar();
 
-                var done = DisplayMergeActions();
-                GUILayout.BeginHorizontal();
-                if (done && GUILayout.Button("Apply merge", GUILayout.Height(40)))
-                {
-                    manager.CompleteMerge();
-                    manager = null;
-                }
-                GUILayout.EndHorizontal();
+            var done = DisplayMergeActions();
+            GUILayout.BeginHorizontal();
+            if (done && GUILayout.Button("Apply merge", GUILayout.Height(40)))
+            {
+                mergeManager.CompleteMerge();
+                mergeManager = null;
             }
+            GUILayout.EndHorizontal();
         }
 
         /// <summary>
@@ -270,11 +287,11 @@ namespace GitMerge
             {
                 if (GUILayout.Button(new GUIContent("Use ours", "Use theirs for all. Do not apply merge automatically.")))
                 {
-                    manager.allMergeActions.ForEach((action) => action.UseOurs());
+                    mergeManager.allMergeActions.ForEach((action) => action.UseOurs());
                 }
                 if (GUILayout.Button(new GUIContent("Use theirs", "Use theirs for all. Do not apply merge automatically.")))
                 {
-                    manager.allMergeActions.ForEach((action) => action.UseTheirs());
+                    mergeManager.allMergeActions.ForEach((action) => action.UseTheirs());
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -307,11 +324,11 @@ namespace GitMerge
         {
             if (filter.useFilter)
             {
-                mergeActionsFiltered = manager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions)).ToList();
+                mergeActionsFiltered = mergeManager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions)).ToList();
             }
             else
             {
-                mergeActionsFiltered = manager.allMergeActions;
+                mergeActionsFiltered = mergeManager.allMergeActions;
             }
         }
     }

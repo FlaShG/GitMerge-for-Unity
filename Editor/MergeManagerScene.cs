@@ -9,6 +9,8 @@ namespace GitMerge
 
     public class MergeManagerScene : MergeManagerBase
     {
+        private const int NUMBER_OF_INITIALIZATION_STEPS = 3;
+
         private Scene theirScene;
 
         public MergeManagerScene(GitMergeWindow window, VCS vcs)
@@ -27,6 +29,7 @@ namespace GitMerge
                 return false;
             }
 
+            DisplayProgressBar(0, "Checking out scene...");
             isMergingScene = true;
             var scenePath = path ?? activeScene.path;
 
@@ -38,6 +41,8 @@ namespace GitMerge
             CheckoutTheirVersionOf(scenePath);
             AssetDatabase.Refresh();
 
+            DisplayProgressBar(1, "Opening scene...");
+
             activeScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
             MergeAction.inMergePhase = false;
@@ -46,6 +51,7 @@ namespace GitMerge
             List<GameObject> ourObjects;
             try
             {
+                DisplayProgressBar(2, "Collecting differences...");
                 // Find all of "our" objects
                 ourObjects = GetAllSceneObjects();
                 ObjectDictionaries.AddToOurObjects(ourObjects);
@@ -63,6 +69,8 @@ namespace GitMerge
             {
                 EditorSceneManager.UnloadSceneAsync(theirScene);
                 AssetDatabase.DeleteAsset(theirFilename);
+
+                EditorUtility.ClearProgressBar();
             }
             
             if (allMergeActions.Count == 0)
@@ -73,6 +81,12 @@ namespace GitMerge
 
             MergeAction.inMergePhase = true;
             return true;
+        }
+
+        private static void DisplayProgressBar(int step, string text)
+        {
+            var progress = step / (float)NUMBER_OF_INITIALIZATION_STEPS;
+            EditorUtility.DisplayProgressBar("GitMerge for Unity", text, progress);
         }
 
         private static void MoveGameObjectsToScene(IEnumerable<GameObject> addedObjects, Scene scene)

@@ -27,8 +27,8 @@ namespace GitMerge
         protected bool usingOurs;
         protected bool usingTheirs;
         protected bool usingNew;
-        // True when this action has been automatically resolved
-        protected bool automatic;
+
+        protected bool wasResolvedAutomatically;
 
 
         public MergeAction(GameObject ours, GameObject theirs)
@@ -55,7 +55,7 @@ namespace GitMerge
             usingTheirs = false;
             usingNew = false;
 
-            automatic = !inMergePhase;
+            wasResolvedAutomatically = !inMergePhase;
 
             if (GitMergeWindow.autofocus)
             {
@@ -83,7 +83,7 @@ namespace GitMerge
             usingTheirs = true;
             usingNew = false;
 
-            automatic = !inMergePhase;
+            wasResolvedAutomatically = !inMergePhase;
 
             if (GitMergeWindow.autofocus)
             {
@@ -103,7 +103,7 @@ namespace GitMerge
             usingTheirs = false;
             usingNew = true;
 
-            automatic = !inMergePhase;
+            wasResolvedAutomatically = !inMergePhase;
 
             RefreshPrefabInstance();
         }
@@ -133,7 +133,7 @@ namespace GitMerge
             var wasMerged = merged;
             if (merged)
             {
-                GUI.backgroundColor = automatic ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
+                GUI.backgroundColor = wasResolvedAutomatically ? new Color(.9f, .9f, .3f, 1) : new Color(.2f, .8f, .2f, 1);
             }
             else
             {

@@ -47,6 +47,7 @@ namespace GitMerge
             // Open a new Scene that will only display the prefab.
             previouslyOpenedScenePath = EditorSceneManager.GetActiveScene().path;
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Lightmapping.ForceStop();
 
             // Instantiate our object in order to view it while merging.
             ourPrefabInstance = PrefabUtility.InstantiatePrefab(ourPrefab) as GameObject;

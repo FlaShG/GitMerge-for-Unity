@@ -36,6 +36,7 @@ namespace GitMerge
             // Overwrite the current scene to prevent the reload/ignore dialog that pops up after the upcoming changes to the file.
             // Pressing "reload" on it would invalidate the GameObject references we're about to collect.
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Lightmapping.ForceStop();
 
             vcs.CheckoutOurs(scenePath);
             CheckoutTheirVersionOf(scenePath);

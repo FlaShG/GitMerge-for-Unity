@@ -12,22 +12,22 @@ namespace GitMerge
     /// </summary>
     public abstract class MergeAction
     {
-        //Don't highlight objects if not in merge phase.
-        //Prevents highlighting while automerging.
+        // Don't highlight objects if not in merge phase.
+        // Prevents highlighting while automerging.
         public static bool inMergePhase;
 
-        //A MergeAction is considered "merged" when, at some point,
-        //"our", "their" or a new version has been applied.
+        // A MergeAction is considered "merged" when, at some point,
+        // "our", "their" or a new version has been applied.
         public bool merged { protected set; get; }
 
         public GameObject ours { protected set; get; }
         public GameObject theirs { protected set; get; }
 
-        //Flags that indicate how this MergeAction has been resolved.
+        // Flags that indicate how this MergeAction has been resolved.
         protected bool usingOurs;
         protected bool usingTheirs;
         protected bool usingNew;
-        //True when this action has been automatically resolved
+        // True when this action has been automatically resolved
         protected bool automatic;
 
 
@@ -37,6 +37,9 @@ namespace GitMerge
             this.theirs = theirs;
         }
 
+        /// <summary>
+        /// Apply "our" change in the conflict, dismissing "their"s.
+        /// </summary>
         public void UseOurs()
         {
             try
@@ -61,6 +64,10 @@ namespace GitMerge
 
             RefreshPrefabInstance();
         }
+
+        /// <summary>
+        /// Apply "their" change in the conflict, dismissing "our"s.
+        /// </summary>
         public void UseTheirs()
         {
             try
@@ -85,6 +92,10 @@ namespace GitMerge
 
             RefreshPrefabInstance();
         }
+
+        /// <summary>
+        /// Mark this <see cref="MergeAction"/> to use a new value instead of either of the conflicting ones.
+        /// </summary>
         public void UsedNew()
         {
             merged = true;
@@ -109,7 +120,7 @@ namespace GitMerge
             }
         }
 
-        //The implementations of these methods conatain the actual merging steps
+        // The implementations of these methods conatain the actual merging steps
         protected abstract void ApplyOurs();
         protected abstract void ApplyTheirs();
 
@@ -136,13 +147,13 @@ namespace GitMerge
             return merged && !wasMerged;
         }
 
-        //The actual UI of the MergeAction depends on the actual type
+        // The actual UI of the MergeAction depends on the actual type
         public abstract void OnGUI();
 
         private void HighlightObject()
         {
-            //Highlight the instance of the prefab, not the prefab itself
-            //Otherwise, "ours".
+            // Highlight the instance of the prefab, not the prefab itself
+            // Otherwise, "ours".
             var objectToHighlight = MergeManagerBase.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
 
             if (objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)

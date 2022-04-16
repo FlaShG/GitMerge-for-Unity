@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using UnityEditor;
-
+﻿
 namespace GitMerge
 {
+    using UnityEngine;
+
     /// <summary>
     /// The abstract base MergeAction for all MergeActions that manage whether or not an object exists
     /// </summary>

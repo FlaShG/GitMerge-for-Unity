@@ -287,8 +287,7 @@ namespace GitMerge
                 GUI.backgroundColor = new Color(1, 0.4f, 0.4f, 1);
                 if (GUI.Button(new Rect(72, 36, 300, 22), "Abort merge"))
                 {
-                    mergeManager.AbortMerge();
-                    mergeManager = null;
+                    AbortMerge();
                 }
                 GUI.backgroundColor = Color.white;
             }

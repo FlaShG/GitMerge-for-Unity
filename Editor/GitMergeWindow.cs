@@ -169,6 +169,12 @@ namespace GitMerge
 
         private void OnHierarchyGUI(int instanceID, Rect selectionRect)
         {
+            if (!mergeInProgress)
+            {
+                EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
+                return;
+            }
+
             var hasConflict = mergeManager.mergeActionsForInstanceId.TryGetValue(instanceID, out var mergeActions);
             if (!hasConflict) return;
             

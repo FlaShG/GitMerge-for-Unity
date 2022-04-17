@@ -137,7 +137,7 @@ namespace GitMerge
             ObjectDictionaries.Clear();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 
-            allMergeActions = null;
+            allMergeActions.Clear();
 
             vcs.MarkAsMerged(fileName);
 

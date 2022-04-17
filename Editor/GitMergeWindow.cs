@@ -13,13 +13,13 @@ namespace GitMerge
     public class GitMergeWindow : EditorWindow
     {
         private VCS vcs = new VCSGit();
-        
+
         private const string EDITOR_PREFS_AUTOMERGE = "GitMerge_automerge";
         private const string EDITOR_PREFS_AUTOFOCUS = "GitMerge_autofocus";
-        
+
         public static bool automerge { private set; get; }
         public static bool autofocus { private set; get; }
-        
+
         private MergeManagerBase mergeManager;
 
         private MergeFilter filter = new MergeFilter();
@@ -56,10 +56,9 @@ namespace GitMerge
             autofocus = EditorPrefs.GetBool(EDITOR_PREFS_AUTOFOCUS, true);
         }
 
-        void OnHierarchyChange()
+        private void OnHierarchyChange()
         {
-            // Repaint if we changed the scene
-            this.Repaint();
+            Repaint();
         }
 
         // Always check for editor state changes, and abort the active merge process if needed
@@ -78,6 +77,7 @@ namespace GitMerge
         {
             mergeManager.AbortMerge(showNotification);
             mergeManager = null;
+            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
         }
 
         private void OnGUI()
@@ -138,7 +138,7 @@ namespace GitMerge
                 if (path != null)
                 {
                     var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
-                    
+
                     if (IsPrefabAsset(asset))
                     {
                         var manager = new MergeManagerPrefab(this, vcs);
@@ -163,6 +163,19 @@ namespace GitMerge
         {
             mergeManager = manager;
             CacheMergeActions();
+
+            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+        }
+
+        private void OnHierarchyGUI(int instanceID, Rect selectionRect)
+        {
+            var hasConflict = mergeManager.mergeActionsForInstanceId.TryGetValue(instanceID, out var mergeActions);
+            if (!hasConflict) return;
+            
+            var iconContent = EditorGUIUtility.IconContent(mergeActions.merged ? "Collab.BuildSucceeded" : "Collab.BuildFailed");
+            selectionRect.x -= 20;
+            selectionRect.y += 1;
+            GUI.Label(selectionRect, iconContent);
         }
 
         private static bool IsPrefabAsset(Object asset)
@@ -187,7 +200,7 @@ namespace GitMerge
                 // Caching these sounds good on paper, but Unity tends to forget them randomly
                 var content = EditorGUIUtility.IconContent("RectMask2D Icon", string.Empty);
                 content.text = text;
-                
+
                 var buttonStyle = GUI.skin.GetStyle("Button");
                 var style = new GUIStyle(GUI.skin.GetStyle("Box"));
                 style.stretchWidth = true;
@@ -240,7 +253,7 @@ namespace GitMerge
                 EDITOR_PREFS_AUTOMERGE,
                 "Automerge",
                 "(Automerge new/deleted GameObjects/Components upon merge start)");
-            
+
             autofocus = DisplaySettingsToggle(autofocus,
                 EDITOR_PREFS_AUTOFOCUS,
                 "Auto Highlight",
@@ -292,10 +305,16 @@ namespace GitMerge
             GUILayout.BeginHorizontal();
             if (done && GUILayout.Button("Apply merge", GUILayout.Height(40)))
             {
-                mergeManager.CompleteMerge();
-                mergeManager = null;
+                ApplyMerge();
             }
             GUILayout.EndHorizontal();
+        }
+
+        private void ApplyMerge()
+        {
+            mergeManager.CompleteMerge();
+            mergeManager = null;
+            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
         }
 
         /// <summary>

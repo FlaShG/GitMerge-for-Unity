@@ -115,7 +115,7 @@ namespace GitMerge
 
             // ObjectDictionaries.Clear();
 
-            allMergeActions = null;
+            allMergeActions.Clear();
 
             // TODO: Could we explicitly just save the prefab?
             AssetDatabase.SaveAssets();

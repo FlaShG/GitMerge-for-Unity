@@ -14,7 +14,8 @@ namespace GitMerge
         protected VCS vcs { private set; get; }
         protected GitMergeWindow window { private set; get; }
 
-        internal List<GameObjectMergeActions> allMergeActions;
+        internal readonly List<GameObjectMergeActions> allMergeActions;
+        internal readonly Dictionary<int, GameObjectMergeActions> mergeActionsForInstanceId;
 
         protected static string fileName;
         protected static string theirFilename;
@@ -28,6 +29,7 @@ namespace GitMerge
             this.window = window;
             this.vcs = vcs;
             allMergeActions = new List<GameObjectMergeActions>();
+            mergeActionsForInstanceId = new Dictionary<int, GameObjectMergeActions>();
         }
 
         protected bool CheckVCSAvailability()
@@ -78,7 +80,8 @@ namespace GitMerge
         /// <param name="theirObjects">The GameObjects of "their" version of the scene.</param>
         protected void BuildAllMergeActions(List<GameObject> ourObjects, List<GameObject> theirObjects)
         {
-            allMergeActions = new List<GameObjectMergeActions>();
+            allMergeActions.Clear();
+            mergeActionsForInstanceId.Clear();
 
             // Map "their" GameObjects to their respective ids
             var theirObjectsDict = new Dictionary<ObjectID, GameObject>();
@@ -99,6 +102,8 @@ namespace GitMerge
                 if (mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
+                    mergeActionsForInstanceId.Add(ours.GetInstanceID(), mergeActions);
+                    // TODO Do we need to also add theirs.GetInstanceID()?
                 }
                 // Remove "their" GameObject from the dict to only keep those new to us
                 theirObjectsDict.Remove(id);
@@ -112,6 +117,7 @@ namespace GitMerge
                 if (mergeActions.hasActions)
                 {
                     allMergeActions.Add(mergeActions);
+                    mergeActionsForInstanceId.Add(theirs.GetInstanceID(), mergeActions);
                 }
             }
         }
@@ -128,7 +134,7 @@ namespace GitMerge
             }
             ObjectDictionaries.DestroyTheirObjects();
             ObjectDictionaries.Clear();
-            allMergeActions = null;
+            allMergeActions.Clear();
 
             if (showNotification)
             {

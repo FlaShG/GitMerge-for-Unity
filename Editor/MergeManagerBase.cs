@@ -2,6 +2,7 @@
 namespace GitMerge
 {
     using UnityEngine;
+    using UnityEditor;
     using System.IO;
     using System.Collections.Generic;
 
@@ -27,6 +28,16 @@ namespace GitMerge
             this.window = window;
             this.vcs = vcs;
             allMergeActions = new List<GameObjectMergeActions>();
+        }
+
+        protected bool CheckVCSAvailability()
+        {
+            if (!vcs.IsValid())
+            {
+                EditorUtility.DisplayDialog("GitMerge", "Your version control system executable could not be found. Plrease go to the settings tab and enter a valid path.", "Ok");
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

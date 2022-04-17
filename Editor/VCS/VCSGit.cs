@@ -19,6 +19,19 @@ namespace GitMerge
             return "GitMerge_git";
         }
 
+        public override bool IsValid()
+        {
+            try
+            {
+                Execute("status", "");
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
         public override void CheckoutOurs(string path)
         {
             GetAbsoluteFolderPathAndFilename(path, out var absoluteFolderPath, out var filename);

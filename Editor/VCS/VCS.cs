@@ -20,6 +20,7 @@ namespace GitMerge
         public abstract void CheckoutOurs(string path);
         public abstract void CheckoutTheirs(string path);
         public abstract void MarkAsMerged(string path);
+        public abstract bool IsValid();
 
         public string GetExePath()
         {

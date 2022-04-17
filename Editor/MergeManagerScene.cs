@@ -29,6 +29,11 @@ namespace GitMerge
                 return false;
             }
 
+            if (!CheckVCSAvailability())
+            {
+                return false;
+            }
+
             DisplayProgressBar(0, "Checking out scene...");
             isMergingScene = true;
             var scenePath = path ?? activeScene.path;

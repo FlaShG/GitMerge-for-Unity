@@ -27,6 +27,11 @@ namespace GitMerge
                 return false;
             }
 
+            if (!CheckVCSAvailability())
+            {
+                return false;
+            }
+
             isMergingScene = false;
             MergeAction.inMergePhase = false;
 

@@ -125,8 +125,7 @@ namespace GitMerge
                 var manager = new MergeManagerScene(this, vcs);
                 if (manager.TryInitializeMerge())
                 {
-                    this.mergeManager = manager;
-                    CacheMergeActions();
+                    StartMergeWith(manager);
                 }
             }
         }
@@ -145,8 +144,7 @@ namespace GitMerge
                         var manager = new MergeManagerPrefab(this, vcs);
                         if (manager.TryInitializeMerge(path))
                         {
-                            this.mergeManager = manager;
-                            CacheMergeActions();
+                            StartMergeWith(manager);
                         }
                     }
                     else if (IsSceneAsset(asset))
@@ -154,12 +152,17 @@ namespace GitMerge
                         var manager = new MergeManagerScene(this, vcs);
                         if (manager.TryInitializeMerge(path))
                         {
-                            this.mergeManager = manager;
-                            CacheMergeActions();
+                            StartMergeWith(manager);
                         }
                     }
                 }
             }
+        }
+
+        private void StartMergeWith(MergeManagerBase manager)
+        {
+            mergeManager = manager;
+            CacheMergeActions();
         }
 
         private static bool IsPrefabAsset(Object asset)

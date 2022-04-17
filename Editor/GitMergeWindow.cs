@@ -83,15 +83,15 @@ namespace GitMerge
         private void OnGUI()
         {
             Resources.DrawLogo();
-            DrawTabButtons();
+            DisplayTabButtons();
             switch (tab)
             {
                 case 0:
-                    OnGUIStartMergeTab();
+                    DisplayMergeTab();
                     break;
 
                 default:
-                    OnGUISettingsTab();
+                    DisplaySettingsTab();
                     break;
             }
         }
@@ -99,7 +99,7 @@ namespace GitMerge
         /// <summary>
         /// Tab that offers scene merging.
         /// </summary>
-        private void OnGUIStartMergeTab()
+        private void DisplayMergeTab()
         {
             if (!mergeInProgress)
             {
@@ -224,7 +224,7 @@ namespace GitMerge
         /// <summary>
         /// Tab that offers various settings for the tool.
         /// </summary>
-        private void OnGUISettingsTab()
+        private void DisplaySettingsTab()
         {
             var vcsPath = vcs.GetExePath();
             var vcsPathNew = EditorGUILayout.TextField("Path to git.exe", vcsPath);
@@ -259,7 +259,7 @@ namespace GitMerge
         /// If no merge is in progress, draws the buttons to switch between tabs.
         /// Otherwise, draws the "abort merge" button.
         /// </summary>
-        private void DrawTabButtons()
+        private void DisplayTabButtons()
         {
             if (!mergeInProgress)
             {

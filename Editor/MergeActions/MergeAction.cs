@@ -147,7 +147,6 @@ namespace GitMerge
             return merged && !wasMerged;
         }
 
-        // The actual UI of the MergeAction depends on the actual type
         public abstract void OnGUI();
 
         private void HighlightObject()

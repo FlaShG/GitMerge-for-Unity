@@ -52,10 +52,13 @@ namespace GitMerge
         /// Ping the GameObject in the hierarchy, select it, and center it in the scene view.
         /// </summary>
         /// <param name="go">The GameObject of interest</param>
-        public static void Highlight(this GameObject go)
+        public static void Highlight(this GameObject go, bool pingObject = false)
         {
             Selection.activeGameObject = go;
-            EditorGUIUtility.PingObject(go);
+            if (pingObject)
+            {
+                EditorGUIUtility.PingObject(go);
+            }
 
             var view = SceneView.lastActiveSceneView;
             if (view)

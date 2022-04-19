@@ -38,6 +38,15 @@ namespace GitMerge
         }
 
         /// <summary>
+        /// Passes the object that was discarded by a decision made for this <see cref="MergeAction"/>, if there is any.
+        /// </summary>
+        public virtual bool TryGetDiscardedObject(out Object discardedObject)
+        {
+            discardedObject = null;
+            return false;
+        }
+
+        /// <summary>
         /// Apply "our" change in the conflict, dismissing "their"s.
         /// </summary>
         public void UseOurs()

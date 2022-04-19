@@ -8,9 +8,13 @@ namespace GitMerge
     /// </summary>
     public class MergeActionNewGameObject : MergeActionExistence
     {
+        private readonly bool theirsWasActive;
+
         public MergeActionNewGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
         {
+            theirsWasActive = theirs.activeSelf;
+
             if (GitMergeWindow.automerge)
             {
                 UseTheirs();
@@ -19,11 +23,14 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
+            /*
             if (ours)
             {
                 ObjectDictionaries.RemoveCopyOf(theirs);
                 GameObject.DestroyImmediate(ours, true);
             }
+            */
+            theirs.SetActive(false);
         }
 
         protected override void ApplyTheirs()
@@ -33,6 +40,19 @@ namespace GitMerge
                 ours = ObjectDictionaries.InstantiateFromMerging(theirs);
                 ObjectDictionaries.SetAsCopy(ours, theirs);
             }
+            theirs.SetActive(theirsWasActive);
+        }
+
+        public override bool TryGetDiscardedObject(out Object discardedObject)
+        {
+            if (usingOurs)
+            {
+                discardedObject = theirs;
+                return true;
+            }
+
+            discardedObject = null;
+            return false;
         }
 
         public override void EnsureExistence()

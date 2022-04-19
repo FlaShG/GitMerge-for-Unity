@@ -8,7 +8,7 @@ namespace GitMerge
     /// </summary>
     public class MergeActionDeleteGameObject : MergeActionExistence
     {
-        private bool oursWasActive;
+        private readonly bool oursWasActive;
 
         public MergeActionDeleteGameObject(GameObject ours, GameObject theirs)
             : base(ours, theirs)
@@ -23,14 +23,25 @@ namespace GitMerge
 
         protected override void ApplyOurs()
         {
-            ours.SetActiveForMerging(true);
             ours.SetActive(oursWasActive);
         }
 
         protected override void ApplyTheirs()
         {
-            ours.SetActiveForMerging(false);
+            ours.SetActive(false);
             SceneView.RepaintAll();
+        }
+
+        public override bool TryGetDiscardedObject(out Object discardedObject)
+        {
+            if (usingTheirs)
+            {
+                discardedObject = ours;
+                return true;
+            }
+
+            discardedObject = null;
+            return false;
         }
 
         public override void EnsureExistence()

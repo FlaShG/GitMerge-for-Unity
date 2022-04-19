@@ -114,7 +114,7 @@ namespace GitMerge
             MergeAction.inMergePhase = false;
 
             // ObjectDictionaries.Clear();
-
+            DestroyAllDiscardedObjects();
             allMergeActions.Clear();
 
             // TODO: Could we explicitly just save the prefab?

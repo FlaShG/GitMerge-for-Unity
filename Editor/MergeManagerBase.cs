@@ -103,7 +103,8 @@ namespace GitMerge
                 {
                     allMergeActions.Add(mergeActions);
                     mergeActionsForInstanceId.Add(ours.GetInstanceID(), mergeActions);
-                    // TODO Do we need to also add theirs.GetInstanceID()?
+                    // TODO Do we need to also also do this?
+                    // mergeActionsForInstanceId.Add(theirs.GetInstanceID(), mergeActions);
                 }
                 // Remove "their" GameObject from the dict to only keep those new to us
                 theirObjectsDict.Remove(id);
@@ -123,6 +124,17 @@ namespace GitMerge
         }
 
         public abstract void CompleteMerge();
+
+        protected void DestroyAllDiscardedObjects()
+        {
+            foreach (var mergeAction in allMergeActions)
+            {
+                foreach (var discardedObject in mergeAction.GetAllDiscardedObjects())
+                {
+                    Object.DestroyImmediate(discardedObject, false);
+                }
+            }
+        }
 
         public virtual void AbortMerge(bool showNotification = true)
         {

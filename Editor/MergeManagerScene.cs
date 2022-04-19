@@ -133,6 +133,7 @@ namespace GitMerge
         {
             MergeAction.inMergePhase = false;
 
+            DestroyAllDiscardedObjects();
             ObjectDictionaries.DestroyTheirObjects();
             ObjectDictionaries.Clear();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());

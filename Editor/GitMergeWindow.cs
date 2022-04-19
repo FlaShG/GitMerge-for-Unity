@@ -72,12 +72,35 @@ namespace GitMerge
                 AbortMerge(false);
             }
         }
+        
+        private void StartMergeWith(MergeManagerBase manager)
+        {
+            mergeManager = manager;
+            CacheMergeActions();
+
+            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+        }
+
+        private void ApplyMerge()
+        {
+            mergeManager.CompleteMerge();
+            mergeManager = null;
+            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
+        }
 
         private void AbortMerge(bool showNotification = true)
         {
             mergeManager.AbortMerge(showNotification);
             mergeManager = null;
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
+        }
+
+        private void OnSelectionChange()
+        {
+            if (mergeInProgress)
+            {
+                CacheMergeActions();
+            }
         }
 
         private void OnGUI()
@@ -157,14 +180,6 @@ namespace GitMerge
                     }
                 }
             }
-        }
-
-        private void StartMergeWith(MergeManagerBase manager)
-        {
-            mergeManager = manager;
-            CacheMergeActions();
-
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
         }
 
         private void OnHierarchyGUI(int instanceID, Rect selectionRect)
@@ -315,13 +330,6 @@ namespace GitMerge
             GUILayout.EndHorizontal();
         }
 
-        private void ApplyMerge()
-        {
-            mergeManager.CompleteMerge();
-            mergeManager = null;
-            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
-        }
-
         /// <summary>
         /// Display extra commands to simplify merge process
         /// </summary>
@@ -375,6 +383,14 @@ namespace GitMerge
 
         private void CacheMergeActions()
         {
+            mergeActionsFiltered = new List<GameObjectMergeActions>();
+            if (Selection.activeObject && mergeManager.mergeActionsForInstanceId.TryGetValue(Selection.activeObject.GetInstanceID(), out var mergeActions))
+            {
+                mergeActionsFiltered.Add(mergeActions);
+            }
+            Repaint();
+            /*
+
             if (filter.useFilter)
             {
                 mergeActionsFiltered = mergeManager.allMergeActions.Where((actions) => filter.IsPassingFilter(actions)).ToList();
@@ -383,6 +399,7 @@ namespace GitMerge
             {
                 mergeActionsFiltered = mergeManager.allMergeActions;
             }
+            */
         }
     }
 }

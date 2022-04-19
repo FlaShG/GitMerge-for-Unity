@@ -374,5 +374,20 @@ namespace GitMerge
 
             GUI.backgroundColor = Color.white;
         }
+        
+        public List<Object> GetAllDiscardedObjects()
+        {
+            var result = new List<Object>();
+
+            foreach (var mergeAction in actions)
+            {
+                if (mergeAction.TryGetDiscardedObject(out var discardedObject))
+                {
+                    result.Add(discardedObject);
+                }
+            }
+
+            return result;
+        }
     }
 }

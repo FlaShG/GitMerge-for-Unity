@@ -45,7 +45,6 @@ namespace GitMerge
             }
         }
 
-
         public static void SetAsOurObject(GameObject go)
         {
             AddOurObject(go);

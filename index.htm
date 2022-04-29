@@ -70,35 +70,15 @@
             <i>GitMerge for Unity</i> is licensed under the <a href="http://choosealicense.com/licenses/gpl-2.0/" target="_blank">GPL2.0 license</a>.
         </p>
     
-    <h2 id="install">How to install</h2>
+    <h2 id="install">How to Install</h2>
+    <h3>Recommended: Use Unity's package manager</h3>
     <p>
-        To use <i>GitMerge for Unity</i>, go to the
-        <a href="https://github.com/FlaShG/GitMerge-for-Unity">project page</a>
-        and clone the repository into your Assets Folder.
+        The recommended way to install <i>GitMerge for Unity</i> is to copy the git url and paste it into the package manager.<br />
+        <a href="https://docs.unity3d.com/Manual/upm-ui-giturl.html" target="_blank">How to add a package via git url/a>
     </p>
+    <h3>Alternative: Clone into Assets</h3>
     <p>
-        Next, you make sure that Git doesn't try to merge scenes and prefabs automatically,
-        since this usually leads to broken files with Unity scenes and prefabs.
-    </p>
-    <p>
-        You have two ways to do that. The first one is to make sure that
-        "<a href="http://docs.unity3d.com/Manual/class-EditorManager.html" target="_blank">Asset Serialization</a>"
-        is set to "Mixed" or "Binary". Unity will save scenes and prefabs as binary files and Git won't touch them.
-    </p>
-    <p>
-        If you want your files serialized as YAML files, you can alternatively add a .gitattributes file
-        that tells Git to handle said filetypes as binary files, even though you want Unity so save them as YAML files.<br />
-        That .gitattributes file could look like this:
-        <pre># .gitattributes
-
-*.unity binary
-*.prefab binary
-*.asset binary
-
-# etc.</pre>
-    </p>
-    <p>
-        That's it, you're ready to go!
+        Alternatively, just clone the repository into your Assets Folder.
     </p>
     
     <div class="col-sm-4 pull-right">
@@ -120,11 +100,12 @@
     <p>
         <i>GitMerge for Unity</i> comes as an opt-in merge tool.
         It is not integrated into Git as an automatic merge tool since merging scenes and prefabs
-        is something you'd never want to have done automatically.
+        is something you'd usually not want to have done automatically.
     </p>
     <p>
         First off, you create your merge conflict the way you usually do.
         Once you're in Git's MERGING state, open the GitMerge window in Unity (Window &rarr; GitMerge).
+        Then, drag the scene or prefab you want to merge and drop it into the big box.
     </p>
     
     <div class="pull-right with-margin panel panel-default small-text" style="width:530px">
@@ -140,52 +121,36 @@
             </p>
        </div>
     </div>
-    <h3 id="instructions-scene">Merge a scene</h3>
+    <h3 id="instructions-scene">Solving Merge Conflicts</h3>
     <p>
-        To merge a scene, open it the usual way. Then, in the GitMerge Window, click "Start merging this scene".
-        When there is an active merge conflict, the tool will find the differences between the currently opened
-        version of the scene and "their" version.
+        The tool will find the differences between the "our" and "their" version of the scene/prefab.
+        You will get a list of so called "MergeActions" in the tool window.
+        Each MergeAction solves one point of conflict between the two scenes.
     </p>
     <p>
-        You will then get a list of so called "MergeActions" in the tool window.
-        Each MergeAction solves one point of conflict between the two scenes.<br />
-        To do this, you will be offered two to three options every time:
+        To do solve the conflict bit by bit, you will be offered two to three options for each MergeAction:
         <ul>
             <li><b>Use "ours"</b> (left side)</li>
             <li><b>Use "theirs"</b> (right side)</li>
             <li><b>Use new</b> (center, when applicable)</li>
         </ul>
-        You can choose to click the left button to use our version, the right button for their version,
+        You can choose to click the left button to use "our" version, the right button for "their" version,
         or enter a new value in the middle. Either way, the MergeAction line will turn from red (unmerged)
         to green (merged).
         MergeActions that have been automatically merged to a default
         (like keeping a Component that "their" version doesn't have) are marked yellow.
     </p>
     <p>
-        You can, of course, continue to edit the scene in a normal way during merging.
+        You can continue to edit the scene in a normal way during merging.
         It is not recommended to delete GameObjects that might be part of a MergeAction though.
+        Consider merging first, and apply changes to the GameObject hierarchy afterwards for a new commit.
     </p>
     <p>
         When all MergeActions are flagged as merged, you can click on "Apply merge".<br />
         The scene will be saved and marked as merged for git. Since there could be more merge conflicts,
-        this will not automatically commit.<br />
-        You'll have to commit your merge manually at some point from now on.
+        the button will not automatically create a commit.<br />
+        You'll have to commit your merge manually at some later point.
     </p>
-    
-    <h3 id="instructions-prefab">Merge a prefab</h3>
-    <p>
-        Merging a prefab pretty much works like with a scene.
-    </p>
-    <p>
-        While in a merge conflict, open the "Merge Prefab" tab and drag your prefab into the field.<br />
-        A new scene will be opened. This scene contains an instance of said prefab.
-        You'll get the same type of list you already know from scene merging.
-        Merge your conflicts and see the result on the prefab instance.
-    </p>
-    <p>
-        When you hit "Apply merge" when done, you will be returned to the scene you were in before. The prefab file will be added to the Git stage, but remember that you'll have to commmit the merge yourself.
-    </p>
-    
     
     <h2 id="development">Active development</h2>
     <p>

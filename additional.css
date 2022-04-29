@@ -1,3 +1,8 @@
+html
+{
+    scroll-behavior: smooth;
+}
+
 a.navbar-brand
 {
     padding-top: 10px;

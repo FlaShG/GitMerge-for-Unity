@@ -154,8 +154,7 @@ namespace GitMerge
         {
             // Highlight the instance of the prefab, not the prefab itself
             // Otherwise, "ours".
-            var objectToHighlight = MergeManagerBase.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance : ours;
-
+            var objectToHighlight = MergeManagerBase.isMergingPrefab ? MergeManagerPrefab.ourPrefabInstance.GetChildWithEqualPath(ours) : ours;
             if (objectToHighlight && inMergePhase && objectToHighlight.hideFlags == HideFlags.None)
             {
                 objectToHighlight.Highlight();

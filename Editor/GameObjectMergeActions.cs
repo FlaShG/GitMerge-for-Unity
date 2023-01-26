@@ -69,7 +69,7 @@ namespace GitMerge
             name = "";
             if (ours)
             {
-                name = "Your[" + GetPath(ours) + "]";
+                name = "Your[" + ours.GetPath() + "]";
             }
             if (theirs)
             {
@@ -77,7 +77,7 @@ namespace GitMerge
                 {
                     name += " vs. ";
                 }
-                name += "Their[" + GetPath(theirs) + "]";
+                name += "Their[" + theirs.GetPath() + "]";
             }
         }
 
@@ -249,31 +249,6 @@ namespace GitMerge
             }
 
             return !object.Equals(our, their);
-        }
-
-        /// <summary>
-        /// Get the path of a GameObject in the hierarchy.
-        /// </summary>
-        private static string GetPath(GameObject gameObject)
-        {
-            var t = gameObject.transform;
-            var sb = new StringBuilder(RemovePostfix(t.name));
-            while (t.parent != null)
-            {
-                t = t.parent;
-                sb.Insert(0, RemovePostfix(t.name) + "/");
-            }
-            return sb.ToString();
-        }
-
-        private static string RemovePostfix(string name)
-        {
-            if (name.EndsWith(MergeManagerBase.THEIR_FILE_POSTFIX))
-            {
-                return name.Substring(0, name.Length - MergeManagerBase.THEIR_FILE_POSTFIX.Length);
-            }
-
-            return name;
         }
 
         private void CheckIfMerged()

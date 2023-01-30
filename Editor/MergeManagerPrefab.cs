@@ -52,6 +52,13 @@ namespace GitMerge
             // Instantiate our object in order to view it while merging.
             ourPrefabInstance = PrefabUtility.InstantiatePrefab(ourPrefab) as GameObject;
             
+            // UI Elements need a Canvas to be displayed correctly:
+            if (ourPrefabInstance.GetComponentInChildren<RectTransform>() != null) {
+                GameObject defaultCanvas = new GameObject("Canvas");
+                defaultCanvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+                ourPrefabInstance.transform.SetParent(defaultCanvas.transform, false);
+            }
+
             var ourObjects = GetAllObjects(ourPrefab);
 
             theirPrefab = AssetDatabase.LoadAssetAtPath(theirFilename, typeof(GameObject)) as GameObject;

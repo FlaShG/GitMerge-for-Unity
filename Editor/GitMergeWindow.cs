@@ -165,7 +165,7 @@ namespace GitMerge
         private static bool IsPrefabAsset(Object asset)
         {
             var assetType = asset.GetType();
-            return assetType == typeof(GameObject) ||
+            return assetType == typeof(GameObject) || assetType == typeof(BrokenPrefabAsset) ||
                    assetType == typeof(DefaultAsset);
         }
 
